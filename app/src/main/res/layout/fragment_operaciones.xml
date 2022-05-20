@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_centerVertical="true"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TextView
+        android:id="@+id/tvtitulo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ivlogo"
+        android:layout_marginHorizontal="15dp"
+        android:layout_marginVertical="15dp"
+        android:text="Aquí se muestran las operaciones actuales posibles con el equipo TREFPB"
+        android:textSize="15sp" />
+
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Button
+                android:visibility="gone"
+                android:layout_marginVertical="15dp"
+                android:layout_marginHorizontal="20dp"
+                android:background="@drawable/round_corner_black"
+                android:textColor="#fff"
+                android:id="@+id/btnparametros"
+                android:text="Cambiar parámetros"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"/>
+
+            <Button
+                android:visibility="gone"
+                android:layout_marginVertical="15dp"
+                android:layout_marginHorizontal="20dp"
+                android:background="@drawable/round_corner_black"
+                android:textColor="#fff"
+                android:id="@+id/btnhandshake"
+                android:text="Handshake"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"/>
+
+            <Button
+                android:visibility="gone"
+                android:layout_marginVertical="15dp"
+                android:layout_marginHorizontal="20dp"
+                android:background="@drawable/round_corner_black"
+                android:textColor="#fff"
+                android:id="@+id/btnreadTimeData"
+                android:text="Lectura de datos tipo Tiempo"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"/>
+
+            <Button
+                android:visibility="gone"
+                android:layout_marginVertical="15dp"
+                android:layout_marginHorizontal="20dp"
+                android:background="@drawable/round_corner_black"
+                android:textColor="#fff"
+                android:id="@+id/btnreadEventData"
+                android:text="Lectura de datos tipo Evento"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"/>
+
+            <Button
+                android:visibility="gone"
+                android:layout_marginVertical="15dp"
+                android:layout_marginHorizontal="20dp"
+                android:background="@drawable/round_corner_black"
+                android:textColor="#fff"
+                android:id="@+id/btnreadRealTimeData"
+                android:text="Estado en tiempo real"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"/>
+
+            <Button
+                android:layout_marginVertical="15dp"
+                android:layout_marginHorizontal="20dp"
+                android:background="@drawable/round_corner_black"
+                android:textColor="#fff"
+                android:id="@+id/btnupdateFw"
+                android:text="Actualizar a nuevo Firmware"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"/>
+
+            <Button
+                android:layout_marginVertical="15dp"
+                android:layout_marginHorizontal="20dp"
+                android:background="@drawable/round_corner_black"
+                android:textColor="#fff"
+                android:id="@+id/btnupdateFwOriginal"
+                android:text="Actualización a firmware original"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"/>
+
+            <Button
+                android:visibility="gone"
+                android:layout_marginVertical="15dp"
+                android:layout_marginHorizontal="20dp"
+                android:background="@drawable/round_corner_black"
+                android:textColor="#fff"
+                android:id="@+id/excel"
+                android:text="Test"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"/>
+
+        </LinearLayout>
+    </ScrollView>
+
+
+
+</LinearLayout>

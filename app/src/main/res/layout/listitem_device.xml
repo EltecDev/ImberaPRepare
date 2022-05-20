@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@color/white_background"
+    android:layout_width="match_parent"
+    android:layout_marginTop="15dp"
+    android:layout_height="100dp">
+
+    <TextView
+        android:id="@+id/tvdevice_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="18dp"/>
+
+    <TextView
+        android:layout_marginTop="5dp"
+        android:layout_below="@id/tvdevice_name"
+        android:id="@+id/tvdevice_address"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="12dp"/>
+
+    <Button
+        android:visibility="gone"
+        android:id="@+id/btnConnect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_centerVertical="true"
+        android:backgroundTint="@color/teal_700"
+        android:text="Conectar"
+        android:textSize="11sp" />
+
+    <ImageView
+        android:id="@+id/ivConnectionStatus"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="15dp"
+        android:layout_toLeftOf="@+id/btnConnect"
+        android:src="@drawable/ic_baseline_bluetooth_connected_gray" />
+
+
+
+    <RelativeLayout
+        android:layout_marginTop="15dp"
+        android:paddingEnd="10dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/gray"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"/>
+</RelativeLayout>

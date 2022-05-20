@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "837091825150",
+    "project_id": "imberap-61ab1",
+    "storage_bucket": "imberap-61ab1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:837091825150:android:537b8f6a506bf0d568dcaf",
+        "android_client_info": {
+          "package_name": "mx.eltec.imberap"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "837091825150-j6l7vsmc5vio99p7kct01il99iii1t2o.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "mx.eltec.imberap",
+            "certificate_hash": "42944d294d598078a0db0b8544023daf673b4a07"
+          }
+        },
+        {
+          "client_id": "837091825150-8vvce520gs0k66jq0k9edd7pkkg9pob5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBh1MY_j06zJ0tgXm-iAIWFJKdTYDXQa5c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "837091825150-8vvce520gs0k66jq0k9edd7pkkg9pob5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

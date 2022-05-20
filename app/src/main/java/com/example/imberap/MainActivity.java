@@ -1,0 +1,1311 @@
+package com.example.imberap;
+
+import static android.view.View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
+import static android.view.WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+
+import android.Manifest;
+import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.example.imberap.BluetoothServices.BluetoothLeService;
+import com.example.imberap.BluetoothServices.BluetoothServices;
+import com.example.imberap.Fragment.ListaBLEFragment;
+import com.example.imberap.Fragment.EstatusBLEFragment;
+import com.example.imberap.Fragment.OperacionesFragmentOxxo;
+import com.example.imberap.Fragment.PlantillaFragment;
+import com.example.imberap.Fragment.OperacionesFragment;
+import com.example.imberap.Fragment.PlantillaOxxoFragment;
+import com.example.imberap.utility.GlobalTools;
+import com.example.imberap.Fragment.PlantillaOxxoDisplayFragment;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationBarView;
+
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Calendar;
+import java.util.List;
+
+/**
+ * TODO:
+ * Bug por Natalia pendiente: al apagar el bluetooth cuando ya estás conectado al BLE, debe cambiar el estado a DESCONECTADO
+ *
+ * PENDIENTE:agregar filtros de Modelo de trefp tanto para no crash como para no inhabikitar los trefps por mal envío de modelo de trefp.
+ *
+ *
+ * */
+public class MainActivity extends AppCompatActivity implements NavigationBarView.OnItemSelectedListener , ListaBLEFragment.connectListener, PlantillaOxxoFragment.listener , PlantillaFragment.listener{
+    BottomNavigationView bottomNavigationView;
+    TextView tvConnectionState, tvfwversion;
+    private BluetoothAdapter mBluetoothAdapter;
+    String deviceName, deviceMacAddress;
+    LayoutInflater inflater;
+
+    androidx.appcompat.app.AlertDialog progressdialog=null;
+    View dialogViewProgressBar;
+
+    //Pantalla de peticion inicial de permisos
+    SharedPreferences sp;
+    SharedPreferences.Editor esp;
+
+    //Fragments
+    ListaBLEFragment listaBLEFragment;
+    PlantillaFragment plantillaFragment;
+    PlantillaOxxoFragment plantillaOxxoFragment;
+    PlantillaOxxoDisplayFragment plantillaOxxoDisplayFragment;
+    EstatusBLEFragment estatusBLEFragment;
+    OperacionesFragment operacionesFragment;
+    OperacionesFragmentOxxo operacionesFragmentOxxo;
+    Fragment active;
+    FragmentManager fragmentManager ;
+    int position=1;
+
+    //Bluetooth Services
+    BluetoothServices bluetoothServices;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        init();
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        initOnResume();
+    }
+
+    private void initOnResume(){
+        BluetoothLeService BLE= bluetoothServices.getBluetoothLeService();
+        if (BLE==null){
+            esp.putBoolean("isconnected",false);
+            esp.putString("mac","");
+            esp.putString("trefpVersionName","");
+            esp.apply();
+            disconnectBLE();
+            GlobalTools.changeScreenConnectionStatus(tvConnectionState,sp);
+        }
+    }
+    private void init(){
+        sp = getSharedPreferences("connection_preferences", Context.MODE_PRIVATE);
+        esp = sp.edit();
+
+        //FirebaseCrashlytics crashlytics = FirebaseCrashlytics.getInstance();
+        // To log a message to a crash report, use the following syntax:
+        //crashlytics.log("E/TAG: my message testt");
+
+        //Vista para controlar el cambio de color en la interfaz
+        View backgroundView = findViewById(R.id.welcomeActivityBackgroundLayout);
+
+        // Ajuste visual de la barra de notificaciones para android 6.0+:
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            int flags = backgroundView.getSystemUiVisibility();
+            flags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+            backgroundView.setSystemUiVisibility(flags);
+            getWindow().setStatusBarColor(Color.parseColor("#f4f4f4"));
+        }
+
+        // Ajuste visual de la barra de navegación para android 8.0+:
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            View decorView = getWindow().getDecorView();
+            decorView.setSystemUiVisibility(FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS |
+                    SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);
+            getWindow().setNavigationBarColor(Color.parseColor("#f4f4f4"));
+        }
+
+
+
+        if (!sp.getBoolean("permissionGiven",false))
+            askPermission();
+
+        //campos
+        tvConnectionState = findViewById(R.id.tvconnectionstate);
+        tvfwversion = findViewById(R.id.tvfwversion);
+
+        //servicios bluetooth
+        fragmentManager= getSupportFragmentManager();
+        bluetoothServices = new BluetoothServices(this, fragmentManager,tvConnectionState,tvfwversion);
+
+
+        if (bluetoothServices.BLESupport()){
+            if (bluetoothServices.isBluetoothAdapterEnabled()){
+                listaBLEFragment = new ListaBLEFragment(bluetoothServices,tvConnectionState, tvfwversion);
+                plantillaFragment = new PlantillaFragment(bluetoothServices);
+                plantillaOxxoFragment = new PlantillaOxxoFragment(bluetoothServices);
+                plantillaOxxoDisplayFragment = new PlantillaOxxoDisplayFragment(bluetoothServices,this);
+                estatusBLEFragment = new EstatusBLEFragment(bluetoothServices,this);
+                operacionesFragment = new OperacionesFragment(bluetoothServices,this);
+                operacionesFragmentOxxo = new OperacionesFragmentOxxo(bluetoothServices,this);
+                active = listaBLEFragment;
+            }else {
+                Toast.makeText(MainActivity.this, "El dispositivo tiene problemas con el Bluetooth o está apagado", Toast.LENGTH_SHORT).show();
+            }
+        }else{
+            Toast.makeText(MainActivity.this, "El dispositivo no soporta deteccion de BLE", Toast.LENGTH_SHORT).show();
+        }
+
+
+        //Inicializar interfaz MainActivity
+        bottomNavigationView = (BottomNavigationView)findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setOnItemSelectedListener(this);
+        //bottomNavigationView.getMenu().getItem(position).setChecked(true);
+        //bottomNavigationView.setSelectedItemId(R.id.bottom_menu_item1);
+        listaBLEFragment.setconnectListenerListener(this);
+        plantillaFragment.setListener(this);
+        plantillaOxxoFragment.setListener(this);
+        plantillaOxxoDisplayFragment.setListener(this);
+
+        fragmentManager.beginTransaction().add(R.id.flFragment, estatusBLEFragment, "3").hide(estatusBLEFragment).commit();
+        fragmentManager.beginTransaction().add(R.id.flFragment, operacionesFragment, "4").hide(operacionesFragment).commit();
+        fragmentManager.beginTransaction().add(R.id.flFragment, operacionesFragmentOxxo, "4").hide(operacionesFragmentOxxo).commit();
+        fragmentManager.beginTransaction().add(R.id.flFragment, plantillaFragment, "2").hide(plantillaFragment).commit();
+        fragmentManager.beginTransaction().add(R.id.flFragment, plantillaOxxoFragment, "2").hide(plantillaOxxoFragment).commit();
+        fragmentManager.beginTransaction().add(R.id.flFragment, plantillaOxxoDisplayFragment, "2").hide(plantillaOxxoDisplayFragment).commit();
+        fragmentManager.beginTransaction().add(R.id.flFragment,listaBLEFragment, "1").commit();
+    }
+
+    private void askPermission(){
+
+        if (Build.VERSION.SDK_INT >= 31){
+            String[] perms = {  Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.BLUETOOTH_CONNECT};
+            if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED) {
+                esp.putBoolean("permissionGiven",true);
+                esp.apply();
+            } else {
+                requestPermissions(perms,100);
+            }
+        }else{
+            ActivityCompat.requestPermissions( this, new String[] {  android.Manifest.permission.ACCESS_FINE_LOCATION  }, 1666);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // User chose not to enable Bluetooth.
+        if (requestCode == 1 && resultCode == Activity.RESULT_CANCELED) {
+            esp.putBoolean("permissionGiven",false);
+            esp.apply();
+            finish();
+            return;
+        }
+        if (requestCode==100) {
+            esp.putBoolean("permissionGiven",true);
+            esp.apply();
+            Toast.makeText(MainActivity.this, "¡Ahora puedes escanear!", Toast.LENGTH_SHORT).show();
+        }else if (requestCode==1666){
+            esp.putBoolean("permissionGiven",true);
+            esp.apply();
+            Toast.makeText(MainActivity.this, "¡Ahora puedes escanear!", Toast.LENGTH_SHORT).show();
+        }else{
+            esp.putBoolean("permissionGiven",false);
+            esp.apply();
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.bottom_menu_item1:
+                fragmentManager.beginTransaction().hide(active).show(listaBLEFragment).commit();
+                active=listaBLEFragment;
+                //fragmentManager.beginTransaction().replace(R.id.flFragment, listaBLEFragment).commit();
+                return true;
+            case R.id.bottom_menu_item2:
+                //Log.d("TAG",":"+sp.getString("trefpVersionName",""));
+                if (sp.getString("trefpVersionName","").equals("IMBERA-OXXO")){
+                    //verificar el modelo del equipo pasa saber parametros a mostrar (por ejemplo con o sin display)
+                    //Log.d("VERIFICAR MODELO",":"+sp.getString("modelo",""));
+                    //if (sp.getString("modelo","").equals("2.0")){
+                      //  fragmentManager.beginTransaction().hide(active).show(plantillaOxxoFragment).commit();
+                      //  active=plantillaOxxoFragment;
+                   // }else if (sp.getString("modelo","").equals("6.4")){
+                        fragmentManager.beginTransaction().hide(active).show(plantillaOxxoDisplayFragment).commit();
+                        active=plantillaOxxoDisplayFragment;
+                   // }else{
+                     //   Toast.makeText(this, "No puedes editar este modelo aún, espera una actualización.", Toast.LENGTH_SHORT).show();
+                  //  }
+
+                }else if (sp.getString("trefpVersionName","").equals("IMBERA-TREFP")){
+                    fragmentManager.beginTransaction().hide(active).show(plantillaFragment).commit();
+                    active=plantillaFragment;
+                }else if (sp.getString("trefpVersionName","").equals("")){
+                    Toast.makeText(this, "Conéctate a un BLE primero", Toast.LENGTH_SHORT).show();
+                }
+                return true;
+
+            case R.id.bottom_menu_item3:
+                fragmentManager.beginTransaction().hide(active).show(estatusBLEFragment).commit();
+                active= estatusBLEFragment;
+
+                return true;
+
+            case R.id.bottom_menu_item4:
+                if (sp.getString("trefpVersionName","").equals("IMBERA-OXXO")){
+                    fragmentManager.beginTransaction().hide(active).show(operacionesFragmentOxxo).commit();
+                    active= operacionesFragmentOxxo;
+                }else if (sp.getString("trefpVersionName","").equals("IMBERA-TREFP")){
+                    fragmentManager.beginTransaction().hide(active).show(operacionesFragment).commit();
+                    active= operacionesFragment;
+                }else if (sp.getString("trefpVersionName","").equals("")){
+                    Toast.makeText(this, "Conéctate a un BLE primero", Toast.LENGTH_SHORT).show();
+                }
+
+
+                //fragmentManager.beginTransaction().hide(active).show(realTimeStateFragment).commit();
+                //active=realTimeStateFragment;
+
+                return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void connectBLE(String name,String mac) {
+        deviceName = name;
+        deviceMacAddress = mac;
+        bluetoothServices.connect(name,mac);
+
+    }
+
+    @Override
+    public void disconnectBLE() {
+        bluetoothServices.disconnect();
+    }
+
+    @Override
+    public boolean isPermissionEnabled() {
+        if (Build.VERSION.SDK_INT >= 31) {
+            if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED) {
+                esp.putBoolean("permissionGiven",true);
+                esp.apply();
+                return true;
+            } else {
+                esp.putBoolean("permissionGiven",false);
+                esp.apply();
+                return false;
+            }
+        }else{
+            if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                esp.putBoolean("permissionGiven",true);
+                esp.apply();
+                return true;
+            } else {
+                esp.putBoolean("permissionGiven",false);
+                esp.apply();
+                return false;
+                //requestPermissions(perms,100);
+            }
+        }
+
+    }
+
+    @Override
+    public void requestPemission() {
+        Toast.makeText(this, "Es necesario que acepte los permisos solicitados", Toast.LENGTH_SHORT).show();
+        askPermission();
+    }
+
+    @Override
+    public void printExcel(List<String> data, String deviceName) {
+        createProgressDialogExcelDoc(data,deviceName);
+    }
+
+    public void createProgressDialogExcelDoc(List<String> data, String name){
+        if(progressdialog == null){
+            //Crear dialogos de "pantalla de carga" y "popups if"
+            LayoutInflater inflater = getLayoutInflater();
+            final View dialogView = inflater.inflate(R.layout.popup_option, null, false);
+            AlertDialog.Builder adb = new AlertDialog.Builder(MainActivity.this,R.style.Theme_AppCompat_Light_Dialog_Alert_eltc);
+            adb.setView(dialogView);
+
+            progressdialog = adb.create();
+            progressdialog.setCanceledOnTouchOutside(false);
+            progressdialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            progressdialog.show();
+
+            dialogView.findViewById(R.id.btnSendExcel).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    progressdialog.dismiss();
+                    progressdialog = null;
+
+                    if (name.equals("oxxo")){
+                        createExcelFileOxxoDisplay(data);
+                    }else
+                        createExcelFile(data);
+
+                }
+            });
+            dialogView.findViewById(R.id.btndontSendExcel).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    progressdialog.dismiss();
+                    progressdialog = null;
+                }
+            });
+        }
+    }
+
+    private void createExcelFile(List<String> data){
+
+        String nombreFile= "PlantillaImberaP.xls";
+        File file = new File(this.getExternalFilesDir(null),nombreFile);
+        FileOutputStream outputStream = null;
+
+        HSSFWorkbook wb= new HSSFWorkbook();
+        HSSFSheet hssfSheet = wb.createSheet("Plantilla");
+
+        HSSFRow hssfRow = hssfSheet.createRow(0);
+        HSSFCell hssfCell = hssfRow.createCell(0);
+
+        hssfCell.setCellValue("Parámetro");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue("Cambio");
+//inicio
+        hssfRow = hssfSheet.createRow(2);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("COMPRESOR");
+
+        hssfRow = hssfSheet.createRow(3);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("F2.- Tiempo mínimo de encendido (minutos, por defecto:3.0)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(0));
+
+        hssfRow = hssfSheet.createRow(4);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("F3.- Tiempo mínimo de apagado (minutos, por defecto:1.5)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(1));
+
+        hssfRow = hssfSheet.createRow(5);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("FC.- Retraso de primer encendido (minutos, por defecto:0.4)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(2));
+//titulo
+        hssfRow = hssfSheet.createRow(6);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("TERMOSTATO");
+
+
+        hssfRow = hssfSheet.createRow(7);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("T0.- Temperatura de corte frío (°C, por defecto:1.0)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(3));
+
+        hssfRow = hssfSheet.createRow(8);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("T2.- Diferencial frío , por defecto:2.0");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(4));
+
+        hssfRow = hssfSheet.createRow(9);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("A0.- Límite de temperatura baja , por defecto:-7.0");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(5));
+//titulo
+        hssfRow = hssfSheet.createRow(10);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("PUERTA");
+
+
+        hssfRow = hssfSheet.createRow(11);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("C1.- Funciones de control");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(6));
+
+        hssfRow = hssfSheet.createRow(12);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("C7.- Cortes de compresor para permitir modos de ahorro, por defecto:2");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(7));
+
+        hssfRow = hssfSheet.createRow(13);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("TF.- Temperatura ambiente para permitir modos de ahorro (°C, por defecto:17.0)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(8));
+
+        hssfRow = hssfSheet.createRow(14);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("TD.- Diferencial de Modo Ahorro 1, por defecto:1.0");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(9));
+
+        hssfRow = hssfSheet.createRow(15);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("TE.- Diferencial de Modo Ahorro 2, por defecto:1.0");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(10));
+
+        hssfRow = hssfSheet.createRow(16);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("FD.- Tiempo de puerta cerrada para Modo Ahorro 1 (horas, por defecto:2.0)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(11));
+
+        hssfRow = hssfSheet.createRow(17);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("FE.- Tiempo de puerta cerrada para Modo Ahorro 2 (horas, por defecto:1.0)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(12));
+
+        hssfRow = hssfSheet.createRow(18);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("D2.- Tiempo para registrar puerta abierta (segundos, por defecto: 5)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(13));
+
+        hssfRow = hssfSheet.createRow(19);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("LF.- Tiempo para validar falla de puerta abierta (minutos, por defecto: 3)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(14));
+//titulo
+        hssfRow = hssfSheet.createRow(20);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("DESHIELO");
+
+
+        hssfRow = hssfSheet.createRow(21);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("C0.- Modo de deshielo , por defecto:2");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(15));
+
+        hssfRow = hssfSheet.createRow(22);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("C3.B2.- Funciones de deshielo, por defecto: 4");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(16));
+
+        hssfRow = hssfSheet.createRow(23);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("L8.- Tiempo mínimo de deshielo (minutos, por defecto:15)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(17));
+
+        hssfRow = hssfSheet.createRow(24);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("L9.- Tiempo máximo de deshielo (minutos, por defecto:30)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(18));
+
+        hssfRow = hssfSheet.createRow(25);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("LA.- Tiempo mínimo para inicio de deshielo (horas, por defecto:12)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(19));
+
+        hssfRow = hssfSheet.createRow(26);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("LB.- Tiempo máximo para inicio de deshielo (horas , por defecto:16)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(20));
+
+        hssfRow = hssfSheet.createRow(27);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("T8.- Temperatura para finalizar deshielo (°C, por defecto:15.0)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(21));
+
+        hssfRow = hssfSheet.createRow(28);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("T9.- Temperatura de reinicio (°C, por defecto:5.0)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(22));
+
+        hssfRow = hssfSheet.createRow(29);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("TA.- Temperatura para iniciar deshielo (°C, por defecto:-5.0)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(23));
+
+        hssfRow = hssfSheet.createRow(30);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("F6.- Tiempo de goteo para compresor (minutos, por defecto:10.0)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(24));
+
+        hssfRow = hssfSheet.createRow(31);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("F7.- Tiempo de goteo para ventilador (minutos, por defecto:5.0)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(25));
+//titulo
+        hssfRow = hssfSheet.createRow(32);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("VENTILADOR");
+
+
+        hssfRow = hssfSheet.createRow(33);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("C4.B0.- Funciones de ventilador, por defecto:2");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(26));
+
+        hssfRow = hssfSheet.createRow(34);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("C4.B1.- Funciones de ventilador, por defecto:2");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(27));
+
+        hssfRow = hssfSheet.createRow(35);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("FB.- Retraso de primer encendido (minutos, por defecto:0.3)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(28));
+
+        hssfRow = hssfSheet.createRow(36);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("F9.- Retardo para comenzar ciclo (minutos, por defecto:3.0)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(29));
+
+        hssfRow = hssfSheet.createRow(37);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("F4.- Tiempo de ventilador encendido (minutos, por defecto:3.0)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(30));
+
+        hssfRow = hssfSheet.createRow(38);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("F5.- Tiempo de ventilador apagado (minutos, por defecto:3.0)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(31));
+
+        hssfRow = hssfSheet.createRow(39);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("FA.- Retardo de encendido del ventilador al cerrar puerta (minutos, por defecto:0.5)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(32));
+//titulo
+        hssfRow = hssfSheet.createRow(40);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("PROTECCIÓN DE VOLTAJE");
+
+
+        hssfRow = hssfSheet.createRow(41);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("C6.- Protección de voltaje, por defecto:1");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(33));
+
+        hssfRow = hssfSheet.createRow(42);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("L0.- Voltaje de protección mínimo para 120 (volts, por defecto:85)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(34));
+
+        hssfRow = hssfSheet.createRow(43);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("L1.-Voltaje de protección máximo 120 mínimo 220 (volts, por defecto:40)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(35));
+
+        hssfRow = hssfSheet.createRow(44);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("L2.- Voltaje de protección máximo para 220 (volts, por defecto:40)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(36));
+
+        hssfRow = hssfSheet.createRow(45);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("L4.- Tiempo de validación de protección de voltaje (segundos, por defecto:15)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(37));
+
+        hssfRow = hssfSheet.createRow(46);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("F1.- Tiempo de validación para salir de protección de voltaje (minutos, por defecto:1.0)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(38));
+
+        hssfRow = hssfSheet.createRow(47);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("F0.- Histéresis (volts, por defecto:4.2)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(39));
+
+        hssfRow = hssfSheet.createRow(48);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("D3.- Tiempo para Logger de datos (minutos, por defecto:60)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(40));
+
+        hssfRow = hssfSheet.createRow(49);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("E0 E1.- Versión de Firmware");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(41));
+
+        hssfRow = hssfSheet.createRow(50);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("E2.- Modelo de TREFP");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(42));
+
+        hssfRow = hssfSheet.createRow(51);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("E3.- Versión de la plantilla");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(43));
+
+        try {
+            outputStream = new FileOutputStream(file);
+            wb.write(outputStream);
+            Toast.makeText(this.getApplicationContext(),"Reporte generado correctamente",Toast.LENGTH_LONG).show();
+            try {
+                outputStream.close();
+                setupEmail();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+
+
+        } catch (java.io.IOException e) {
+            Toast.makeText(this.getApplicationContext(),"Reporte no generado",Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+
+        }
+    }
+
+    private void createExcelFileOxxo(List<String> data){
+
+        String nombreFile= "PlantillaImberaP.xls";
+        File file = new File(this.getExternalFilesDir(null),nombreFile);
+        FileOutputStream outputStream = null;
+
+        HSSFWorkbook wb= new HSSFWorkbook();
+        HSSFSheet hssfSheet = wb.createSheet("Plantilla");
+
+        HSSFRow hssfRow = hssfSheet.createRow(0);
+        HSSFCell hssfCell = hssfRow.createCell(0);
+
+        hssfCell.setCellValue("Parámetro");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue("Cambio");
+//inicio
+        //hssfRow = hssfSheet.createRow(2);
+        //hssfCell = hssfRow.createCell(0);
+        //hssfCell.setCellValue("COMPRESOR");
+
+        hssfRow = hssfSheet.createRow(2);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("T0.- Set point diurno (grados, por defecto:-3.5)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(0));
+
+        hssfRow = hssfSheet.createRow(3);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("T1.- Diferencial diurno (grados, por defecto:2.5)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(1));
+
+        hssfRow = hssfSheet.createRow(4);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("T3.- Offset Diurno (grados, por defecto:-0.5)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(2));
+//titulo
+        //hssfRow = hssfSheet.createRow(6);
+        //hssfCell = hssfRow.createCell(0);
+        //hssfCell.setCellValue("TERMOSTATO");
+
+
+        hssfRow = hssfSheet.createRow(5);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("T6.- Límite interior para ajuste de set point (grados , por defecto:-15.0)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(3));
+
+        hssfRow = hssfSheet.createRow(6);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("T7.- Límite superior para ajuste de set point (grados , por defecto:15.0)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(4));
+
+        hssfRow = hssfSheet.createRow(7);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("TD.- Diferencial de temperatura para Ahorro 1 (grados, por defecto:1.0)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(5));
+//titulo
+        //hssfRow = hssfSheet.createRow(10);
+        //hssfCell = hssfRow.createCell(0);
+        //hssfCell.setCellValue("PUERTA");
+
+
+        hssfRow = hssfSheet.createRow(8);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("TD.- Diferencial de temperatura para Ahorro 2 (grados, por defecto:1.0)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(6));
+
+        hssfRow = hssfSheet.createRow(9);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("A0.- Temperatura evaporador para terminar deshielo (grados, por defecto:15.0)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(7));
+
+        hssfRow = hssfSheet.createRow(10);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("A1.- Temperatura ambiente para terminar deshielo (°C, por defecto:30.0)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(8));
+
+        hssfRow = hssfSheet.createRow(11);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("A4.- Temperatura de pulldown (grados, por defecto:12.0");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(9));
+
+        hssfRow = hssfSheet.createRow(12);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("L0.- Voltaje de protección mínimo para 120  (Volts, por defecto:85");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(10));
+
+        hssfRow = hssfSheet.createRow(13);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("L1.- Voltaje de protección máximo 120 mínimo 220 (Volts, por defecto:40)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(11));
+
+        hssfRow = hssfSheet.createRow(14);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("L2.- Voltaje de protección máximo para 220 (Volts, por defecto:40)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(12));
+
+        hssfRow = hssfSheet.createRow(15);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("L3.- Tiempo para validar falla de voltaje (segundos, por defecto: 15)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(13));
+
+        hssfRow = hssfSheet.createRow(16);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("L4.- Tiempo entre deshielos (horas, por defecto: 4)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(14));
+//titulo
+        //hssfRow = hssfSheet.createRow(20);
+        //hssfCell = hssfRow.createCell(0);
+        //hssfCell.setCellValue("DESHIELO");
+
+
+        hssfRow = hssfSheet.createRow(17);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("L5.- Tiempo máximo de deshielo (minutos, por defecto:30)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(15));
+
+        hssfRow = hssfSheet.createRow(18);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("L6.- Tiempo de puerta abierta para cancelar control de ventilador por puerta (minutos, por defecto: 99)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(16));
+
+        hssfRow = hssfSheet.createRow(19);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("L7.- Tiempo de validación para alarma de puerta abierta (minutos, por defecto:3)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(17));
+
+        hssfRow = hssfSheet.createRow(20);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("L9.- Tiempo de permanencia en modo nocturno (minutos, por defecto:10)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(18));
+
+        hssfRow = hssfSheet.createRow(21);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("C0.- Escala de temperatura (por defecto:Celcius)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(19));
+
+        hssfRow = hssfSheet.createRow(22);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("C1.- Banderas de configuración (horas , por defecto:16)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(20));
+
+        hssfRow = hssfSheet.createRow(23);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("C2.- Intensidad del filtro para el sensor ambiente a la subida (°C, por defecto:15.0)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(21));
+
+        hssfRow = hssfSheet.createRow(24);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("C3.- Tipo de deshielo (por defecto:)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(22));
+
+        hssfRow = hssfSheet.createRow(25);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("C4.- Tiempo adaptativo de deshielo (por defecto: 0)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(23));
+
+        hssfRow = hssfSheet.createRow(26);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("C5.- Protección de voltaje (por defecto:)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(24));
+
+        hssfRow = hssfSheet.createRow(27);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("F0.- Histéresis para la protección de voltaje (Volts, por defecto:4.2)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(25));
+//titulo
+        //hssfRow = hssfSheet.createRow(32);
+        //hssfCell = hssfRow.createCell(0);
+        //hssfCell.setCellValue("VENTILADOR");
+
+
+        hssfRow = hssfSheet.createRow(28);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("F1.- Tiempo de validación para salir de falla de voltaje (minutos, por defecto:0.3)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(26));
+
+        hssfRow = hssfSheet.createRow(29);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("F2.- Tiempo de goteo (minutos, por defecto:1.1)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(27));
+
+        hssfRow = hssfSheet.createRow(30);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("F3.- Tiempo de descanso mínimo del compresor (minutos, por defecto:1.0)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(28));
+
+        hssfRow = hssfSheet.createRow(31);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("FD.- Tiempo de puerta cerrada para entrar a modo Ahorro 1 (horas, por defecto:2.0)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(29));
+
+        hssfRow = hssfSheet.createRow(32);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("FE.- Tiempo de puerta cerrada para entrar a modo Ahorro 2 (horas, por defecto:1.0)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(30));
+
+        hssfRow = hssfSheet.createRow(33);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("D0.- Direccion Modbus (por defecto:222)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(31));
+
+        hssfRow = hssfSheet.createRow(34);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("D7.- Modelo (por defecto:2)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(32));
+
+        hssfRow = hssfSheet.createRow(35);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("E1 E2.- Versión Firmware (por defecto:1.0)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(33));
+//titulo
+        //hssfRow = hssfSheet.createRow(40);
+        //hssfCell = hssfRow.createCell(0);
+        //hssfCell.setCellValue("PROTECCIÓN DE VOLTAJE");
+
+
+        hssfRow = hssfSheet.createRow(36);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("E3.- Plantilla ( por defecto:10)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(34));
+
+
+
+        try {
+            outputStream = new FileOutputStream(file);
+            wb.write(outputStream);
+            Toast.makeText(this.getApplicationContext(),"Reporte generado correctamente",Toast.LENGTH_LONG).show();
+            try {
+                outputStream.close();
+                setupEmail();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+
+
+        } catch (java.io.IOException e) {
+            Toast.makeText(this.getApplicationContext(),"Reporte no generado",Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+
+        }
+    }
+
+    private void createExcelFileOxxoDisplay(List<String> data){
+
+        String nombreFile= "PlantillaImberaP.xls";
+        File file = new File(this.getExternalFilesDir(null),nombreFile);
+        FileOutputStream outputStream = null;
+
+        HSSFWorkbook wb= new HSSFWorkbook();
+        HSSFSheet hssfSheet = wb.createSheet("Plantilla");
+
+        HSSFRow hssfRow = hssfSheet.createRow(0);
+        HSSFCell hssfCell = hssfRow.createCell(0);
+
+        hssfCell.setCellValue("Parámetro");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue("Cambio");
+//inicio
+        //hssfRow = hssfSheet.createRow(2);
+        //hssfCell = hssfRow.createCell(0);
+        //hssfCell.setCellValue("COMPRESOR");
+
+        hssfRow = hssfSheet.createRow(2);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("T0.- Set point diurno (grados, por defecto:-3.5)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(0));
+
+        hssfRow = hssfSheet.createRow(3);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("T1.- Diferencial diurno (grados, por defecto:2.5)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(1));
+
+        hssfRow = hssfSheet.createRow(4);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("T3.- Offset Diurno (grados, por defecto:-0.5)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(2));
+//titulo
+        //hssfRow = hssfSheet.createRow(6);
+        //hssfCell = hssfRow.createCell(0);
+        //hssfCell.setCellValue("TERMOSTATO");
+
+
+        hssfRow = hssfSheet.createRow(5);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("T6.- Límite interior para ajuste de set point (grados , por defecto:-15.0)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(3));
+
+        hssfRow = hssfSheet.createRow(6);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("T7.- Límite superior para ajuste de set point (grados , por defecto:15.0)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(4));
+
+        hssfRow = hssfSheet.createRow(7);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("TD.- Diferencial de temperatura para Ahorro 1 (grados, por defecto:1.0)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(5));
+//titulo
+        //hssfRow = hssfSheet.createRow(10);
+        //hssfCell = hssfRow.createCell(0);
+        //hssfCell.setCellValue("PUERTA");
+
+
+        hssfRow = hssfSheet.createRow(8);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("TD.- Diferencial de temperatura para Ahorro 2 (grados, por defecto:1.0)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(6));
+
+        hssfRow = hssfSheet.createRow(9);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("A0.- Temperatura evaporador para terminar deshielo (grados, por defecto:15.0)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(7));
+
+        hssfRow = hssfSheet.createRow(10);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("A1.- Temperatura ambiente para terminar deshielo (°C, por defecto:30.0)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(8));
+
+        hssfRow = hssfSheet.createRow(11);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("A4.- Temperatura de pulldown (grados, por defecto:12.0");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(9));
+
+        hssfRow = hssfSheet.createRow(12);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("A6.- Alarma de temperatura Alta (grados, por defecto:12.0");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(10));
+
+        hssfRow = hssfSheet.createRow(13);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("A7.- Alarma de temperatura Baja (grados, por defecto:-12.0");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(11));
+
+        hssfRow = hssfSheet.createRow(14);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("A8.- Diferencial para alarmas de Temperatura (grados, por defecto:1.0");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(12));
+
+        hssfRow = hssfSheet.createRow(15);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("L0.- Voltaje de protección mínimo para 120  (Volts, por defecto:85");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(13));
+
+        hssfRow = hssfSheet.createRow(16);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("L1.- Voltaje de protección máximo 120 mínimo 220 (Volts, por defecto:40)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(14));
+
+        hssfRow = hssfSheet.createRow(17);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("L2.- Voltaje de protección máximo para 220 (Volts, por defecto:40)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(15));
+
+        hssfRow = hssfSheet.createRow(18);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("L3.- Tiempo para validar falla de voltaje (segundos, por defecto: 15)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(16));
+
+        hssfRow = hssfSheet.createRow(19);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("L4.- Tiempo entre deshielos (horas, por defecto: 4)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(17));
+//titulo
+        //hssfRow = hssfSheet.createRow(20);
+        //hssfCell = hssfRow.createCell(0);
+        //hssfCell.setCellValue("DESHIELO");
+
+
+        hssfRow = hssfSheet.createRow(20);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("L5.- Tiempo máximo de deshielo (minutos, por defecto:30)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(18));
+
+        hssfRow = hssfSheet.createRow(21);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("L6.- Tiempo de puerta abierta para cancelar control de ventilador por puerta (minutos, por defecto: 99)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(19));
+
+        hssfRow = hssfSheet.createRow(22);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("L7.- Tiempo de validación para alarma de puerta abierta (minutos, por defecto:3)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(20));
+
+        hssfRow = hssfSheet.createRow(23);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("L9.- Tiempo de permanencia en modo nocturno (minutos, por defecto:10)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(21));
+
+        hssfRow = hssfSheet.createRow(24);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("C0.- Escala de temperatura (por defecto:Celcius)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(22));
+
+        hssfRow = hssfSheet.createRow(25);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("C1.- Banderas de configuración (horas , por defecto:16)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(23));
+
+        hssfRow = hssfSheet.createRow(26);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("C2.- Intensidad del filtro para el sensor ambiente a la subida (°C, por defecto:15.0)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(24));
+
+        hssfRow = hssfSheet.createRow(27);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("C3.- Tipo de deshielo (por defecto:)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(25));
+
+        hssfRow = hssfSheet.createRow(28);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("C4.- Tiempo adaptativo de deshielo (por defecto: 0)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(26));
+
+        hssfRow = hssfSheet.createRow(29);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("C5.- Protección de voltaje (por defecto:)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(27));
+
+        hssfRow = hssfSheet.createRow(30);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("F0.- Histéresis para la protección de voltaje (Volts, por defecto:4.2)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(28));
+//titulo
+        //hssfRow = hssfSheet.createRow(32);
+        //hssfCell = hssfRow.createCell(0);
+        //hssfCell.setCellValue("VENTILADOR");
+
+
+        hssfRow = hssfSheet.createRow(31);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("F1.- Tiempo de validación para salir de falla de voltaje (minutos, por defecto:0.3)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(29));
+
+        hssfRow = hssfSheet.createRow(32);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("F2.- Tiempo de goteo (minutos, por defecto:1.1)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(30));
+
+        hssfRow = hssfSheet.createRow(33);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("F3.- Tiempo de descanso mínimo del compresor (minutos, por defecto:1.0)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(31));
+
+        hssfRow = hssfSheet.createRow(34);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("FD.- Tiempo de puerta cerrada para entrar a modo Ahorro 1 (horas, por defecto:2.0)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(32));
+
+        hssfRow = hssfSheet.createRow(35);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("FE.- Tiempo de puerta cerrada para entrar a modo Ahorro 2 (horas, por defecto:1.0)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(33));
+
+        hssfRow = hssfSheet.createRow(36);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("D0.- Direccion Modbus (por defecto:222)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(34));
+
+        hssfRow = hssfSheet.createRow(37);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("D1.- Password (por defecto:73)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(35));
+
+        hssfRow = hssfSheet.createRow(38);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("D7.- Modelo (por defecto:2)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(36));
+
+        hssfRow = hssfSheet.createRow(39);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("E1 E2.- Versión Firmware (por defecto:1.0)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(37));
+//titulo
+        //hssfRow = hssfSheet.createRow(40);
+        //hssfCell = hssfRow.createCell(0);
+        //hssfCell.setCellValue("PROTECCIÓN DE VOLTAJE");
+
+
+        hssfRow = hssfSheet.createRow(40);
+        hssfCell = hssfRow.createCell(0);
+        hssfCell.setCellValue("E3.- Plantilla ( por defecto:10)");
+        hssfCell = hssfRow.createCell(1);
+        hssfCell.setCellValue(data.get(38));
+
+
+
+        try {
+            outputStream = new FileOutputStream(file);
+            wb.write(outputStream);
+            Toast.makeText(this.getApplicationContext(),"Reporte generado correctamente",Toast.LENGTH_LONG).show();
+            try {
+                outputStream.close();
+                setupEmail();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+
+
+        } catch (java.io.IOException e) {
+            Toast.makeText(this.getApplicationContext(),"Reporte no generado",Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+
+        }
+    }
+
+    private void setupEmail (){
+        //String[] email = new String[1];
+        //email[0] = "luise@eltec.mx";
+        //email[0] = "eduard_vis@hotmail.com";
+
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("application/excel");
+        //intent.putExtra(Intent.EXTRA_EMAIL, email);
+        intent.putExtra(Intent.EXTRA_SUBJECT, "PLANTILLA DE CONFIGURACIÓN 1.0");
+        intent.putExtra(Intent.EXTRA_TEXT,"Envío de archivo de configuración enviado desde la aplicación ImberaP\nFecha:"+ Calendar.getInstance().getTime());
+
+        String nombreFile= "PlantillaImberaP.xls";
+        File file = new File(this.getExternalFilesDir(null),nombreFile);
+        if (file.exists()){
+            Log.v("TEST EMAIL", "Email file_exists!" );
+        } else{
+            Log.v("TEST EMAIL", "Email file does not exist!" );
+        }
+
+        Uri uri = FileProvider.getUriForFile(
+                this,
+                "mx.eltec.imberap.MainActivity.provider",
+                file);
+
+        intent.putExtra(Intent.EXTRA_STREAM, uri);
+        this.startActivity(Intent.createChooser(intent, "Send mail..."));
+    }
+}

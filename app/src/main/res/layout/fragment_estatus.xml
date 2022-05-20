@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white_background">
+
+    <TextView
+        android:id="@+id/tvtitulo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:fontFamily="sans-serif-black"
+        android:text="Estado en tiempo real"
+        android:textColor="@color/blue"
+        android:textSize="25sp" />
+
+    <TextView
+        android:id="@+id/tvsubtitulo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvtitulo"
+        android:layout_centerHorizontal="true"
+        android:text="Aquí se muestra el estado actual de tu dispositivo TREFPB"
+        android:textSize="15sp" />
+
+    <RelativeLayout
+        android:visibility="gone"
+        android:alpha="0.2"
+        android:layout_below="@+id/tvsubtitulo"
+        android:background="@color/black"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"/>
+
+    <ScrollView
+        android:id="@+id/scroll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvsubtitulo"
+        android:layout_above="@+id/btnGetCurrentdata"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <!--
+             handshake
+             -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-black"
+                android:text="Handshake"
+                android:textColor="@color/blue"
+                android:textSize="16sp"
+                />
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Información básica del equipo:"
+                android:textStyle="bold" />
+            <TextView
+                android:id="@+id/tvhandshake"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:text="Información de Handshake"
+                android:textSize="15sp" />
+
+            <!--
+             handshake
+             -->
+            <TextView
+                android:id="@+id/loggerView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-black"
+                android:text="Datos tipo Tiempo"
+                android:textColor="@color/blue"
+                android:textSize="16sp" />
+            <TextView
+                android:id="@+id/loggerView1"
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Información sobre eventos tipo TIEMPO sucedidos en el equipo:"
+                android:textStyle="bold" />
+            <TextView
+                android:id="@+id/tvdatostipoTiempo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:text="Información de tipo tiempo"
+                android:textSize="15sp" />
+
+            <!--
+             handshake
+             -->
+            <TextView
+                android:id="@+id/loggerView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-black"
+                android:text="Datos tipo Evento"
+                android:textColor="@color/blue"
+                android:textSize="16sp" />
+            <TextView
+                android:id="@+id/loggerView3"
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Información sobre eventos sucedidos en el equipo:"
+                android:textStyle="bold" />
+            <TextView
+                android:id="@+id/tvdatostipoEvento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:text="Información de tipo evento"
+                android:textSize="15sp" />
+
+            <!--
+             handshake
+             -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-black"
+                android:text="Datos: Estado en tiempo real"
+                android:textColor="@color/blue"
+                android:textSize="16sp" />
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Información básica del equipo:"
+                android:textStyle="bold" />
+            <TextView
+                android:id="@+id/tvdatosEstadoTiempoReal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:text="Información de tiempo real"
+                android:textSize="15sp" />
+
+
+        </LinearLayout>
+
+
+    </ScrollView>
+
+
+    <Button
+
+        android:id="@+id/btnGetCurrentdata"
+        android:layout_width="match_parent"
+        android:layout_height="46dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginHorizontal="45dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/round_corner_black"
+        android:text="Obtener estado actual"
+        android:textAlignment="center"
+        android:textColor="#FFF"
+        android:textSize="18sp" />
+
+</RelativeLayout>
+

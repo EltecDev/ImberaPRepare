@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/round_corner_white"
+    android:orientation="vertical">
+    <TextView
+        android:layout_marginTop="15dp"
+        android:id="@+id/tvTituloData"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:text="Hexadecimal:"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+    <TextView
+        android:id="@+id/tvsubtitulo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="15dp"
+        android:layout_marginVertical="15dp"
+        android:text="Aquí se muestran la información encontrada al mandar el comando"
+        android:textSize="15sp" />
+    <Button
+        android:id="@+id/welcomeAlexaButtonLater"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginLeft="24dp"
+        android:layout_marginRight="24dp"
+        android:layout_marginBottom="24dp"
+        android:background="@drawable/round_corner_black"
+        android:gravity="center"
+        android:text="Volver"
+        android:textColor="#FFF" />
+</LinearLayout>
