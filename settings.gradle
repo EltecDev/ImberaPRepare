@@ -8,3 +8,4 @@ dependencyResolutionManagement {
 }
 rootProject.name = "ImberaP"
 include ':app'
+include ':ImberaTREFP'

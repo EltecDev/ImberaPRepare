@@ -1,0 +1,73 @@
+<resources>
+    <string name="app_version">Version:</string>
+    <string name="app_name">ImberaP</string>
+    <string name="bottom_menu_item1">Escán</string>
+    <string name="bottom_menu_item2">Plantilla</string>
+    <string name="bottom_menu_itemOxxo">Plantilla OXXO</string>
+    <string name="bottom_menu_item3">Operaciones</string>
+    <string name="bottom_menu_item5">Login</string>
+    <string name="bottom_menu_item4">Estatus</string>
+
+    <string name="string_app_restrictions_title">Estatus</string>
+    <string name="string_app_restrictions_description">Estatus</string>
+
+    <string-array name="modosDeshieloOxxo">
+        <item>Por ventilador</item>
+        <item>Por gas caliente</item>
+        <item>Por resistencia eléctrica</item>
+    </string-array>
+
+    <string-array name="nivelesTiempoMostrarFallas">
+        <item>Nivel 0</item>
+        <item>Nivel 1</item>
+        <item>Nivel 2</item>
+        <item>Nivel 3</item>
+        <item>Nivel 4</item>
+    </string-array>
+
+    <string-array name="configRelevadores">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+    </string-array>
+
+    <string-array name="numeroSensoresTempSistema">
+        <item>1 Sensor</item>
+        <item>2 Sensores</item>
+        <item>3 sensores</item>
+    </string-array>
+
+    <string-array name="modosDeshielo">
+        <item>Función de deshielo desactivada</item>
+        <item>Entrada por tiempo y salida por temperatura ambiente</item>
+        <item>Entrada por tiempo y salida por temperatura de deshielo</item>
+        <item>Entrada y salida por temperatura de deshielo</item>
+    </string-array>
+
+    <string-array name="funcionesDeshielo">
+        <item>Deshielo por resistencia</item>
+        <item>Deshielo por ventilador</item>
+    </string-array>
+
+    <string-array name="OxxofuncionesDeshielo">
+        <item>Deshielo por resistencia</item>
+        <item>Deshielo por ventilador</item>
+        <item>Deshielo por Gas caliente</item>
+    </string-array>
+
+    <string-array name="proteccionVoltaje">
+        <item>Sin protección de voltaje</item>
+        <item>Protección a 120 Volts</item>
+        <item>Protección a 220 Volts</item>
+    </string-array>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+</resources>

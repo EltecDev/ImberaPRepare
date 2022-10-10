@@ -1,15 +1,47 @@
 <resources>
+    <string name="app_version">Version:</string>
     <string name="app_name">ImberaP</string>
-    <string name="bottom_menu_item1">Lista de BLE</string>
+    <string name="bottom_menu_item1">Escán</string>
     <string name="bottom_menu_item2">Plantilla</string>
     <string name="bottom_menu_itemOxxo">Plantilla OXXO</string>
     <string name="bottom_menu_item3">Operaciones</string>
+    <string name="bottom_menu_item5">Login</string>
     <string name="bottom_menu_item4">Estatus</string>
+
+    <string name="string_app_restrictions_title">Estatus</string>
+    <string name="string_app_restrictions_description">Estatus</string>
 
     <string-array name="modosDeshieloOxxo">
         <item>Por ventilador</item>
         <item>Por gas caliente</item>
         <item>Por resistencia eléctrica</item>
+    </string-array>
+
+    <string-array name="nivelesTiempoMostrarFallas">
+        <item>Nivel 0</item>
+        <item>Nivel 1</item>
+        <item>Nivel 2</item>
+        <item>Nivel 3</item>
+        <item>Nivel 4</item>
+    </string-array>
+
+    <string-array name="configRelevadores">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+    </string-array>
+
+    <string-array name="numeroSensoresTempSistema">
+        <item>1 Sensor</item>
+        <item>2 Sensores</item>
+        <item>3 sensores</item>
     </string-array>
 
     <string-array name="modosDeshielo">

@@ -12,7 +12,7 @@
         android:layout_below="@+id/ivlogo"
         android:layout_marginHorizontal="15dp"
         android:layout_marginVertical="15dp"
-        android:text="Aquí se muestran las operaciones actuales posibles con el equipo TREFPB"
+        android:text="Aquí se muestran las operaciones actuales posibles con el equipo IMBERA-TREFP"
         android:textSize="15sp" />
 
 
@@ -49,24 +49,24 @@
                 android:layout_height="50dp"/>
 
             <Button
-                android:visibility="gone"
+                android:visibility="visible"
                 android:layout_marginVertical="15dp"
                 android:layout_marginHorizontal="20dp"
                 android:background="@drawable/round_corner_black"
                 android:textColor="#fff"
                 android:id="@+id/btnreadTimeData"
-                android:text="Lectura de datos tipo Tiempo"
+                android:text="Generar reporte datos tipo Tiempo"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"/>
 
             <Button
-                android:visibility="gone"
+                android:visibility="visible"
                 android:layout_marginVertical="15dp"
                 android:layout_marginHorizontal="20dp"
                 android:background="@drawable/round_corner_black"
                 android:textColor="#fff"
                 android:id="@+id/btnreadEventData"
-                android:text="Lectura de datos tipo Evento"
+                android:text="Generar reporte datos tipo Evento"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"/>
 
@@ -83,6 +83,7 @@
 
             <Button
                 android:layout_marginVertical="15dp"
+
                 android:layout_marginHorizontal="20dp"
                 android:background="@drawable/round_corner_black"
                 android:textColor="#fff"
@@ -101,16 +102,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dp"/>
 
-            <Button
-                android:visibility="gone"
-                android:layout_marginVertical="15dp"
-                android:layout_marginHorizontal="20dp"
-                android:background="@drawable/round_corner_black"
-                android:textColor="#fff"
-                android:id="@+id/excel"
-                android:text="Test"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"/>
+
 
         </LinearLayout>
     </ScrollView>

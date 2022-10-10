@@ -27,8 +27,8 @@ import com.example.imberap.BluetoothServices.BluetoothServices;
 import com.example.imberap.Clasesdata.BLEDevices;
 import com.example.imberap.R;
 import com.example.imberap.adapters.RecyclerViewBLEList;
-import com.example.imberap.utility.GetRealDataFromHexaImbera;
-import com.example.imberap.utility.GlobalTools;
+import com.example.imberap.Utility.GetRealDataFromHexaImbera;
+import com.example.imberap.Utility.GlobalTools;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -104,6 +104,8 @@ public class ListaBLEFragment extends Fragment {
 
     }
 
+    public ListaBLEFragment(){}
+
     public ListaBLEFragment(BluetoothServices bluetoothServices,TextView tv, TextView tvv){
         this.tvConnectionState = tv;
         this.tvfwversion = tvv;
@@ -118,7 +120,7 @@ public class ListaBLEFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view =inflater.inflate(R.layout.list_ble_devices_fragment, container, false);
+        View view =inflater.inflate(R.layout.fragment_list_ble_devices, container, false);
         init(view);
         view.findViewById(R.id.btnEscanear).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -148,15 +150,18 @@ public class ListaBLEFragment extends Fragment {
 
     @Override
     public void onStart() {
-        if (connectListener.isPermissionEnabled()){
-            if (sp.getBoolean("permissionGiven",false)){
-                if(!sp.getBoolean("isconnected",false)){
-                    new MyAsyncTaskScanBLEdevices().execute();
+        if (!sp.getString("userId","").equals("")){//si no hay usuario logeado entonces no escanear
+            if (connectListener.isPermissionEnabled()){
+                if (sp.getBoolean("permissionGiven",false)){
+                    if(!sp.getBoolean("isconnected",false)){
+                        new MyAsyncTaskScanBLEdevices().execute();
+                    }
                 }
+            }else{
+                connectListener.requestPemission();
             }
-        }else{
-            connectListener.requestPemission();
         }
+
         super.onStart();
     }
 
@@ -310,6 +315,7 @@ public class ListaBLEFragment extends Fragment {
     class MyAsyncTaskScanBLEdevices extends AsyncTask<Integer, Integer, String> {
         @Override
         protected String doInBackground(Integer... params) {
+
             scanLeDevice(true);
             return "resp";
         }
@@ -346,8 +352,10 @@ public class ListaBLEFragment extends Fragment {
             if (sp.getBoolean("isconnected",false)){
                 bluetoothLeService = bluetoothServices.getBluetoothLeService();
                 if (bluetoothLeService.sendFirstComando("4021")){
+                    Log.d("","dataChecksum total:7");
                     return "ok";
                 }else
+                    Log.d("","dataChecksum total:8");
                     return "not";
             }else
                 return "noconnected";
@@ -364,7 +372,7 @@ public class ListaBLEFragment extends Fragment {
             progressdialog=null;
 
             if (result.equals("noconnected")) {
-                Toast.makeText(getContext(), "Error de conexión, reconecta a tu BLE", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Problemas de conexión, reconecta a tu BLE", Toast.LENGTH_SHORT).show();
             }else {
                 if (result.equals("ok")){
                     List<String> listData = new ArrayList<String>();
@@ -372,26 +380,82 @@ public class ListaBLEFragment extends Fragment {
                     listData = bluetoothLeService.getDataFromBroadcastUpdate();
 
                     if (!listData.isEmpty()){
-                        FinalListData = GetRealDataFromHexaImbera.convert(listData, "Handshake");
-                        listData = GetRealDataFromHexaImbera.GetRealData(FinalListData, "Handshake");
-                        tvfwversion.setText("Modelo TREFPB:" + listData.get(1)
-                                + "\nVersión:" + listData.get(2)
-                                + "\nPlantilla:" + listData.get(3));
-                        esp.putString("modelo",listData.get(1));
-                        esp.putString("numversion",listData.get(2));
-                        esp.putString("plantillaVersion",listData.get(3));
-                        esp.putString("trefpVersionName",name);
-                        //recyclerView.getChildAdapterPosition(v)).getNombre()
-                        esp.apply();
+                        Log.d("listdataHandshake",":"+listData);
+                        if(name.equals("IMBERA-TREFP")){
+                            String isChecksumOk = GlobalTools.checkChecksumImberaTREFPB(GetRealDataFromHexaImbera.cleanSpace(listData).toString());
+                            if (isChecksumOk.equals("ok")){
+                                FinalListData = GetRealDataFromHexaImbera.convert(listData, "Handshake","","");
+                                listData = GetRealDataFromHexaImbera.GetRealData(FinalListData, "Handshake","","");
+                                tvfwversion.setText("Modelo TREFPB:" + listData.get(1)
+                                        + "\nVersión:" + listData.get(2)
+                                        + "\nPlantilla:" + listData.get(3));
+                                esp.putString("modelo",listData.get(1));
+                                esp.putString("numversion",listData.get(2));
+                                esp.putString("plantillaVersion",listData.get(3));
+                                esp.putString("trefpVersionName",name);
+                                esp.apply();
+                            }else if (isChecksumOk.equals("notFirmware")){
+                                //Toast.makeText(getContext(), "", Toast.LENGTH_SHORT).show();
+                                GlobalTools.showInfoPopup("Información del equipo","Tu control BLE no está respondiendo como se esperaba, intenta de nuevo o contacta a personal autorizado. (NFW)",getContext());
+                                esp.putString("trefpVersionName","");
+                                esp.putString("numversion","");
+                                esp.putString("plantillaVersion","");
+                                esp.apply();
+                                desconectarBLE();
+                            }else if (isChecksumOk.equals("notok")){
+                                GlobalTools.showInfoPopup("Información del equipo","Tu control BLE no está respondiendo como se esperaba, intenta de nuevo o contacta a personal autorizado. (CHKSM)",getContext());
+                                esp.putString("trefpVersionName","");
+                                esp.putString("numversion","");
+                                esp.putString("plantillaVersion","");
+                                esp.apply();
+                                desconectarBLE();
+                            }
+                        }else if (name.equals("IMBERA-OXXO")){
+                            String isChecksumOk = GlobalTools.checkChecksum(GetRealDataFromHexaImbera.cleanSpace(listData).toString());
+                            if (isChecksumOk.equals("ok")){
+                                FinalListData = GetRealDataFromHexaImbera.convert(listData, "Handshake","","");
+                                listData = GetRealDataFromHexaImbera.GetRealData(FinalListData, "Handshake","","");
+                                tvfwversion.setText("Modelo TREFPB:" + listData.get(1)
+                                        + "\nVersión:" + listData.get(2)
+                                        + "\nPlantilla:" + listData.get(3));
+                                esp.putString("modelo",listData.get(1));
+                                esp.putString("numversion",listData.get(2));
+                                esp.putString("plantillaVersion",listData.get(3));
+                                esp.putString("trefpVersionName",name);
+                                esp.apply();
+                            }else if (isChecksumOk.equals("notFirmware")){
+                                //Toast.makeText(getContext(), "", Toast.LENGTH_SHORT).show();
+                                GlobalTools.showInfoPopup("Información del equipo","Tu control BLE no está respondiendo como se esperaba, intenta de nuevo o contacta a personal autorizado. (NFW)",getContext());
+                                esp.putString("trefpVersionName","");
+                                esp.putString("numversion","");
+                                esp.putString("plantillaVersion","");
+                                esp.apply();
+                                desconectarBLE();
+                            }else if (isChecksumOk.equals("notok")){
+                                GlobalTools.showInfoPopup("Información del equipo","Tu control BLE no está respondiendo como se esperaba, intenta de nuevo o contacta a personal autorizado. (CHKSM)",getContext());
+                                esp.putString("trefpVersionName","");
+                                esp.putString("numversion","");
+                                esp.putString("plantillaVersion","");
+                                esp.apply();
+                                desconectarBLE();
+                            }
+                        }
+
+
                     }else{
+                        Toast.makeText(getContext(), "No se pudo obtener primera comunicación", Toast.LENGTH_SHORT).show();
                         esp.putString("trefpVersionName","");
                         esp.putString("numversion","");
                         esp.putString("plantillaVersion","");
                         esp.apply();
+                        desconectarBLE();
                     }
 
-                }else
-                    Toast.makeText(getContext(), "Conéctate a un BLE", Toast.LENGTH_SHORT).show();
+                }else{
+                    Toast.makeText(getContext(), "Fallo al conectar a un BLE", Toast.LENGTH_SHORT).show();
+                    desconectarBLE();
+                }
+
             }
 
         }
@@ -422,6 +486,12 @@ public class ListaBLEFragment extends Fragment {
         }
         progressdialog.show();
     }
+
+    public void desconectarBLE(){
+        connectListener.disconnectBLE();
+        GlobalTools.changeScreenConnectionStatus(tvConnectionState,sp);
+    }
+
 
     //Metodos MainActivity
     public interface connectListener {

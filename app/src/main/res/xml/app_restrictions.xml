@@ -1,0 +1,10 @@
+<?versión xml="1.0" codificación="utf-8"?>
+<restrictions xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <restriction
+        android:key="descargarOnCellular"
+        android:title="@string/string_app_restrictions_title"
+        android:restrictionType="bool"
+        android:description="@string/string_app_restrictions_description"
+        android:defaultValue="true" />
+</restrictions>

@@ -19,13 +19,20 @@ import androidx.fragment.app.Fragment;
 import com.example.imberap.BluetoothServices.BluetoothLeService;
 import com.example.imberap.BluetoothServices.BluetoothServices;
 import com.example.imberap.R;
-import com.example.imberap.utility.GetRealDataFromHexaImbera;
-import com.example.imberap.utility.GetRealDataFromHexaOxxo;
-import com.example.imberap.utility.GetRealDataFromHexaOxxoDisplay;
+import com.example.imberap.Utility.GetRealDataFromHexaImbera;
+import com.example.imberap.Utility.GetRealDataFromHexaOxxoDisplay;
+import com.example.imberap.Utility.GlobalTools;
 
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * 28/09/2022
+ * Información importante para logger:
+ *
+ * La manera de recibir la información por BLE (por partes) necesita saber el firmware que tiene el control para saber que manera se van a leer los datos, actualmente
+ * Para logger Firmware 1.02; Modelo 3.3, tiempo son 7 iteraciones, para evento 17 iteraciones
+ * Para logger Firmware 1.14; Modelo 3.5, tiempo son 20 iteraciones, para evento 31 iteraciones
+ * */
 public class EstatusBLEFragment extends Fragment {
     BluetoothServices bluetoothServices;
     BluetoothLeService bluetoothLeService;
@@ -67,7 +74,7 @@ public class EstatusBLEFragment extends Fragment {
         View view =inflater.inflate(R.layout.fragment_estatus, container, false);
         init(view);
 
-        view.findViewById(R.id.btnGetCurrentdata).setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.btnsendStatus).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 requestStatus();
@@ -106,8 +113,12 @@ public class EstatusBLEFragment extends Fragment {
     class MyAsyncTaskGetActualStatus extends AsyncTask<Integer, Integer, String> {
         @Override
         protected String doInBackground(Integer... params) {
-            convertInfo();
-            return "resp";
+            if (convertInfo().equals("true")){
+                return "true";
+            }else{
+                return "false";
+            }
+
         }
 
         @Override
@@ -115,96 +126,112 @@ public class EstatusBLEFragment extends Fragment {
             if (progressdialog != null)progressdialog.dismiss();
             progressdialog=null;
 
-            if (sp.getString("trefpVersionName","").equals("IMBERA-TREFP")){
-                tvsubtitulo.setText("Aquí se muestra el estado actual de tu dispositivo IMBERA-TREFPB");
+            if (result.equals("true")){
+                if (sp.getString("trefpVersionName","").equals("IMBERA-TREFP")){
+                    tvsubtitulo.setText("Aquí se muestra el estado actual de tu dispositivo IMBERA-TREFPB");
 
-                tvhandshake.setVisibility(View.VISIBLE);
-                tvLogg.setVisibility(View.VISIBLE);
-                tvLogg1.setVisibility(View.VISIBLE);
-                tvLogg2.setVisibility(View.VISIBLE);
-                tvLogg3.setVisibility(View.VISIBLE);
-                tvEvent.setVisibility(View.VISIBLE);
-                tvTime.setVisibility(View.VISIBLE);
-                tvRealState.setVisibility(View.VISIBLE);
+                    tvhandshake.setVisibility(View.VISIBLE);
+                    tvLogg.setVisibility(View.VISIBLE);
+                    tvLogg1.setVisibility(View.VISIBLE);
+                    tvLogg2.setVisibility(View.VISIBLE);
+                    tvLogg3.setVisibility(View.VISIBLE);
+                    tvEvent.setVisibility(View.VISIBLE);
+                    tvTime.setVisibility(View.VISIBLE);
+                    tvRealState.setVisibility(View.VISIBLE);
 
-                tvhandshake.setText("MAC:" + FinalListDataHandshake.get(0)
-                        + "\nModelo TREFPB:" + FinalListDataHandshake.get(1)
-                        + "\nVersión:" + FinalListDataHandshake.get(2)
-                        + "\nPlantilla:" + FinalListDataHandshake.get(3));
-
-
-
-                StringBuilder stringb = new StringBuilder();
-                int j=1;
-                for (int i=0;i<FinalListDataTiempo.size(); i+=4){
-                    if (i+3>FinalListDataTiempo.size()){
-                        break;
-                    }   else {
-                        stringb.append("\nIteración "+j+
-                                "\nTimeStamp:" + FinalListDataTiempo.get(i)
-                                +"\nTemperatura 1:" + FinalListDataTiempo.get(i+1) + "C°"
-                                + "\nTemperatura 2:" + FinalListDataTiempo.get(i+2) + "C°"
-                                + "\nVoltaje:" + FinalListDataTiempo.get(i+3));
-                        j++;
-                    }
-                }
-                tvTime.setText(stringb.toString());
-
-                StringBuilder stringa = new StringBuilder();
-                j=1;
-                for (int i=0;i<FinalListDataEvento.size(); i+=6){
-                    if (i+5>FinalListDataEvento.size()){
-                        break;
-                    }   else {
-                        stringa.append("\nIteración "+j+
-                                "\nTimeStamp START:" + FinalListDataEvento.get(i)
-                                +"\nTimeStamp END:" + FinalListDataEvento.get(i+1)
-                                +"\nTipo de evento:" + FinalListDataEvento.get(i+2)
-                                +"\nTemperatura 1I:" + FinalListDataEvento.get(i+3) + " C°"
-                                + "\nTemperatura 2F:" + FinalListDataEvento.get(i+4) + " C°"
-                                + "\nVoltaje:" + FinalListDataEvento.get(i+5));
-                        j++;
-                    }
-                }
-                tvEvent.setText(stringa.toString());
-
-                tvRealState.setText("\nTemperatura 1:" + FinalListDataRealState.get(0) + " C°"
-                        + "\nTemperatura 2:" + FinalListDataRealState.get(1) + " C°"
-                        + "\nVoltage:" + FinalListDataRealState.get(2)
-                        + "\nActuadores:" + FinalListDataRealState.get(3)
-                        + "\nAlarmas:" + FinalListDataRealState.get(4)
-                );
-            }else if (sp.getString("trefpVersionName","").contains("IMBERA-OXXO")){
-                tvsubtitulo.setText("Aquí se muestra el estado actual de tu dispositivo IMBERA-OXXO");
-
-                //OXXO no tiene LOGGER
-                tvhandshake.setVisibility(View.VISIBLE);
-                tvLogg.setVisibility(View.GONE);
-                tvLogg1.setVisibility(View.GONE);
-                tvLogg2.setVisibility(View.GONE);
-                tvLogg3.setVisibility(View.GONE);
-                tvEvent.setVisibility(View.GONE);
-                tvTime.setVisibility(View.GONE);
-                tvRealState.setVisibility(View.VISIBLE);
-                if (!FinalListDataHandshake.isEmpty()){
                     tvhandshake.setText("MAC:" + FinalListDataHandshake.get(0)
                             + "\nModelo TREFPB:" + FinalListDataHandshake.get(1)
                             + "\nVersión:" + FinalListDataHandshake.get(2)
                             + "\nPlantilla:" + FinalListDataHandshake.get(3));
-                }else{
-                    tvhandshake.setText("No se pudo obtener información Handshake de tu Trefp, por favor intenta reconectarte");
-                }
-                if (!FinalListDataRealState.isEmpty()){
-                    tvRealState.setText("\nTemperatura 1:" + FinalListDataRealState.get(0) + " C°"
-                                    + "\nTemperatura 2:" + FinalListDataRealState.get(1) + " C°"
-                                    + "\nVoltage:" + FinalListDataRealState.get(2)
-                                    + "\nActuadores:" + FinalListDataRealState.get(3)
-                            + "\nAlarmas:" + FinalListDataRealState.get(4)
-                    );
-                }else
-                    tvRealState.setText("No se pudo obtener información Estado en tiempo real de tu Trefp, por favor intenta reconectarte");
 
+
+
+                    StringBuilder stringb = new StringBuilder();
+                    int j=1;
+                    for (int i=0;i<FinalListDataTiempo.size(); i+=4){
+                        if (i+3>FinalListDataTiempo.size()){
+                            break;
+                        }   else {
+                            stringb.append("\nIteración "+j+
+                                    "\nTimeStamp:" + FinalListDataTiempo.get(i)
+                                    +"\nTemperatura 1:" + FinalListDataTiempo.get(i+1) + " °C"
+                                    + "\nTemperatura 2:" + FinalListDataTiempo.get(i+2) + " °C"
+                                    + "\nVoltaje:" + FinalListDataTiempo.get(i+3)+ "\n");
+                            j++;
+                        }
+                    }
+                    tvTime.setText(stringb.toString());
+
+                    StringBuilder stringa = new StringBuilder();
+                    j=1;
+                    for (int i=0;i<FinalListDataEvento.size(); i+=6){
+                        if (i+5>FinalListDataEvento.size()){
+                            break;
+                        }   else {
+                            stringa.append("\nIteración "+j+
+                                    "\nTimeStamp START:" + FinalListDataEvento.get(i)
+                                    +"\nTimeStamp END:" + FinalListDataEvento.get(i+1)
+                                    +"\nTipo de evento:\n" + FinalListDataEvento.get(i+2)
+                                    +"\nTemperatura 1I:" + FinalListDataEvento.get(i+3) + " °C"
+                                    + "\nTemperatura 2F:" + FinalListDataEvento.get(i+4) + " °C"
+                                    + "\nVoltaje:" + FinalListDataEvento.get(i+5)+ "\n");
+                            j++;
+                        }
+                    }
+                    tvEvent.setText(stringa.toString());
+
+                    tvRealState.setText("\nTemperatura 1:" + FinalListDataRealState.get(0) + " °C"
+                            + "\nTemperatura 2:" + FinalListDataRealState.get(1) + " °C"
+                            + "\nVoltaje:" + FinalListDataRealState.get(2)
+                            + "\nActuadores:" + FinalListDataRealState.get(3)
+                            + "\nAlarmas:" + FinalListDataRealState.get(4)+ "\n"
+                    );
+                }else if (sp.getString("trefpVersionName","").contains("IMBERA-OXXO")){
+                    tvsubtitulo.setText("Aquí se muestra el estado actual de tu dispositivo IMBERA-OXXO");
+
+                    //OXXO no tiene LOGGER
+                    tvhandshake.setVisibility(View.VISIBLE);
+                    tvLogg.setVisibility(View.GONE);
+                    tvLogg1.setVisibility(View.GONE);
+                    tvLogg2.setVisibility(View.GONE);
+                    tvLogg3.setVisibility(View.GONE);
+                    tvEvent.setVisibility(View.GONE);
+                    tvTime.setVisibility(View.GONE);
+                    tvRealState.setVisibility(View.VISIBLE);
+                    if (!FinalListDataHandshake.isEmpty()){
+                        tvhandshake.setText("MAC:" + FinalListDataHandshake.get(0)
+                                + "\nModelo TREFPB:" + FinalListDataHandshake.get(1)
+                                + "\nVersión:" + FinalListDataHandshake.get(2)
+                                + "\nPlantilla:" + FinalListDataHandshake.get(3)+ "\n");
+                    }else{
+                        tvhandshake.setText("No se pudo obtener información Handshake de tu Trefp, por favor intenta reconectarte");
+                    }
+                    if (!FinalListDataRealState.isEmpty()){
+                        if (FinalListDataRealState.get(0).equals("8")){
+                            tvRealState.setText("\nTemperatura 1:" + FinalListDataRealState.get(1) + " °C"
+                                    + "\nTemperatura 2:" + FinalListDataRealState.get(2) + " °C"
+                                    + "\nVoltaje:" + FinalListDataRealState.get(3)
+                                    + "\nActuadores:" + FinalListDataRealState.get(4)
+                                    + "\nAlarmas:" + FinalListDataRealState.get(5)+ "\n"
+                            );
+                        }else{
+                            tvRealState.setText("\nTemperatura 1:" + FinalListDataRealState.get(1) + " °C"
+                                    + "\nTemperatura 2:" + FinalListDataRealState.get(2) + " °C"
+                                    + "\nTemperatura 3:" + FinalListDataRealState.get(3) + " °C"
+                                    + "\nVoltaje:" + FinalListDataRealState.get(4)
+                                    + "\nActuadores:" + FinalListDataRealState.get(5)
+                                    + "\nAlarmas:" + FinalListDataRealState.get(6)+ "\n"
+                            );
+                        }
+
+                    }else
+                        tvRealState.setText("No se pudo obtener información Estado en tiempo real de tu Trefp, por favor intenta reconectarte");
+
+                }
+            }else if(result.equals("false")){
+                GlobalTools.showInfoPopup("Información","La comunicación no fue exitosa, reintenta o reconecta con el equipo TREFP",getContext());
             }
+
 
 
         }
@@ -224,98 +251,513 @@ public class EstatusBLEFragment extends Fragment {
         }
     }
 
-    private void convertInfo(){
+    private String convertInfo(){
         List<String> FinalListData = new ArrayList<String>() ;
+        List<String> FinalListTest = new ArrayList<String>() ;
+        String isChecksumOk;
         listData.clear();
         FinalListDataRealState.clear();
         try {
             if (sp.getString("trefpVersionName","").equals("IMBERA-TREFP")){
                 bluetoothServices.sendCommand("handshake","4021");
-                Thread.sleep(150);
+                Thread.sleep(450);
                 listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
-                if (listData.get(0).length() == 0){
-                    FinalListDataHandshake.clear();
+                if(GetRealDataFromHexaImbera.cleanSpace(listData).toString().length() == 0){
+                    return "false";
                 }else{
-                    FinalListData = GetRealDataFromHexaImbera.convert(listData, "Handshake");
-                    FinalListDataHandshake = GetRealDataFromHexaImbera.GetRealData(FinalListData, "Handshake");
+                    isChecksumOk = GlobalTools.checkChecksumImberaTREFPB(GetRealDataFromHexaImbera.cleanSpace(listData).toString());
+                    Log.d("ishandshake",":"+isChecksumOk);
+                    if (isChecksumOk.equals("ok")){
+                        if (listData.get(0).length() == 0){
+                            FinalListDataHandshake.clear();
+                            return "false";
+                        }else{
+                            FinalListData = GetRealDataFromHexaImbera.convert(listData, "Handshake",sp.getString("numversion",""), sp.getString("modelo",""));
+                            FinalListDataHandshake = GetRealDataFromHexaImbera.GetRealData(FinalListData, "Handshake",sp.getString("numversion",""),sp.getString("modelo",""));
+                        }
+                    }else{
+                        return "false";
+                    }
+
+                    //if modelo actual es igual a 3.3 en adelante, entonces mostrar de forma de nuevo logger
+                    Log.d("LOGGG2",":"+Double.parseDouble(sp.getString("numversion","")));
+                    Log.d("LOGGG2",":"+Double.parseDouble(sp.getString("modelo","")));
+                    if (sp.getString("modelo","").equals("3.3") && sp.getString("numversion","").equals("1.02")){
+                        FinalListData.clear();
+                        FinalListData2.clear();
+                        listData.clear();
+                        bluetoothServices.sendCommand("time","4060");
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(0));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(1));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(2));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(3));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(4));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(5));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(6));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(7));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(8));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(9));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(10));
+
+
+                        for (int i=0; i<listData.size(); i++){//comprobación de la obtención de datos sin lista vacía
+                            if (listData.get(i).length() !=0){
+                                FinalListTest.add(listData.get(i));
+                            }
+                        }
+
+                        isChecksumOk = GlobalTools.checkChecksumImberaTREFPBList(GetRealDataFromHexaImbera.cleanSpaceList(FinalListTest));
+                        Log.d("istiempoChecksum",":"+isChecksumOk);
+                        if (isChecksumOk.equals("ok")){
+                            if (FinalListTest.get(0).length() == 0){
+                                FinalListDataTiempo.clear();
+                                return "false";
+                            }else{
+                                FinalListData = GetRealDataFromHexaImbera.convert(FinalListTest, "Lectura de datos tipo Tiempo",sp.getString("numversion",""), sp.getString("modelo",""));
+                                FinalListDataTiempo = GetRealDataFromHexaImbera.GetRealData(FinalListData, "Lectura de datos tipo Tiempo",sp.getString("numversion",""), sp.getString("modelo",""));
+                            }
+                        }else{
+                            return "false";
+                        }
+
+                        FinalListTest.clear();
+                        FinalListData.clear();
+                        FinalListData2.clear();
+                        listData.clear();
+                        bluetoothServices.sendCommand("event","4061");
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(0));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(1));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(2));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(3));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(4));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(5));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(6));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(7));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(8));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(9));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(10));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(11));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(12));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(13));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(14));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(15));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(16));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(17));
+                        for (int i=0; i<listData.size(); i++){//comprobación de la obtención de datos sin lista vacía
+                            if (listData.get(i).length() !=0){
+                                FinalListTest.add(listData.get(i));
+                            }
+                        }
+                        isChecksumOk = GlobalTools.checkChecksumImberaTREFPBList(GetRealDataFromHexaImbera.cleanSpaceList(FinalListTest));
+                        Log.d("isevento",":"+isChecksumOk);
+                        if (isChecksumOk.equals("ok")){
+
+                            if (FinalListTest.get(0).length() == 0){
+                                FinalListDataEvento.clear();
+                                return "false";
+                            }else{
+                                FinalListData = GetRealDataFromHexaImbera.convert(FinalListTest, "Lectura de datos tipo Evento",sp.getString("numversion",""), sp.getString("modelo",""));
+                                FinalListDataEvento = GetRealDataFromHexaImbera.GetRealData(FinalListData, "Lectura de datos tipo Evento",sp.getString("numversion",""),sp.getString("modelo",""));
+                            }
+                        }else{
+                            return "false";
+                        }
+                    }else if (sp.getString("modelo","").equals("3.5") && sp.getString("numversion","").equals("1.04")){
+                        FinalListData.clear();
+                        FinalListData2.clear();
+                        listData.clear();
+                        bluetoothServices.sendCommand("time","4060");
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(0));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(1));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(2));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(3));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(4));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(5));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(6));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(7));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(8));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(9));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(10));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(11));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(12));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(13));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(14));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(15));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(16));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(17));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(18));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(19));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(20));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(21));
+
+
+
+                        for (int i=0; i<listData.size(); i++){//comprobación de la obtención de datos sin lista vacía
+                            if (listData.get(i).length() !=0){
+                                FinalListTest.add(listData.get(i));
+                            }
+                        }
+
+                        isChecksumOk = GlobalTools.checkChecksumImberaTREFPBList(GetRealDataFromHexaImbera.cleanSpaceList(FinalListTest));
+                        Log.d("istiempoChecksum",":"+isChecksumOk);
+                        if (isChecksumOk.equals("ok")){
+                            if (FinalListTest.get(0).length() == 0){
+                                FinalListDataTiempo.clear();
+                                return "false";
+                            }else{
+                                FinalListData = GetRealDataFromHexaImbera.convert(FinalListTest, "Lectura de datos tipo Tiempo",sp.getString("numversion",""), sp.getString("modelo",""));
+                                FinalListDataTiempo = GetRealDataFromHexaImbera.GetRealData(FinalListData, "Lectura de datos tipo Tiempo",sp.getString("numversion",""), sp.getString("modelo",""));
+                            }
+                        }else{
+                            return "false";
+                        }
+
+                        FinalListTest.clear();
+                        FinalListData.clear();
+                        FinalListData2.clear();
+                        listData.clear();
+                        bluetoothServices.sendCommand("event","4061");
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(0));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(1));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(2));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(3));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(4));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(5));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(6));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(7));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(8));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(9));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(10));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(11));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(12));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(13));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(14));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(15));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(16));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(17));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(18));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(19));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(20));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(21));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(22));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(23));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(24));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(25));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(26));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(27));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(28));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(29));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        Log.d("islistttt",":"+listData.get(30));
+                        Thread.sleep(700);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+
+                        for (int i=0; i<listData.size(); i++){//comprobación de la obtención de datos sin lista vacía
+                            if (listData.get(i).length() !=0){
+                                FinalListTest.add(listData.get(i));
+                            }
+                        }
+                        isChecksumOk = GlobalTools.checkChecksumImberaTREFPBList(GetRealDataFromHexaImbera.cleanSpaceList(FinalListTest));
+                        Log.d("isevento",":"+isChecksumOk);
+                        if (isChecksumOk.equals("ok")){
+
+                            if (FinalListTest.get(0).length() == 0){
+                                FinalListDataEvento.clear();
+                                return "false";
+                            }else{
+                                FinalListData = GetRealDataFromHexaImbera.convert(FinalListTest, "Lectura de datos tipo Evento",sp.getString("numversion",""), sp.getString("modelo",""));
+                                FinalListDataEvento = GetRealDataFromHexaImbera.GetRealData(FinalListData, "Lectura de datos tipo Evento",sp.getString("numversion",""), sp.getString("modelo",""));
+                            }
+                        }else{
+                            return "false";
+                        }
+                    }else{
+                        //if modelo actual es menor a 3.3 en adelante, entonces mostrar de forma de nuevo logger
+                        listData.clear();
+                        FinalListDataTiempo.clear();
+                        bluetoothLeService = bluetoothServices.getBluetoothLeService();
+                        bluetoothServices.sendCommand("time","4060");
+                        Thread.sleep(3550);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        isChecksumOk = GlobalTools.checkChecksumImberaTREFPBList(GetRealDataFromHexaImbera.cleanSpaceList(listData));
+                        Log.d("istiempoChecksum",":"+isChecksumOk);
+                        if (listData.get(0).length() == 0){
+                            FinalListDataTiempo.clear();
+                        }else{
+                            FinalListData = GetRealDataFromHexaImbera.convert(listData, "Lectura de datos tipo Tiempo",sp.getString("numversion",""), sp.getString("modelo",""));
+                            FinalListDataTiempo = GetRealDataFromHexaImbera.GetRealData(FinalListData, "Lectura de datos tipo Tiempo",sp.getString("numversion",""), sp.getString("modelo",""));
+                            //StringBuilder s = GetRealDataFromHexaImbera.cleanSpace(listData);
+                            //listData.clear();
+                            //listData = GetRealDataFromHexaImbera.divideCrudoTiempo(s.toString());
+                            //Log.d("Datos tipo tiempo REPORTE crudo",":"+listData);
+                            //Log.d("Datos tipo tiempo REPORTE",":"+FinalListDataTiempo);
+                            //listener.createExcelTimeData("",FinalListDataTiempo);
+                            //listener.createExcelTimeDataCrudo("",FinalListDataTiempo,listData);
+                        }
+
+                        listData.clear();
+                        FinalListData.clear();
+                        FinalListDataEvento.clear();
+                        bluetoothLeService = bluetoothServices.getBluetoothLeService();
+                        bluetoothServices.sendCommand("event","4061");
+                        Thread.sleep(1000);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        isChecksumOk = GlobalTools.checkChecksumImberaTREFPBList(GetRealDataFromHexaImbera.cleanSpaceList(listData));
+                        Log.d("istiempoChecksum",":"+isChecksumOk);
+                        if (listData.get(0).length() == 0){
+                            FinalListDataEvento.clear();
+                        }else{
+                            FinalListData = GetRealDataFromHexaImbera.convert(listData, "Lectura de datos tipo Evento",sp.getString("numversion",""), sp.getString("modelo",""));
+                            FinalListDataEvento = GetRealDataFromHexaImbera.GetRealData(FinalListData, "Lectura de datos tipo Evento",sp.getString("numversion",""), sp.getString("modelo",""));
+                            //StringBuilder s = GetRealDataFromHexaImbera.cleanSpace(listData);
+                            //listData.clear();
+                            //listData = GetRealDataFromHexaImbera.divideCrudoEvento(s.toString());
+                            Log.d("Datos tipo tiempo REPORTE",":"+FinalListDataEvento);
+                            //listener.createExcelEventData("",FinalListDataEvento);
+                            //listener.createExcelEventDataCrudo("",FinalListDataTiempo,listData);
+                        }
+                    }
+
+                    FinalListData.clear();
+                    FinalListData2.clear();
+                    listData.clear();
+                    bluetoothServices.sendCommand("realState","4053");
+                    Thread.sleep(450);
+                    listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                    Log.d("isrealtimeLISADATA:",":"+listData);
+                    isChecksumOk = GlobalTools.checkChecksum(GetRealDataFromHexaImbera.cleanSpace(listData).toString());
+                    Log.d("isrealtime",":"+isChecksumOk);
+                    if (isChecksumOk.equals("ok")){
+                        if (listData.get(0).length() == 0){
+                            FinalListDataRealState.clear();
+                            return "false";
+                        }else{
+                            FinalListData = GetRealDataFromHexaImbera.convert(listData, "Lectura de datos tipo Tiempo real",sp.getString("numversion",""), sp.getString("modelo",""));
+                            FinalListDataRealState = GetRealDataFromHexaImbera.GetRealData(FinalListData, "Lectura de datos tipo Tiempo real",sp.getString("numversion",""), sp.getString("modelo",""));
+                        }
+                    }else{
+                        return "false";
+                    }
                 }
 
-                FinalListData.clear();
-                FinalListData2.clear();
-                listData.clear();
-                bluetoothServices.sendCommand("time","4060");
-                Thread.sleep(150);
-                listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
-                if (listData.get(0).length() == 0){
-                    FinalListDataTiempo.clear();
-                }else{
-                    FinalListData = GetRealDataFromHexaImbera.convert(listData, "Lectura de datos tipo Tiempo");
-                    FinalListDataTiempo = GetRealDataFromHexaImbera.GetRealData(FinalListData, "Lectura de datos tipo Tiempo");
-                }
-
-                FinalListData.clear();
-                FinalListData2.clear();
-                listData.clear();
-                bluetoothServices.sendCommand("event","4061");
-                Thread.sleep(150);
-                listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
-                if (listData.get(0).length() == 0){
-                    FinalListDataEvento.clear();
-                }else{
-                    FinalListData = GetRealDataFromHexaImbera.convert(listData, "Lectura de datos tipo Evento");
-                    FinalListDataEvento = GetRealDataFromHexaImbera.GetRealData(FinalListData, "Lectura de datos tipo Evento");
-                }
-
-                FinalListData.clear();
-                FinalListData2.clear();
-                listData.clear();
-                bluetoothServices.sendCommand("realState","4053");
-                Thread.sleep(150);
-                listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
-                if (listData.get(0).length() == 0){
-                    FinalListDataRealState.clear();
-                }else{
-                    FinalListData = GetRealDataFromHexaImbera.convert(listData, "Lectura de datos tipo Tiempo real");
-                    FinalListDataRealState = GetRealDataFromHexaImbera.GetRealData(FinalListData, "Lectura de datos tipo Tiempo real");
-                }
 
             }else if( sp.getString("trefpVersionName","").equals("IMBERA-OXXO")){
                 bluetoothServices.sendCommand("handshake","4021");
-                Thread.sleep(150);
+                Thread.sleep(250);
                 listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
-
-                if (listData.get(0).length() == 0){
-                    FinalListDataHandshake.clear();
+                if(GetRealDataFromHexaImbera.cleanSpace(listData).toString().length() == 0){
+                    return "false";
                 }else{
-                    FinalListData = GetRealDataFromHexaOxxoDisplay.convert(listData, "Handshake");
-                    FinalListDataHandshake = GetRealDataFromHexaOxxoDisplay.GetRealData(FinalListData, "Handshake");
+                    isChecksumOk = GlobalTools.checkChecksum(GetRealDataFromHexaImbera.cleanSpace(listData).toString());
+                    Log.d("ishandshake",":"+isChecksumOk);
+                    if (isChecksumOk.equals("ok")){
+                        if (listData.get(0).length() == 0){
+                            FinalListDataHandshake.clear();
+                            return "false";
+                        }else{
+                            FinalListData = GetRealDataFromHexaOxxoDisplay.convert(listData, "Handshake");
+                            FinalListDataHandshake = GetRealDataFromHexaOxxoDisplay.GetRealData(FinalListData, "Handshake");
+                        }
+                    }else{
+                        return "false";
+                    }
+
+                    isChecksumOk = GlobalTools.checkChecksum(GetRealDataFromHexaImbera.cleanSpace(listData).toString());
+                    Log.d("isresltatus",":"+isChecksumOk);
+                    if (isChecksumOk.equals("ok")){
+                        FinalListData.clear();
+                        FinalListData2.clear();
+                        listData.clear();
+                        bluetoothServices.sendCommand("realState","4053");
+                        Thread.sleep(250);
+                        listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                        if (listData.get(0).length() == 0){
+                            FinalListDataRealState.clear();
+                            return "false";
+                        }else{
+                            FinalListData = GetRealDataFromHexaOxxoDisplay.convert(listData, "Lectura de datos tipo Tiempo real");
+                            FinalListDataRealState = GetRealDataFromHexaOxxoDisplay.GetRealData(FinalListData, "Lectura de datos tipo Tiempo real");
+                        }
+                    }else{
+                        return "false";
+                    }
+
                 }
-
-                FinalListData.clear();
-                FinalListData2.clear();
-                listData.clear();
-
-
-                bluetoothServices.sendCommand("realState","4053");
-                Thread.sleep(150);
-                listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
-                if (listData.get(0).length() == 0){
-                    FinalListDataRealState.clear();
-                }else{
-                    FinalListData = GetRealDataFromHexaOxxoDisplay.convert(listData, "Lectura de datos tipo Tiempo real");
-                    FinalListDataRealState = GetRealDataFromHexaOxxoDisplay.GetRealData(FinalListData, "Lectura de datos tipo Tiempo real");
-                }
-
+                //return "true";
 
 
             }
 
         } catch (InterruptedException e) {
             e.printStackTrace();
+
         }
 
+        return "true";
 
-        Log.d("handhand",":"+FinalListDataRealState);
     }
 
     public void createProgressDialog(String string){

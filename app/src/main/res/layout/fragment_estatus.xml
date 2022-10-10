@@ -173,5 +173,20 @@
         android:textColor="#FFF"
         android:textSize="18sp" />
 
+    <Button
+
+        android:id="@+id/btnsendStatus"
+        android:layout_width="match_parent"
+        android:layout_height="46dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginHorizontal="45dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/round_corner_black"
+        android:text="Obtener estado actual"
+        android:textAlignment="center"
+        android:textColor="#FFF"
+        android:textSize="18sp" />
+
 </RelativeLayout>
 

@@ -10,8 +10,7 @@
     <RelativeLayout
         android:id="@+id/welcomeActivityBackgroundLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-    </RelativeLayout>
+        android:layout_height="match_parent"></RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/topView"
@@ -27,6 +26,28 @@
             android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
             android:src="@drawable/logo" />
+
+        <TextView
+            android:id="@+id/tvappVersion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/ivlogo"
+            android:layout_marginTop="0dp"
+            android:layout_marginStart="15dp"
+            android:text=""
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/tvUsuarioActual"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/tvappVersion"
+            android:layout_marginTop="5dp"
+            android:layout_marginStart="15dp"
+            android:text=""
+            android:textSize="12sp" />
 
         <TextView
             android:id="@+id/tvconnectionstate0"
@@ -88,9 +109,9 @@
         android:layout_marginHorizontal="35dp"
         android:layout_marginVertical="15dp"
         android:background="@drawable/round_corner_white"
-        app:itemTextColor="@color/black"
-        app:itemIconTint="@color/black"
         app:itemIconSize="18dp"
+        app:itemIconTint="@color/black"
+        app:itemTextColor="@color/black"
         app:menu="@menu/bottom_navigation_menu" />
 
 

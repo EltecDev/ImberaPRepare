@@ -1,6 +1,7 @@
 package com.example.imberap.Fragment;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
@@ -10,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.Spinner;
@@ -23,8 +25,9 @@ import androidx.fragment.app.Fragment;
 import com.example.imberap.BluetoothServices.BluetoothLeService;
 import com.example.imberap.BluetoothServices.BluetoothServices;
 import com.example.imberap.R;
-import com.example.imberap.utility.GetHexFromRealDataImbera;
-import com.example.imberap.utility.GetRealDataFromHexaImbera;
+import com.example.imberap.Utility.GetHexFromRealDataImbera;
+import com.example.imberap.Utility.GetRealDataFromHexaImbera;
+import com.example.imberap.Utility.GlobalTools;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import java.util.ArrayList;
@@ -35,10 +38,20 @@ public class PlantillaFragment extends Fragment {
     String TAG="PlantillaFragment";
     listener listenermain;
 
+    SharedPreferences sp;
+    SharedPreferences.Editor esp;
+
     List<TextView> tvList = new ArrayList<TextView>();
     List<EditText> tvListEditText = new ArrayList<EditText>();
 
+    List<String> FinalListDataRealState = new ArrayList<String>();
+    List<String> FinalListDataHandshake = new ArrayList<String>();
+    List<String> FinalListDataTiempo = new ArrayList<String>();
+    List<String> FinalListDataEvento = new ArrayList<String>();
+    List<String> FinalListDataPlantilla = new ArrayList<String>();
+
     ScrollView scrollView;
+    Button  btngetPlantilla, btnsendPlantilla;
     SwitchMaterial switchFuncionesControl, switchFuncionesVentiladorB0, switchFuncionesVentiladorB1;
     TextView tvActCompresorTiempoMinimoEncendido, tvActCompresorTiempoMinimoApagado, tvActCompresorRetrasoPrimerEncendido, tvActTermostatoTemperaturaDeCorteFrio,
             tvActTermostatoDiferencialFrio, tvActTermostatoLimiteDeTemperaturaBaja, tvActPuertaHabilitar, tvActPuertaCortesCompresorPermitirModosAhorro, tvActPuertaTemperaturaAmbientePermitirModosAhorro,
@@ -60,8 +73,9 @@ public class PlantillaFragment extends Fragment {
             etProteccionVoltajeVoltajeProteccionMinimo120, etProteccionVoltajeVoltajeProteccionMaximo120minimo220, etProteccionVoltajeVoltajeProteccionMaximo220, etProteccionVoltajeTiempoValidacionProteccionVoltaje,
             etProteccionVoltajeTiempoValidacionParaSalirDeProtDeVolt, etProteccionVoltajeHisteresis, etLoggerTiempoParaLogger, etPlantillaversion,etactualFirmwareVersion, etModeloTrefp;
 
-
     Spinner  spinnerModosDeshielo, spinnerFuncionesDeshielo,  spinnerProteccionVoltaje;
+    TextView tvPlantillatituloTREFP ;
+    Button btnGetPlantilla,btnenviarfwOperadores;
     BluetoothServices bluetoothServices;
     BluetoothLeService bluetoothLeService;
 
@@ -69,9 +83,14 @@ public class PlantillaFragment extends Fragment {
     View dialogViewProgressBar;
 
     List<String> dataListPlantilla = new ArrayList<String>();
+    Context context;
+    public PlantillaFragment(){}
 
-    public PlantillaFragment(BluetoothServices bluetoothServices) {
+    public PlantillaFragment(BluetoothServices bluetoothServices, Context context) {
         this.bluetoothServices = bluetoothServices;
+        this.context = context;
+        sp = context.getSharedPreferences("connection_preferences" , Context.MODE_PRIVATE);
+        esp = sp.edit();
     }
 
     @Override
@@ -82,7 +101,7 @@ public class PlantillaFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.plantilla_fragment, container, false);
+        View view = inflater.inflate(R.layout.fragment_plantilla, container, false);
         init(view);
 
         view.findViewById(R.id.btnSendPlantilla).setOnClickListener(new View.OnClickListener() {
@@ -97,9 +116,76 @@ public class PlantillaFragment extends Fragment {
                 getActualData();
             }
         });
+        view.findViewById(R.id.btnSendFWOperador).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                updatefwOperador();
+            }
+        });
+
+
+        view.findViewById(R.id.btnSendPlantillaObtenida).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendPlantillaActual();
+            }
+        });
+        view.findViewById(R.id.btnSendInfoCrudo).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendInfoCrudoExcel();
+            }
+        });
 
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        actualizarUIJerarquia();
+    }
+
+    public void actualizarUIJerarquia(){
+        if (!sp.getString("userId","").equals("")){//si no hay usuario logeado entonces no escanear
+            switch (sp.getString("userjerarquia","")){
+                case "1":{
+                    tvPlantillatituloTREFP.setText("Aquí puedes editar plantillas y mandarlas como parámetros a tu dispositivo IMBERA-OXXO");
+                    scrollView.setVisibility(View.VISIBLE);
+                    btnenviarfwOperadores.setVisibility(View.GONE);
+                    btnGetPlantilla.setVisibility(View.VISIBLE);
+                    //btnenviarPlantillaOperadores.setVisibility(View.GONE);
+                    btnsendPlantilla.setVisibility(View.VISIBLE);
+                    break;
+                }
+                case "2":{
+
+                    break;
+                }
+                case "3":{
+
+                    break;
+                }
+                case "4":{
+                    tvPlantillatituloTREFP.setText("Aquí puedes editar plantillas y mandarlas como parámetros a tu dispositivo IMBERA-OXXO");
+                    scrollView.setVisibility(View.GONE);
+                    btnGetPlantilla.setVisibility(View.GONE);
+                    //btnenviarPlantillaOperadores.setVisibility(View.GONE);
+                    break;
+                }
+                case "5":{
+                    tvPlantillatituloTREFP.setText("Usa los botones de abajo para proceder a actualizar el equipo TREFPB");
+                    btnenviarfwOperadores.setVisibility(View.VISIBLE);
+                    //btnenviarPlantillaOperadores.setVisibility(View.VISIBLE);
+                    scrollView.setVisibility(View.GONE);
+                    btnGetPlantilla.setVisibility(View.GONE);
+                    btnsendPlantilla.setVisibility(View.GONE);
+                    break;
+                }
+            }
+
+        }
     }
 
     private void init(View v) {
@@ -110,6 +196,12 @@ public class PlantillaFragment extends Fragment {
 
     private void initCampos(View view) {
         scrollView = view.findViewById(R.id.scrollPlantilla);
+
+        btnGetPlantilla = view.findViewById(R.id.btnGetPlantilla);
+        btnsendPlantilla = view.findViewById(R.id.btnSendPlantilla);
+        btnenviarfwOperadores = view.findViewById(R.id.btnSendFWOperador);
+
+        tvPlantillatituloTREFP= view.findViewById(R.id.tvPlantillatituloTREFP);
 
         tvActCompresorTiempoMinimoEncendido = view.findViewById(R.id.tvActCompresorTiempoMinimoEncendido);
         tvActCompresorTiempoMinimoApagado = view.findViewById(R.id.tvActCompresorTiempoMinimoApagado);
@@ -312,6 +404,24 @@ public class PlantillaFragment extends Fragment {
 
     }
 
+    private void sendPlantillaActual(){
+        if (!checkEmptydata()){
+            Toast.makeText(getContext(), "Campos vacíos, intenta obtener plantilla", Toast.LENGTH_SHORT).show();
+        }else{
+            listenermain.printExcel(getOriginalListToExcel(),"imbera");
+        }
+
+    }
+
+    private void sendInfoCrudoExcel(){
+        if (!sp.getString("trefpVersionName","").equals("")){
+            new MyAsyncTaskGetActualStatusTotalCrudo().execute();    
+        }else{
+            Toast.makeText(context, "No estás conectado a un TREFPB", Toast.LENGTH_SHORT).show();
+        }
+        
+    }
+
     private void getActualData() {
         bluetoothLeService = bluetoothServices.getBluetoothLeService();
         if (bluetoothServices != null && bluetoothLeService != null)
@@ -407,8 +517,12 @@ public class PlantillaFragment extends Fragment {
             etProteccionVoltajeTiempoValidacionProteccionVoltaje.setText(dataListPlantilla.get(16));
             etProteccionVoltajeTiempoValidacionParaSalirDeProtDeVolt.setText(dataListPlantilla.get(29));
             etProteccionVoltajeHisteresis.setText(dataListPlantilla.get(28));
-
             etLoggerTiempoParaLogger.setText(dataListPlantilla.get(43));
+            String fw = dataListPlantilla.get(44)+dataListPlantilla.get(45);
+            fw = fw.replace(".","");
+            fw = fw.substring(0,2)+"."+fw.substring(2);
+            etactualFirmwareVersion.setText(fw);
+            etModeloTrefp.setText(dataListPlantilla.get(46));
             etPlantillaversion.setText(dataListPlantilla.get(47));
         }
 
@@ -453,9 +567,9 @@ public class PlantillaFragment extends Fragment {
                 tvDeshieloModoDeDeshielo.setText("Entrada por tiempo y salida por temperatura ambiente");
 
             if (dataListPlantilla.get(23).equals("0"))
-                tvActPuertaHabilitar.setText("Puerta cerrada");
+                tvActPuertaHabilitar.setText("No sensar puerta");
             else if (dataListPlantilla.get(23).equals("1"))
-                tvActPuertaHabilitar.setText("Puerta abierta");
+                tvActPuertaHabilitar.setText("Si sensar puerta");
 
 
             if (dataListPlantilla.get(24).equals("0"))
@@ -557,7 +671,7 @@ public class PlantillaFragment extends Fragment {
             for (String dato:arrayListInfo){
                 stringBuilder.append(dato.toUpperCase());
             }
-            new MyAsyncTaskSendNewPlantilla(stringBuilder).execute();
+            new MyAsyncTaskSendNewPlantilla(stringBuilder).execute();//se envian los datos al TREFP
         } else{
             Toast.makeText(getContext(), "Uno o varios parámetros están fuera de los límites válidos", Toast.LENGTH_SHORT).show();
             scrollView.post(new Runnable() {
@@ -569,7 +683,7 @@ public class PlantillaFragment extends Fragment {
     }
 
     public String getOptionSpinner(String option,int selected){
-        //Log.d("VALOR","deshielo:"+selected);
+
         switch (option){
             case "mododeshielo":{
                 if (selected==2)
@@ -611,7 +725,6 @@ public class PlantillaFragment extends Fragment {
     }
 
     public String getOptionSwitch(String option,boolean ischecked){
-        Log.d("ischecked",":"+ischecked);
         if ("funcionesControl".equals(option)) {
             if (ischecked)
                 return "00000100";
@@ -622,8 +735,6 @@ public class PlantillaFragment extends Fragment {
     }
 
     public String getOptionSwitchB0B1(boolean selectedB1, boolean selectedB0){
-        Log.d("VALOR","B1:"+selectedB1);
-        Log.d("VALOR","B0:"+selectedB0);
         if (selectedB0) {
             if (selectedB1)
                 return "00000011";
@@ -645,6 +756,12 @@ public class PlantillaFragment extends Fragment {
         List<EditText> editTextsList = new ArrayList<>(getEditTextList());
         //falta agregar función
         List<EditText> editTextsWrongDataList = new ArrayList<>();
+        float numA0 = Float.parseFloat(editTextsList.get(8).getText().toString());
+        float numT0 = Float.parseFloat(editTextsList.get(0).getText().toString());
+        if(numA0 > numT0){
+            errorEditText(editTextsList.get(8), "A0 siempre debe ser menor a T0");
+            editTextsWrongDataList.add(editTextsList.get(8));
+        }
         for (int i =0 ; i<editTextsList.size(); i++){
             if (i==0 || i==2 ||  i==3 || i==4 || i==7 || i==8){//-99 a 99
                 float numf = Float.parseFloat(editTextsList.get(i).getText().toString());
@@ -660,7 +777,7 @@ public class PlantillaFragment extends Fragment {
                     editTextsWrongDataList.add(editTextsList.get(i));
                 }
             }
-            if (i==9 || i==12 || i == 13 || i == 14 || i == 15 || i == 16|| i == 17|| i == 33|| i == 34 || i == 10){//00 a 99
+            if (i==9 || i == 10 || i==12 || i == 13 || i == 14 || i == 15 || i == 16|| i == 17|| i == 33|| i == 34 ){//00 a 99
                 float numf = Float.parseFloat(editTextsList.get(i).getText().toString());
                 int num = (int) numf;
                 if (num<-0 || num > 99){
@@ -714,9 +831,88 @@ public class PlantillaFragment extends Fragment {
                 }
             }
 
+            //firmware correcto
+            if (i==35){
+                if (editTextsList.get(i).getText().toString().contains(".")){
+                    if (editTextsList.get(i).getText().toString().length() >= 3){
+                        String n = editTextsList.get(i).getText().toString();
+                        int index = n.indexOf(".");
+
+                        if (index > 2){
+                            errorEditText(editTextsList.get(i), "La versión no puede superar 99.99");
+                            editTextsWrongDataList.add(editTextsList.get(i));
+                        }else{
+                            if (n.length()-index == 0){
+                                errorEditText(editTextsList.get(i), "Verifica el formato del dato Firmware");
+                                editTextsWrongDataList.add(editTextsList.get(i));
+                            }
+                        }
+                    }else {
+                        errorEditText(editTextsList.get(i), "Verifica el formato del dato Firmware");
+                        editTextsWrongDataList.add(editTextsList.get(i));
+                    }
+                }else{
+                    errorEditText(editTextsList.get(i), "Verifica el formato del dato Firmware,debe llevar decimal");
+                    editTextsWrongDataList.add(editTextsList.get(i));
+                }
+            }
+
+            //modelo correcto
+            if (i==36){
+
+                if (editTextsList.get(i).getText().toString().contains(".")){
+                    if (editTextsList.get(i).getText().toString().length() >= 3){
+                        String n = editTextsList.get(i).getText().toString();
+                        int index = n.indexOf(".");
+
+                        if (index > 2){
+                            errorEditText(editTextsList.get(i), "La versión no puede superar 99.99");
+                            editTextsWrongDataList.add(editTextsList.get(i));
+                        }else{
+
+                            if (n.length()-index == 0){
+                                errorEditText(editTextsList.get(i), "Verifica el formato del dato Firmware");
+                                editTextsWrongDataList.add(editTextsList.get(i));
+                            }
+                        }
+                    }else {
+                        errorEditText(editTextsList.get(i), "El modelo debe coincidir con el del equipo.");
+                        editTextsWrongDataList.add(editTextsList.get(i));
+                    }
+                }else{
+                    errorEditText(editTextsList.get(i), "Verifica el formato del dato Firmware,debe llevar decimal");
+                    editTextsWrongDataList.add(editTextsList.get(i));
+                }
+            }
+
+            //plantilla formato correcto
+            if (i==37){
+
+                if (editTextsList.get(i).getText().toString().contains(".")){
+                    if (editTextsList.get(i).getText().toString().length() >= 3){
+                        String n = editTextsList.get(i).getText().toString();
+                        int index = n.indexOf(".");
+
+                        if (index > 2){
+                            errorEditText(editTextsList.get(i), "La versión no puede superar 99.99");
+                            editTextsWrongDataList.add(editTextsList.get(i));
+                        }else{
+                            if (n.length()-index == 0){
+                                errorEditText(editTextsList.get(i), "Verifica el formato del dato Firmware");
+                                editTextsWrongDataList.add(editTextsList.get(i));
+                            }
+                        }
+                    }else {
+                        errorEditText(editTextsList.get(i), "Verifica el formato del dato Plantilla");
+                        editTextsWrongDataList.add(editTextsList.get(i));
+                    }
+                }else{
+                    errorEditText(editTextsList.get(i), "Verifica el formato del dato Plantilla,debe llevar decimal");
+                    editTextsWrongDataList.add(editTextsList.get(i));
+                }
+            }
 
         }
-
         return editTextsWrongDataList;
     }
 
@@ -760,8 +956,8 @@ public class PlantillaFragment extends Fragment {
                 return "";
             }else {
                 listData = bluetoothLeService.getDataFromBroadcastUpdate();
-                FinalListData = GetRealDataFromHexaImbera.convert(listData,"Lectura de parámetros de operación");
-                dataListPlantilla = GetRealDataFromHexaImbera.GetRealData(FinalListData,"Lectura de parámetros de operación");
+                FinalListData = GetRealDataFromHexaImbera.convert(listData,"Lectura de parámetros de operación",sp.getString("numversion",""), sp.getString("modelo",""));
+                dataListPlantilla = GetRealDataFromHexaImbera.GetRealData(FinalListData,"Lectura de parámetros de operación",sp.getString("numversion",""), sp.getString("modelo",""));
                 return "resp";
             }
 
@@ -840,7 +1036,7 @@ public class PlantillaFragment extends Fragment {
                     Toast.makeText(getContext(), "Acabas de enviar plantilla, intenta reconectarte a BLE", Toast.LENGTH_SHORT).show();
                 if (result.equals("ok")){
                     Toast.makeText(getContext(), "Actualización de plantilla: Correcta", Toast.LENGTH_SHORT).show();
-                    listenermain.printExcel(getOriginalList(),"imbera");
+                    //listenermain.printExcel(getOriginalList(),"imbera");
                 }if (result.equals("noconnected")){
                     Toast.makeText(getContext(), "No te has conectados a un BLE", Toast.LENGTH_SHORT).show();
                 }if (result.equals("exception")){
@@ -854,7 +1050,7 @@ public class PlantillaFragment extends Fragment {
 
         @Override
         protected void onPreExecute() {
-            createProgressDialog("Acualizando a nueva plantilla...");
+            createProgressDialog("Actualizando a nueva plantilla...");
         }
 
         @Override
@@ -863,9 +1059,390 @@ public class PlantillaFragment extends Fragment {
         }
     }
 
+    class MyAsyncTaskGetActualStatusTotalCrudo extends AsyncTask<Integer, Integer, String> {
+        @Override
+        protected String doInBackground(Integer... params) {
+            obtenerInfoTotalCrudo();
+            return "resp";
+        }
 
+        @Override
+        protected void onPostExecute(String result) {
+            if (progressdialog != null)progressdialog.dismiss();
+            if (sp.getString("modelo","").equals("3.3") && sp.getString("numversion","").equals("1.02")){
+                List<String> fin = new ArrayList<String>();
+                fin.add(FinalListDataHandshake.get(0));
+                fin.add(FinalListDataRealState.get(0));
+                fin.add(FinalListDataPlantilla.get(0));
+
+                listenermain.printExcelCrudoExtendido(fin,FinalListDataEvento,FinalListDataTiempo);
+                progressdialog=null;
+            }else if (sp.getString("modelo","").equals("3.5") && sp.getString("numversion","").equals("1.04")){
+                List<String> fin = new ArrayList<String>();
+                fin.add(FinalListDataHandshake.get(0));
+                fin.add(FinalListDataRealState.get(0));
+                fin.add(FinalListDataPlantilla.get(0));
+
+                listenermain.printExcelCrudoExtendido(fin,FinalListDataEvento,FinalListDataTiempo);
+                progressdialog=null;
+            }else{
+                List<String> fin = new ArrayList<String>();
+                fin.add(FinalListDataHandshake.get(0));
+                fin.add(FinalListDataRealState.get(0));
+                fin.add(FinalListDataTiempo.get(0));
+                fin.add(FinalListDataEvento.get(0));
+                fin.add(FinalListDataPlantilla.get(0));
+
+                listenermain.printExcel(fin,"crudototalImbera");
+                progressdialog=null;
+            }
+
+
+        }
+
+        @Override
+        protected void onPreExecute() {
+            FinalListDataHandshake.clear();
+            FinalListDataTiempo.clear();
+            FinalListDataEvento.clear();
+            FinalListDataRealState.clear();
+            FinalListDataPlantilla.clear();
+            createProgressDialog("Obteniendo estado actual...");
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+
+        }
+    }
+
+    private void obtenerInfoTotalCrudo(){
+        List<String> FinalListData = new ArrayList<String>() ;
+        List<String> listData = new ArrayList<String>() ;
+        List<String> FinalListTest = new ArrayList<String>() ;
+        String isChecksumOk;
+
+        FinalListDataRealState.clear();
+        bluetoothLeService = bluetoothServices.getBluetoothLeService();
+        try {
+            bluetoothServices.sendCommand("handshake","4021");
+            Thread.sleep(250);
+            FinalListDataHandshake.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+
+            if (sp.getString("modelo","").equals("3.3") && sp.getString("numversion","").equals("1.02")){
+                FinalListData.clear();
+                listData.clear();
+                bluetoothServices.sendCommand("time","4060");
+                Thread.sleep(700);
+                FinalListDataTiempo.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataTiempo.get(0));
+                Thread.sleep(700);
+                FinalListDataTiempo.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataTiempo.get(1));
+                Thread.sleep(700);
+                FinalListDataTiempo.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataTiempo.get(2));
+                Thread.sleep(700);
+                FinalListDataTiempo.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataTiempo.get(3));
+                Thread.sleep(700);
+                FinalListDataTiempo.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataTiempo.get(4));
+                Thread.sleep(700);
+                FinalListDataTiempo.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataTiempo.get(5));
+                Thread.sleep(700);
+                FinalListDataTiempo.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataTiempo.get(6));
+                Thread.sleep(700);
+                FinalListDataTiempo.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataTiempo.get(7));
+                Thread.sleep(700);
+                FinalListDataTiempo.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataTiempo.get(8));
+                Thread.sleep(700);
+                FinalListDataTiempo.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataTiempo.get(9));
+                Thread.sleep(700);
+                FinalListDataTiempo.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataTiempo.get(7));
+
+
+                FinalListTest.clear();
+                FinalListData.clear();
+                FinalListDataEvento.clear();
+                bluetoothServices.sendCommand("event","4061");
+                Thread.sleep(700);
+                FinalListDataEvento.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataEvento.get(0));
+                Thread.sleep(700);
+                FinalListDataEvento.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataEvento.get(1));
+                Thread.sleep(700);
+                FinalListDataEvento.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataEvento.get(2));
+                Thread.sleep(700);
+                FinalListDataEvento.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataEvento.get(3));
+                Thread.sleep(700);
+                FinalListDataEvento.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataEvento.get(4));
+                Thread.sleep(700);
+                FinalListDataEvento.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataEvento.get(5));
+                Thread.sleep(700);
+                FinalListDataEvento.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataEvento.get(6));
+                Thread.sleep(700);
+                FinalListDataEvento.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataEvento.get(7));
+                Thread.sleep(700);
+                FinalListDataEvento.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataEvento.get(8));
+                Thread.sleep(700);
+                FinalListDataEvento.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataEvento.get(9));
+                Thread.sleep(700);
+                FinalListDataEvento.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataEvento.get(10));
+                Thread.sleep(700);
+                FinalListDataEvento.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataEvento.get(11));
+                Thread.sleep(700);
+                FinalListDataEvento.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataEvento.get(12));
+                Thread.sleep(700);
+                FinalListDataEvento.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataEvento.get(13));
+                Thread.sleep(700);
+                FinalListDataEvento.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataEvento.get(14));
+                Thread.sleep(700);
+                FinalListDataEvento.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataEvento.get(15));
+                Thread.sleep(700);
+                FinalListDataEvento.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataEvento.get(16));
+                Thread.sleep(700);
+                FinalListDataEvento.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataEvento.get(17));
+
+
+            }else if ((sp.getString("modelo","").equals("3.5") && sp.getString("numversion","").equals("1.04")) ||
+                    (sp.getString("modelo","").equals("3.5") && sp.getString("numversion","").equals("1.14"))){
+                FinalListData.clear();
+                listData.clear();
+                bluetoothServices.sendCommand("time","4060");
+                Thread.sleep(700);
+                FinalListDataTiempo.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataTiempo.get(0));
+                Thread.sleep(700);
+                FinalListDataTiempo.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataTiempo.get(1));
+                Thread.sleep(700);
+                FinalListDataTiempo.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataTiempo.get(2));
+                Thread.sleep(700);
+                FinalListDataTiempo.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataTiempo.get(3));
+                Thread.sleep(700);
+                FinalListDataTiempo.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataTiempo.get(4));
+                Thread.sleep(700);
+                FinalListDataTiempo.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataTiempo.get(5));
+                Thread.sleep(700);
+                FinalListDataTiempo.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataTiempo.get(6));
+                Thread.sleep(700);
+                FinalListDataTiempo.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataTiempo.get(7));
+                Thread.sleep(700);
+                FinalListDataTiempo.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataTiempo.get(8));
+                Thread.sleep(700);
+                FinalListDataTiempo.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataTiempo.get(9));
+                Thread.sleep(700);
+                FinalListDataTiempo.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataTiempo.get(10));
+                Thread.sleep(700);
+                FinalListDataTiempo.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataTiempo.get(11));
+                Thread.sleep(700);
+                FinalListDataTiempo.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataTiempo.get(12));
+                Thread.sleep(700);
+                FinalListDataTiempo.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataTiempo.get(13));
+                Thread.sleep(700);
+                FinalListDataTiempo.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataTiempo.get(14));
+                Thread.sleep(700);
+                FinalListDataTiempo.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataTiempo.get(15));
+                Thread.sleep(700);
+                FinalListDataTiempo.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataTiempo.get(16));
+                Thread.sleep(700);
+                FinalListDataTiempo.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataTiempo.get(17));
+                Thread.sleep(700);
+                FinalListDataTiempo.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataTiempo.get(18));
+                Thread.sleep(700);
+                FinalListDataTiempo.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataTiempo.get(19));
+                Thread.sleep(700);
+                FinalListDataTiempo.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataTiempo.get(20));
+                Thread.sleep(700);
+                FinalListDataTiempo.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataTiempo.get(21));
+
+                FinalListTest.clear();
+                FinalListData.clear();
+                FinalListDataEvento.clear();
+                bluetoothServices.sendCommand("event","4061");
+                Thread.sleep(700);
+                FinalListDataEvento.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataEvento.get(0));
+                Thread.sleep(700);
+                FinalListDataEvento.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataEvento.get(1));
+                Thread.sleep(700);
+                FinalListDataEvento.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataEvento.get(2));
+                Thread.sleep(700);
+                FinalListDataEvento.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataEvento.get(3));
+                Thread.sleep(700);
+                FinalListDataEvento.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataEvento.get(4));
+                Thread.sleep(700);
+                FinalListDataEvento.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataEvento.get(5));
+                Thread.sleep(700);
+                FinalListDataEvento.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataEvento.get(6));
+                Thread.sleep(700);
+                FinalListDataEvento.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataEvento.get(7));
+                Thread.sleep(700);
+                FinalListDataEvento.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataEvento.get(8));
+                Thread.sleep(700);
+                FinalListDataEvento.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataEvento.get(9));
+                Thread.sleep(700);
+                FinalListDataEvento.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataEvento.get(10));
+                Thread.sleep(700);
+                FinalListDataEvento.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataEvento.get(11));
+                Thread.sleep(700);
+                FinalListDataEvento.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataEvento.get(12));
+                Thread.sleep(700);
+                FinalListDataEvento.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataEvento.get(13));
+                Thread.sleep(700);
+                FinalListDataEvento.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataEvento.get(14));
+                Thread.sleep(700);
+                FinalListDataEvento.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataEvento.get(15));
+                Thread.sleep(700);
+                FinalListDataEvento.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataEvento.get(16));
+                Thread.sleep(700);
+                FinalListDataEvento.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataEvento.get(17));
+                Thread.sleep(700);
+                FinalListDataEvento.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataEvento.get(18));
+                Thread.sleep(700);
+                FinalListDataEvento.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataEvento.get(19));
+                Thread.sleep(700);
+                FinalListDataEvento.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataEvento.get(20));
+                Thread.sleep(700);
+                FinalListDataEvento.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataEvento.get(21));
+                Thread.sleep(700);
+                FinalListDataEvento.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataEvento.get(22));
+                Thread.sleep(700);
+                FinalListDataEvento.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataEvento.get(23));
+                Thread.sleep(700);
+                FinalListDataEvento.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataEvento.get(24));
+                Thread.sleep(700);
+                FinalListDataEvento.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataEvento.get(25));
+                Thread.sleep(700);
+                FinalListDataEvento.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataEvento.get(26));
+                Thread.sleep(700);
+                FinalListDataEvento.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataEvento.get(27));
+                Thread.sleep(700);
+                FinalListDataEvento.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataEvento.get(28));
+                Thread.sleep(700);
+                FinalListDataEvento.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataEvento.get(29));
+                Thread.sleep(700);
+                FinalListDataEvento.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataEvento.get(30));
+                Thread.sleep(700);
+                FinalListDataEvento.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataEvento.get(31));
+                Thread.sleep(700);
+                FinalListDataEvento.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+                Log.d("islistttt",":"+FinalListDataEvento.get(32));
+
+
+
+            }else{
+                //if modelo actual es menor a 3.3 en adelante, entonces mostrar de forma de nuevo logger
+                listData.clear();
+                FinalListDataTiempo.clear();
+                bluetoothLeService = bluetoothServices.getBluetoothLeService();
+                bluetoothServices.sendCommand("time","4060");
+                Thread.sleep(3050);
+                FinalListDataTiempo.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+
+
+                listData.clear();
+                FinalListData.clear();
+                FinalListDataEvento.clear();
+                bluetoothLeService = bluetoothServices.getBluetoothLeService();
+                bluetoothServices.sendCommand("event","4061");
+                Thread.sleep(3000);
+                FinalListDataEvento.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+
+            }
+
+            bluetoothServices.sendCommand("realState","4053");
+            Thread.sleep(250);
+            FinalListDataRealState.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+
+            bluetoothServices.sendCommand("readParam","4051");
+            Thread.sleep(350);
+            FinalListDataPlantilla.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void updatefwOperador() {//firmware dado para únicamente grabar, dado desde Eltec (o alto cargo en TREFP PC)
+        bluetoothServices.sendCommand("newfwTrefpResetMemory");
+    }
     //utilidad
-    public List<String> getOriginalList(){
+    public List<String> getOriginalListToExcel(){
         List<String> arrayListInfo = new ArrayList<>();
         arrayListInfo.add(etActCompresorTiempoMinimoEncendido.getText().toString());
         arrayListInfo.add(etActCompresorTiempoMinimoApagado.getText().toString());
@@ -906,7 +1483,7 @@ public class PlantillaFragment extends Fragment {
         else
             arrayListInfo.add("Apagar ventilador con compresor apagado: Deshabilitado");
 
-        if (switchFuncionesVentiladorB0.isChecked())
+        if (switchFuncionesVentiladorB1.isChecked())
             arrayListInfo.add("Apagar ventilador con puerta abierta: Habilitado");
         else
             arrayListInfo.add("Apagar ventilador con puerta abierta: Deshabilitado");
@@ -967,7 +1544,7 @@ public class PlantillaFragment extends Fragment {
         editTextsList.add(etActPuertaTiempoPuertaCerradaModoAhorro2);
         editTextsList.add(etActPuertaTiempoParaRegistrarPuertaAbierta);
         editTextsList.add(etLoggerTiempoParaLogger);
-        editTextsList.add(etactualFirmwareVersion);
+        editTextsList.add(etactualFirmwareVersion);//35
         editTextsList.add(etModeloTrefp);
         editTextsList.add(etPlantillaversion);
         return editTextsList;
@@ -1025,6 +1602,7 @@ public class PlantillaFragment extends Fragment {
 
     public interface listener {
         public void printExcel(List<String> data,String deviceName);
+        public void printExcelCrudoExtendido(List<String> data,List<String> evento,List<String> tiempo);
 
     }
     //Listeners

@@ -106,7 +106,7 @@ public class BluetoothLeService extends Service {
             if(status != BluetoothGatt.GATT_SUCCESS) {
                 return;
             }
-            Log.d(TAG,"write finished, status="+status);
+            //Log.d(TAG,"write finished, status="+status);
         }
 
         @Override
@@ -114,11 +114,11 @@ public class BluetoothLeService extends Service {
             super.onDescriptorWrite(gatt, descriptor, status);
             if(descriptor.getCharacteristic() == readCharacteristic) {
                 if (status != BluetoothGatt.GATT_SUCCESS) {
-                    Log.d("onDescriptorWrite", "connected1");
+                    //Log.d("onDescriptorWrite", "connected1");
                 } else {
                     // onCharacteristicChanged with incoming data can happen after writeDescriptor(ENABLE_INDICATION/NOTIFICATION)
                     // before confirmed by this method, so receive data can be shown before device is shown as 'Connected'.
-                    Log.d("onDescriptorWrite", "connected2");
+                    //Log.d("onDescriptorWrite", "connected2");
                 }
             }
         }
@@ -140,16 +140,16 @@ public class BluetoothLeService extends Service {
         int writeProperties = writeCharacteristic.getProperties();
         if((writeProperties & (BluetoothGattCharacteristic.PROPERTY_WRITE +
                 BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE)) ==0) {
-            Log.d("connectCharacteristics3","write characteristic not writable");
+            //Log.d("connectCharacteristics3","write characteristic not writable");
             return;
         }
         if(!gatt.setCharacteristicNotification(readCharacteristic,true)) {
-            Log.d("connectCharacteristics3","no notification for read characteristic");
+            //Log.d("connectCharacteristics3","no notification for read characteristic");
             return;
         }
         BluetoothGattDescriptor readDescriptor = readCharacteristic.getDescriptor(BLUETOOTH_LE_CCCD);
         if(readDescriptor == null) {
-            Log.d("connectCharacteristics3","no CCCD descriptor for read characteristic");
+            //Log.d("connectCharacteristics3","no CCCD descriptor for read characteristic");
             return;
         }
         int readProperties = readCharacteristic.getProperties();
@@ -161,7 +161,7 @@ public class BluetoothLeService extends Service {
             return;
         }
         if(!gatt.writeDescriptor(readDescriptor)) {
-            Log.d("connectCharacteristics3","FAIL");
+            //Log.d("connectCharacteristics3","FAIL");
         }
     }
 
@@ -181,7 +181,7 @@ public class BluetoothLeService extends Service {
                 final StringBuilder stringBuilder = new StringBuilder(data.length);
                 for(byte byteChar : data)
                     stringBuilder.append(String.format("%02X ", byteChar));
-                Log.d(TAG, "Received TREFPB Data:"+stringBuilder );
+                //Log.d(TAG, "Received TREFPB Data:"+stringBuilder );
                 //devolver el valor de la característica cambiada (onCharacteristicChanged)
                 //intent.putExtra(EXTRA_DATA, new String(data) + "\n" + stringBuilder.toString());
                 //intent.putExtra(EXTRA_DATA, stringBuilder.toString());
@@ -211,7 +211,7 @@ public class BluetoothLeService extends Service {
         StringBuilder stringBuilder = new StringBuilder();
         for (String s:listData)
             stringBuilder.append(s);
-
+        listData.clear();
         return stringBuilder.toString().trim();
     }
 
@@ -350,7 +350,8 @@ public class BluetoothLeService extends Service {
     public void sendComando(String command){
         listData.clear();
         if (writeCharacteristic==null || readCharacteristic==null){
-            Toast.makeText(getApplicationContext(), "Conéctate a un BLE", Toast.LENGTH_SHORT).show();
+            Log.d(TAG,"writeCharacteristic NULL");
+            //Toast.makeText(getApplicationContext(), "Conéctate a un BLE", Toast.LENGTH_SHORT).show();
         }else {
             byte[] b = hexStringToByteArray(command);
             //byte[] b = command.getBytes();
@@ -360,6 +361,44 @@ public class BluetoothLeService extends Service {
                 Log.d(TAG,"WRITE FAIL");
             } else {
                 Log.d(TAG,"write started, len="+b.length);
+            }
+        }
+    }
+
+    public void sendComandoW(String command, byte[] b){
+        listData.clear();
+        if (writeCharacteristic==null || readCharacteristic==null){
+            Log.d(TAG,"writeCharacteristic NULL");
+            //Toast.makeText(getApplicationContext(), "Conéctate a un BLE", Toast.LENGTH_SHORT).show();
+        }else {
+            //byte[] b = hexStringToByteArray(command);
+            //byte[] b = command.getBytes();
+
+            writeCharacteristic.setValue(b);
+            if (!mBluetoothGatt.writeCharacteristic(writeCharacteristic)) {
+                Log.d(TAG,"WRITE FAIL");
+            } else {
+                Log.d(TAG,"write started, len="+b.length);
+            }
+        }
+    }
+
+
+    public void sendComandoWifi(String command){
+        listData.clear();
+        if (writeCharacteristic==null || readCharacteristic==null){
+            Log.d(TAG,"writeCharacteristic NULL");
+            //Toast.makeText(getApplicationContext(), "Conéctate a un BLE", Toast.LENGTH_SHORT).show();
+        }else {
+            //byte[] b = hexStringToByteArray(command);
+            //byte[] b = command.getBytes();
+            writeCharacteristic.setValue(command);
+            //writeCharacteristic.setValue(b);
+            if (!mBluetoothGatt.writeCharacteristic(writeCharacteristic)) {
+                Log.d(TAG,"WRITE FAIL");
+            } else {
+                //Log.d(TAG,"write started, len="+b.length);
+                Log.d(TAG,"write started, len="+command);
             }
         }
     }
@@ -409,7 +448,6 @@ public class BluetoothLeService extends Service {
         }
         return data;
     }
-
 
 
 }
