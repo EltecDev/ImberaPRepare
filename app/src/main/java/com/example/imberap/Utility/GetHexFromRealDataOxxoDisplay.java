@@ -30,14 +30,17 @@ public class GetHexFromRealDataOxxoDisplay {
                     //Log.d("tag",":"+numfi);
                     Log.d("tag","2:"+numfinal);
 
-                    if (Integer.signum(num)==1){
+                    if (Integer.signum(num)==1 || numfinal>0){
+                        Log.d("TAGGGSD","122");
                         arrayListInfo.add(convertDecimalToHexa(dataListPlantilla.get(i))); //decimales con punto //get temp positivo
                         T0 = convertDecimalToHexa(dataListPlantilla.get(i));
                     }else if (Integer.signum(num)==-1){
                         arrayListInfo.add(getNeg((numfinal))); //get negativos
                         T0 = getNeg((numfinal));
+                        Log.d("TAGGGSD","11");
                     }else{//Es 0 cero
                         T0 = "0000";
+                        Log.d("TAGGGSD","00");
                         arrayListInfo.add("0000"); //get negativos
                     }
                     break;
@@ -58,7 +61,7 @@ public class GetHexFromRealDataOxxoDisplay {
                         num = (int) numf;
                     //Log.d("tag",":"+numfi);
                     Log.d("tag","2:"+numfinal);
-                    if (Integer.signum(num)==1){
+                    if (Integer.signum(num)==1|| numfinal>0){
                         arrayListInfo.add(convertDecimalToHexa(dataListPlantilla.get(i))); //decimales con punto //get temp positivo
                     }else if (Integer.signum(num)==-1){
                         arrayListInfo.add(getNeg((numfinal))); //get negativos
@@ -79,7 +82,7 @@ public class GetHexFromRealDataOxxoDisplay {
                         num = (int) numf;
                     //Log.d("tag",":"+numfi);
                     Log.d("tag","2:"+numfinal);
-                    if (Integer.signum(num)==1){
+                    if (Integer.signum(num)==1|| numfinal>0){
                         arrayListInfo.add(convertDecimalToHexa(dataListPlantilla.get(i))); //decimales con punto //get temp positivo
                     }else if (Integer.signum(num)==-1){
                         arrayListInfo.add(getNeg((numfinal))); //get negativos
@@ -100,7 +103,7 @@ public class GetHexFromRealDataOxxoDisplay {
                         num = (int) numf;
                     //Log.d("tag",":"+numfi);
                     Log.d("tag","2:"+numfinal);
-                    if (Integer.signum(num)==1){
+                    if (Integer.signum(num)==1|| numfinal>0){
                         arrayListInfo.add(convertDecimalToHexa(dataListPlantilla.get(i))); //decimales con punto //get temp positivo
                     }else if (Integer.signum(num)==-1){
                         arrayListInfo.add(getNeg((numfinal))); //get negativos
@@ -122,7 +125,7 @@ public class GetHexFromRealDataOxxoDisplay {
                         num = (int) numf;
                     //Log.d("tag",":"+numfi);
                     Log.d("tag","2:"+numfinal);
-                    if (Integer.signum(num)==1){
+                    if (Integer.signum(num)==1|| numfinal>0){
                         arrayListInfo.add(convertDecimalToHexa(dataListPlantilla.get(i))); //decimales con punto //get temp positivo
                     }else if (Integer.signum(num)==-1){
                         arrayListInfo.add(getNeg((numfinal))); //get negativos
@@ -144,7 +147,7 @@ public class GetHexFromRealDataOxxoDisplay {
                         num = (int) numf;
                     //Log.d("tag",":"+numfi);
                     Log.d("tag","2:"+numfinal);
-                    if (Integer.signum(num)==1){
+                    if (Integer.signum(num)==1|| numfinal>0){
                         arrayListInfo.add(convertDecimalToHexa(dataListPlantilla.get(i))); //decimales con punto //get temp positivo
                     }else if (Integer.signum(num)==-1){
                         arrayListInfo.add(getNeg((numfinal))); //get negativos
@@ -174,7 +177,7 @@ public class GetHexFromRealDataOxxoDisplay {
                         num = (int) numf;
                     //Log.d("tag",":"+numfi);
                     Log.d("tag","2:"+numfinal);
-                    if (Integer.signum(num)==1){
+                    if (Integer.signum(num)==1|| numfinal>0){
                         arrayListInfo.add(convertDecimalToHexa(dataListPlantilla.get(i))); //decimales con punto //get temp positivo
                     }else if (Integer.signum(num)==-1){
                         arrayListInfo.add(getNeg((numfinal))); //get negativos
@@ -194,7 +197,7 @@ public class GetHexFromRealDataOxxoDisplay {
                         num = (int) numf;
                     //Log.d("tag",":"+numfi);
                     Log.d("tag","2:"+numfinal);
-                    if (Integer.signum(num)==1){
+                    if (Integer.signum(num)==1|| numfinal>0){
                         arrayListInfo.add(convertDecimalToHexa(dataListPlantilla.get(i))); //decimales con punto //get temp positivo
                     }else if (Integer.signum(num)==-1){
                         arrayListInfo.add(getNeg((numfinal))); //get negativos
@@ -216,7 +219,7 @@ public class GetHexFromRealDataOxxoDisplay {
                         num = (int) numf;
                     //Log.d("tag",":"+numfi);
                     Log.d("tag","2:"+numfinal);
-                    if (Integer.signum(num)==1){
+                    if (Integer.signum(num)==1 || numfinal>0){
                         arrayListInfo.add(convertDecimalToHexa(dataListPlantilla.get(i))); //decimales con punto //get temp positivo
                     }else if (Integer.signum(num)==-1){
                         arrayListInfo.add(getNeg((numfinal))); //get negativos
@@ -238,7 +241,7 @@ public class GetHexFromRealDataOxxoDisplay {
                         num = (int) numf;
                     //Log.d("tag",":"+numfi);
                     Log.d("tag","2:"+numfinal);
-                    if (Integer.signum(num)==1){
+                    if (Integer.signum(num)==1 || numfinal>0){
                         arrayListInfo.add(convertDecimalToHexa(dataListPlantilla.get(i))); //decimales con punto //get temp positivo
                         A6 =convertDecimalToHexa(dataListPlantilla.get(i));
                     }else if (Integer.signum(num)==-1){
@@ -263,7 +266,7 @@ public class GetHexFromRealDataOxxoDisplay {
                         num = (int) numf;
                     //Log.d("tag",":"+numfi);
                     Log.d("tag","2:"+numfinal);
-                    if (Integer.signum(num)==1){
+                    if (Integer.signum(num)==1 || numfinal>0){
                         arrayListInfo.add(convertDecimalToHexa(dataListPlantilla.get(i))); //decimales con punto //get temp positivo
                         A7 =convertDecimalToHexa(dataListPlantilla.get(i));
                     }else if (Integer.signum(num)==-1){
@@ -288,7 +291,7 @@ public class GetHexFromRealDataOxxoDisplay {
                         num = (int) numf;
                     //Log.d("tag",":"+numfi);
                     Log.d("tag","2:"+numfinal);
-                    if (Integer.signum(num)==1){
+                    if (Integer.signum(num)==1 || numfinal>0){
                         arrayListInfo.add(convertDecimalToHexa(dataListPlantilla.get(i))); //decimales con punto //get temp positivo
                     }else if (Integer.signum(num)==-1){
                         arrayListInfo.add(getNeg((numfinal))); //get negativos
@@ -310,7 +313,7 @@ public class GetHexFromRealDataOxxoDisplay {
                         num = (int) numf;
                     //Log.d("tag",":"+numfi);
                     Log.d("tag","2:"+numfinal);
-                    if (Integer.signum(num)==1){
+                    if (Integer.signum(num)==1 || numfinal>0){
                         arrayListInfo.add(convertDecimalToHexa(dataListPlantilla.get(i))); //decimales con punto //get temp positivo
                     }else if (Integer.signum(num)==-1){
                         arrayListInfo.add(getNeg((numfinal))); //get negativos

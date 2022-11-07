@@ -1,0 +1,1436 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@color/white_background"
+    android:id="@+id/fragment_list_BLE_devices"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/tvPlantillatituloTREFP"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:text="Aquí puedes editar plantillas y mandarlas como parámetros a tu dispositivo IMBERA-TREFP"
+        android:textSize="15sp" />
+
+    <TextView
+        android:id="@+id/tvPlantillaVersionTitulo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvPlantillatituloTREFP"
+        android:layout_marginVertical="15dp"
+        android:visibility="gone"
+        android:text="Plantilla:"
+        android:textSize="25sp" />
+
+    <RelativeLayout
+        android:visibility="gone"
+
+        android:alpha="0.2"
+        android:layout_below="@+id/tvPlantillatituloTREFP"
+        android:background="@color/black"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"/>
+
+    <ScrollView
+        android:id="@+id/scrollPlantilla"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvPlantillaVersionTitulo"
+        android:layout_above="@+id/layoutButtons"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <!--
+             Datos de COMPRESOR
+             -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-black"
+                android:text="Compresor"
+                android:textColor="@color/blue"
+                android:textSize="24sp" />
+
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="F2.- Tiempo mínimo de encendido (minutos, por defecto:3.0)"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+            <TextView
+                android:id="@+id/tvActCompresorTiempoMinimoEncendido"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0.0 a 25" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+            <com.google.android.material.textfield.TextInputEditText
+                android:digits="1234567890-."
+                android:id="@+id/etActCompresorTiempoMinimoEncendido"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="0.0 a 25" />
+
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="F3.- Tiempo mínimo de apagado (minutos, por defecto:1.5)"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+            <TextView
+                android:id="@+id/tvActCompresorTiempoMinimoApagado"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0.0 a 25" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+            <com.google.android.material.textfield.TextInputEditText
+                android:inputType="numberDecimal"
+                android:id="@+id/etActCompresorTiempoMinimoApagado"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="0.0 a 25" />
+
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="FC.- Retraso de primer encendido (minutos, por defecto:0.4)"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+            <TextView
+                android:id="@+id/tvActCompresorRetrasoPrimerEncendido"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0.0 a 25" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+            <com.google.android.material.textfield.TextInputEditText
+
+                android:inputType="numberDecimal"
+                android:id="@+id/etActCompresorRetrasoPrimerEncendido"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="0.0 a 25" />
+
+
+            <!--
+             Datos de TERMOSTADO
+             -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="25dp"
+                android:fontFamily="sans-serif-black"
+                android:text="Termostato"
+                android:textColor="@color/blue"
+                android:textSize="24sp" />
+
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="T0.- Temperatura de corte frío (°C, por defecto:1.0)"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+            <TextView
+                android:id="@+id/tvActTermostatoTemperaturaDeCorteFrio"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="-99 a 99" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+            <com.google.android.material.textfield.TextInputEditText
+
+                android:id="@+id/etActTermostatoTemperaturaDeCorteFrio"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="-99 a 99" />
+
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="T2.- Diferencial frío , por defecto:2.0"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+            <TextView
+                android:id="@+id/tvActTermostatoDiferencialFrio"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0.0 a 10" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+            <com.google.android.material.textfield.TextInputEditText
+                android:inputType="numberDecimal"
+                android:id="@+id/etActTermostatoDiferencialFrio"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="0.0 a 10" />
+
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="A0.- Límite de temperatura baja , por defecto:-7.0"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+            <TextView
+                android:id="@+id/tvActTermostatoLimiteDeTemperaturaBaja"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="-99 a 99" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etActTermostatoLimiteDeTemperaturaBaja"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:digits="1234567890-."
+                android:hint="-99 a 99" />
+
+            <!--
+             Datos de PUERTA
+             -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="25dp"
+                android:fontFamily="sans-serif-black"
+                android:text="Puerta"
+                android:textColor="@color/blue"
+                android:textSize="24sp" />
+
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="C1.- Sensar puerta"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+            <TextView
+                android:id="@+id/tvActPuertaHabilitar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="-" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="25dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="No sensar puerta" />
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:checked="false"
+                    android:id="@+id/switchFuncionesControl"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Si sensar puerta" />
+            </LinearLayout>
+
+
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="C7.- Cortes de compresor para permitir modos de ahorro, por defecto:2"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+            <TextView
+                android:id="@+id/tvActPuertaCortesCompresorPermitirModosAhorro"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0-10" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+            <com.google.android.material.textfield.TextInputEditText
+                android:inputType="numberSigned"
+                android:id="@+id/etActPuertaCortesCompresorPermitirModosAhorro"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="0-10" />
+
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TF.- Temperatura ambiente para permitir modos de ahorro (°C, por defecto:17.0) "
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+            <TextView
+                android:id="@+id/tvActPuertaTemperaturaAmbientePermitirModosAhorro"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="-99 a 99" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etActPuertaTemperaturaAmbientePermitirModosAhorro"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:digits="1234567890-."
+                android:hint="-99 a 99" />
+
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TD.- Diferencial de Modo Ahorro 1, por defecto:1.0"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+            <TextView
+                android:id="@+id/tvActPuertaDiferencialModoAhorro1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0.0 a 10" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+            <com.google.android.material.textfield.TextInputEditText
+
+                android:inputType="numberDecimal"
+                android:id="@+id/etActPuertaDiferencialModoAhorro1"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="0.0 a 10" />
+
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TE.- Diferencial de Modo Ahorro 2, por defecto:1.0"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+            <TextView
+                android:id="@+id/tvActPuertaDiferencialModoAhorro2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0.0 a 10" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+            <com.google.android.material.textfield.TextInputEditText
+
+                android:inputType="numberDecimal"
+                android:id="@+id/etActPuertaDiferencialModoAhorro2"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="0.0 a 10" />
+
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="FD.- Tiempo de puerta cerrada para Modo Ahorro 1 (horas, por defecto:2.0)"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+            <TextView
+                android:id="@+id/tvActPuertaTiempoPuertaCerradaModoAhorro1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0.0 a 25" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+            <com.google.android.material.textfield.TextInputEditText
+
+                android:inputType="numberDecimal"
+                android:id="@+id/etActPuertaTiempoPuertaCerradaModoAhorro1"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="0.0 a 25" />
+
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="FE.- Tiempo de puerta cerrada para Modo Ahorro 2 (horas, por defecto:1.0)"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+            <TextView
+                android:id="@+id/tvActPuertaTiempoPuertaCerradaModoAhorro2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0.0 a 25" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+            <com.google.android.material.textfield.TextInputEditText
+
+                android:inputType="numberDecimal"
+                android:id="@+id/etActPuertaTiempoPuertaCerradaModoAhorro2"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="0.0 a 25" />
+
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="D2.- Tiempo para registrar puerta abierta (segundos, por defecto: 5)"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+            <TextView
+                android:id="@+id/tvActPuertaTiempoParaRegistrarPuertaAbierta"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0 a 99" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+            <com.google.android.material.textfield.TextInputEditText
+
+                android:inputType="numberSigned"
+                android:id="@+id/etActPuertaTiempoParaRegistrarPuertaAbierta"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="0 a 99" />
+
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="LF.- Tiempo para validar falla de puerta abierta (minutos, por defecto:3)"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+            <TextView
+                android:id="@+id/tvActPuertaTiempoParaValidarFallaPuertaAbierta"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0 a 25" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+            <com.google.android.material.textfield.TextInputEditText
+
+                android:inputType="number"
+                android:id="@+id/etActPuertaTiempoParaValidarFallaPuertaAbierta"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="0 a 25" />
+
+            <!--
+             Datos de DESHIELO
+             -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="25dp"
+                android:fontFamily="sans-serif-black"
+                android:text="Deshielo"
+                android:textColor="@color/blue"
+                android:textSize="24sp" />
+
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="C0.- Modo de deshielo , por defecto:2"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+            <TextView
+                android:id="@+id/tvDeshieloModoDeDeshielo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0 a 3" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+            <Spinner
+                android:id="@+id/spinnerModosdeshielo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="C3.B2.- Funciones de deshielo, por defecto: 4"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+            <TextView
+                android:id="@+id/tvDeshieloDeshieloPorVentilador"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0-1" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+            <Spinner
+                android:id="@+id/spinnerFuncionesDeshielo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="L8.- Tiempo mínimo de deshielo (minutos, por defecto:15)"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+            <TextView
+                android:id="@+id/tvDeshieloTiempoMinimoDeDeshielo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="00 a 99" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+            <com.google.android.material.textfield.TextInputEditText
+                android:inputType="number"
+                android:id="@+id/etDeshieloTiempoMinimoDeDeshielo"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="00 a 99" />
+
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="L9.- Tiempo máximo de deshielo (minutos, por defecto:30)"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+            <TextView
+                android:id="@+id/tvDeshieloTiempoMaximoDeDeshielo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="00 a 99" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+            <com.google.android.material.textfield.TextInputEditText
+
+                android:inputType="number"
+                android:id="@+id/etDeshieloTiempoMaximoDeDeshielo"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="00 a 99" />
+
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="LA.- Tiempo mínimo para inicio de deshielo (horas, por defecto:12)"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+            <TextView
+                android:id="@+id/tvDeshieloTiempoMinimoParaInicioDeDeshielo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="00 a 99" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+            <com.google.android.material.textfield.TextInputEditText
+
+                android:inputType="number"
+                android:id="@+id/etDeshieloTiempoMinimoParaInicioDeDeshielo"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="00 a 99" />
+
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="LB.- Tiempo máximo para inicio de deshielo (horas , por defecto:16)"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+            <TextView
+                android:id="@+id/tvDeshieloTiempoMaximoParaInicioDeDeshielo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="00 a 99" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+            <com.google.android.material.textfield.TextInputEditText
+                android:inputType="number"
+                android:id="@+id/etDeshieloTiempoMaximoParaInicioDeDeshielo"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="00 a 99" />
+
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="T8.- Temperatura para finalizar deshielo (°C, por defecto:15.0)"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+            <TextView
+                android:id="@+id/tvDeshieloTemperaturaParaFinalizarDeshielo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="-99 a 99" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para en TREFP : " />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etDeshieloTemperaturaParaFinalizarDeshielo"
+                android:digits="1234567890-."
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="-99 a 99" />
+
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="T9.- Temperatura de reinicio (°C, por defecto:5.0)"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+            <TextView
+                android:id="@+id/tvDeshieloTemperaturaDeReinicio"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="-99 a 99" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etDeshieloTemperaturaDeReinicio"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="-99 a 99" />
+
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TA.- Temperatura para iniciar deshielo (°C, por defecto:-5.0)"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+            <TextView
+                android:id="@+id/tvDeshieloTemperaturaParaIniciarDeshielo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="-99 a 99" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etDeshieloTemperaturaParaIniciarDeshielo"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="-99 a 99" />
+
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="F6.- Tiempo de goteo para compresor (minutos, por defecto:10.0)"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+            <TextView
+                android:id="@+id/tvDeshieloTiempoDeGoteoParaCompresor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0.0 a 25" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+            <com.google.android.material.textfield.TextInputEditText
+
+                android:inputType="numberDecimal"
+                android:id="@+id/etDeshieloTiempoDeGoteoParaCompresor"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="0.0 a 25" />
+
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="F7.- Tiempo de goteo para ventilador (minutos, por defecto:5.0)"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+            <TextView
+                android:id="@+id/tvDeshieloTiempoDeGoteoParaVentilador"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0.0 a 25" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+            <com.google.android.material.textfield.TextInputEditText
+
+                android:inputType="numberDecimal"
+                android:id="@+id/etDeshieloTiempoDeGoteoParaVentilador"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="0.0 a 25" />
+
+
+            <!--
+             Datos de VENTILADOR
+             -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="25dp"
+                android:fontFamily="sans-serif-black"
+                android:text="Ventilador"
+                android:textColor="@color/blue"
+                android:textSize="24sp" />
+
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="C4.B0.- Funciones de ventilador, por defecto:2"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+            <TextView
+                android:id="@+id/tvVentiladorFuncionesVentiladorB0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0-1" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:checked="false"
+                android:id="@+id/switchFuncionesVentiladorB0"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="Apagar ventilador con compresor apagado"/>
+
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="C4.B1.- Funciones de ventilador, por defecto:2"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+            <TextView
+                android:id="@+id/tvVentiladorFuncionesVentiladorB1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0-1" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:checked="false"
+                android:id="@+id/switchFuncionesVentiladorB1"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="Apagar ventilador con puerta abierta"/>
+
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="FB.- Retraso de primer encendido (minutos, por defecto:0.3)"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+            <TextView
+                android:id="@+id/tvVentiladorRetrasoPrimerEncendido"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0.0 a 25" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+            <com.google.android.material.textfield.TextInputEditText
+
+                android:inputType="numberDecimal"
+                android:id="@+id/etVentiladorRetrasoPrimerEncendido"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="0.0 a 25" />
+
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="F9.- Retardo para comenzar ciclo (minutos, por defecto:3.0)"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+            <TextView
+                android:id="@+id/tvVentiladorRetardoParaComenzarCiclo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0.0 a 25" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+            <com.google.android.material.textfield.TextInputEditText
+
+                android:inputType="numberDecimal"
+                android:id="@+id/etVentiladorRetardoParaComenzarCiclo"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="0.0 a 25" />
+
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="F4.- Tiempo de ventilador encendido (minutos, por defecto:3.0)"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+            <TextView
+                android:id="@+id/tvVentiladorTiempoVentiladorEncendido"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0.0 a 25" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+            <com.google.android.material.textfield.TextInputEditText
+
+                android:inputType="numberDecimal"
+                android:id="@+id/etVentiladorTiempoVentiladorEncendido"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="0.0 a 25" />
+
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="F5.- Tiempo de ventilador apagado (minutos, por defecto:3.0)"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+            <TextView
+                android:id="@+id/tvVentiladorTiempoVentiladorApagado"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0.0 a 25" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+            <com.google.android.material.textfield.TextInputEditText
+
+                android:inputType="numberDecimal"
+                android:id="@+id/etVentiladorTiempoVentiladorApagado"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="0.0 a 25" />
+
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="FA.- Retardo de encendido del ventilador al cerrar puerta (minutos, por defecto:0.5)"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+            <TextView
+                android:id="@+id/tvVentiladorRetardoEncendidoAlCerrarPuerta"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0.0 a 25" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+            <com.google.android.material.textfield.TextInputEditText
+
+                android:inputType="numberDecimal"
+                android:id="@+id/etVentiladorRetardoEncendidoAlCerrarPuerta"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="0.0 a 25" />
+
+
+            <!--
+             Datos de PROTECCION DE VOLTAJE
+             -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="25dp"
+                android:fontFamily="sans-serif-black"
+                android:text="Protección de voltaje"
+                android:textColor="@color/blue"
+                android:textSize="24sp" />
+
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="C6.- Protección de voltaje, por defecto:1"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+            <TextView
+                android:id="@+id/tvProteccionVoltajeProteccionVoltaje"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0-2" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+            <Spinner
+                android:id="@+id/spinnerProteccionVoltaje"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="L0.- Voltaje de protección mínimo para 120 (volts, por defecto:85)"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+            <TextView
+                android:id="@+id/tvProteccionVoltajeVoltajeProteccionMinimo120"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0 a 99" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+            <com.google.android.material.textfield.TextInputEditText
+                android:inputType="numberSigned"
+                android:id="@+id/etProteccionVoltajeVoltajeProteccionMinimo120"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="0 a 99" />
+
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="L1.-Voltaje de protección máximo 120 mínimo 220 (volts, por defecto:140)"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="1" />
+                <TextView
+                    android:id="@+id/tvProteccionVoltajeVoltajeProteccionMaximo120minimo220"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="00 a 99" />
+            </LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="1" />
+                <com.google.android.material.textfield.TextInputEditText
+                    android:inputType="numberSigned"
+                    android:id="@+id/etProteccionVoltajeVoltajeProteccionMaximo120minimo220"
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content"
+                    android:hint="00 a 99" />
+            </LinearLayout>
+
+
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="L2.- Voltaje de protección máximo para 220 (volts, por defecto:240)"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="2" />
+                <TextView
+                    android:id="@+id/tvProteccionVoltajeVoltajeProteccionMaximo220"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="00 a 50" />
+            </LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="2" />
+                <com.google.android.material.textfield.TextInputEditText
+                    android:inputType="numberSigned"
+                    android:id="@+id/etProteccionVoltajeVoltajeProteccionMaximo220"
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content"
+                    android:hint="00 a 50" />
+            </LinearLayout>
+
+
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="L4.- Tiempo de validación de protección de voltaje (segundos, por defecto:15)"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+            <TextView
+                android:id="@+id/tvProteccionVoltajeTiempoValidacionProteccionVoltaje"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0 a 99" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+            <com.google.android.material.textfield.TextInputEditText
+                android:inputType="number"
+                android:id="@+id/etProteccionVoltajeTiempoValidacionProteccionVoltaje"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="0 a 99" />
+
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="F1.- Tiempo de validación para salir de protección de voltaje (minutos, por defecto:1.0)"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+            <TextView
+                android:id="@+id/tvProteccionVoltajeTiempoValidacionParaSalirDeProtDeVolt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0.0 a 25" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+            <com.google.android.material.textfield.TextInputEditText
+
+                android:inputType="numberDecimal"
+                android:id="@+id/etProteccionVoltajeTiempoValidacionParaSalirDeProtDeVolt"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="0.0 a 25" />
+
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="F0.- Histéresis (volts, por defecto:4.2)"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+            <TextView
+                android:id="@+id/tvProteccionVoltajeHisteresis"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0.0 a 9.9" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+            <com.google.android.material.textfield.TextInputEditText
+
+                android:inputType="numberDecimal"
+                android:id="@+id/etProteccionVoltajeHisteresis"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="0.0 a 9.9" />
+
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="D3.- Tiempo para Logger de datos (minutos, por defecto:60)"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+            <TextView
+                android:id="@+id/tvLoggerTiempoParaLogger"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0 a 99" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+            <com.google.android.material.textfield.TextInputEditText
+                android:inputType="numberSigned"
+                android:id="@+id/etLoggerTiempoParaLogger"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                 />
+
+
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="E3.- Versión de la plantilla"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+            <TextView
+                android:id="@+id/tvactualPlantilla"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0 a 99" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+            <com.google.android.material.textfield.TextInputEditText
+                android:inputType="numberDecimal"
+                android:id="@+id/etNewPlantillaversion"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                />
+
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text='E0 E1.- Versión Firmware Actual (ejemplo: "01.01" , "01.00")'
+                android:textStyle="bold" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+            <com.google.android.material.textfield.TextInputEditText
+                android:enabled="false"
+                android:inputType="numberDecimal"
+                android:id="@+id/etactualFirmwareVersion"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                />
+
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text='E2.- Modelo de TREFP (Ejemplo "2.0")'
+                android:textStyle="bold" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+            <com.google.android.material.textfield.TextInputEditText
+                android:enabled="false"
+                android:inputType="numberDecimal"
+                android:id="@+id/etModelTrefp"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                />
+
+            <LinearLayout
+
+                android:layout_marginBottom="10dp"
+                android:id="@+id/layoutButtonsGetCrudo"
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <Button
+
+                    android:id="@+id/btnSendInfoCrudo"
+                    android:layout_width="150dp"
+                    android:layout_height="56dp"
+                    android:background="@drawable/round_corner_white"
+                    android:text="Info sin proceso"
+                    android:textAlignment="center"
+                    android:textColor="#000"
+                    android:textSize="15sp" />
+
+                <Button
+                    android:layout_marginHorizontal="10dp"
+                    android:id="@+id/btnSendPlantillaObtenida"
+                    android:layout_width="150dp"
+                    android:layout_height="56dp"
+                    android:background="@drawable/round_corner_white"
+                    android:text="Excel de plantilla"
+                    android:textAlignment="center"
+                    android:textColor="#000"
+                    android:textSize="15sp" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+    </ScrollView>
+
+    <LinearLayout
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="10dp"
+        android:id="@+id/layoutButtons"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <Button
+
+            android:id="@+id/btnSendPlantilla"
+            android:layout_width="150dp"
+            android:layout_height="56dp"
+            android:background="@drawable/round_corner_black"
+            android:text="Enviar plantilla"
+            android:textAlignment="center"
+            android:textColor="#FFF"
+            android:textSize="18sp" />
+
+        <Button
+            android:layout_marginHorizontal="10dp"
+            android:id="@+id/btnGetPlantilla"
+            android:layout_width="150dp"
+            android:layout_height="56dp"
+            android:background="@drawable/round_corner_black"
+            android:text="Obtener plantilla"
+            android:textAlignment="center"
+            android:textColor="#FFF"
+            android:textSize="18sp" />
+
+        <Button
+            android:layout_marginHorizontal="10dp"
+            android:id="@+id/btnSendFWOperador"
+            android:layout_width="150dp"
+            android:layout_height="56dp"
+            android:background="@drawable/round_corner_black"
+            android:text="Actualizar Frimware"
+            android:textAlignment="center"
+            android:textColor="#FFF"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+
+
+
+</RelativeLayout>

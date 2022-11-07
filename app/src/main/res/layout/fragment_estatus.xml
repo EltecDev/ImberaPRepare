@@ -76,6 +76,31 @@
              handshake
              -->
             <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-black"
+                android:text="Datos: Estado en tiempo real"
+                android:textColor="@color/blue"
+                android:textSize="16sp" />
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Información básica del equipo:"
+                android:textStyle="bold" />
+            <TextView
+                android:id="@+id/tvdatosEstadoTiempoReal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:text="Información de tiempo real"
+                android:textSize="15sp" />
+
+            <!--
+             handshake
+             -->
+            <TextView
                 android:id="@+id/loggerView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -126,67 +151,41 @@
                 android:text="Información de tipo evento"
                 android:textSize="15sp" />
 
-            <!--
-             handshake
-             -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-black"
-                android:text="Datos: Estado en tiempo real"
-                android:textColor="@color/blue"
-                android:textSize="16sp" />
-            <TextView
-                android:layout_marginTop="15dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Información básica del equipo:"
-                android:textStyle="bold" />
-            <TextView
-                android:id="@+id/tvdatosEstadoTiempoReal"
+            <LinearLayout
+                android:layout_marginVertical="15dp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true"
-                android:text="Información de tiempo real"
-                android:textSize="15sp" />
+                android:layout_height="wrap_content">
 
+                <Button
+                    android:layout_marginHorizontal="10dp"
+                    android:id="@+id/btnsendStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/round_corner_black"
+                    android:text="Estado actual"
+                    android:textColor="#FFF"
+                    android:textSize="18sp" />
+
+                <Button
+                    android:layout_marginHorizontal="10dp"
+                    android:id="@+id/btnGetCurrentLogger"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/round_corner_black"
+                    android:text="Obtener Logger"
+                    android:textColor="#FFF"
+                    android:textSize="18sp" />
+
+            </LinearLayout>
 
         </LinearLayout>
-
-
     </ScrollView>
 
 
-    <Button
 
-        android:id="@+id/btnGetCurrentdata"
-        android:layout_width="match_parent"
-        android:layout_height="46dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginHorizontal="45dp"
-        android:layout_marginBottom="10dp"
-        android:background="@drawable/round_corner_black"
-        android:text="Obtener estado actual"
-        android:textAlignment="center"
-        android:textColor="#FFF"
-        android:textSize="18sp" />
-
-    <Button
-
-        android:id="@+id/btnsendStatus"
-        android:layout_width="match_parent"
-        android:layout_height="46dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginHorizontal="45dp"
-        android:layout_marginBottom="10dp"
-        android:background="@drawable/round_corner_black"
-        android:text="Obtener estado actual"
-        android:textAlignment="center"
-        android:textColor="#FFF"
-        android:textSize="18sp" />
 
 </RelativeLayout>
 

@@ -73,7 +73,7 @@ public class ListaBLEFragment extends Fragment {
                         //listaDevices.add(new BLEDevices("","", null));
 
                     }else{
-                        if (device.getName().contains("IMBERA-TREFP") || device.getName().contains("IMBERA-OXXO")){
+                        if (device.getName().contains("IMBERA-TREFP") || device.getName().contains("IMBERA-OXXO") || device.getName().contains("OXXO-CMO")|| device.getName().contains("IMBERA-WF")){
                             if (listaDevices.isEmpty()){
                                 listaDevices.add(new BLEDevices(device.getName(),device.getAddress(), null));
                             }else {
@@ -381,7 +381,7 @@ public class ListaBLEFragment extends Fragment {
 
                     if (!listData.isEmpty()){
                         Log.d("listdataHandshake",":"+listData);
-                        if(name.equals("IMBERA-TREFP")){
+                        /*if(name.equals("IMBERA-TREFP")){
                             String isChecksumOk = GlobalTools.checkChecksumImberaTREFPB(GetRealDataFromHexaImbera.cleanSpace(listData).toString());
                             if (isChecksumOk.equals("ok")){
                                 FinalListData = GetRealDataFromHexaImbera.convert(listData, "Handshake","","");
@@ -439,7 +439,36 @@ public class ListaBLEFragment extends Fragment {
                                 esp.apply();
                                 desconectarBLE();
                             }
-                        }
+                        }else if (name.equals("IMBERA-WF")){*/
+                            String isChecksumOk = GlobalTools.checkChecksum(GetRealDataFromHexaImbera.cleanSpace(listData).toString());
+                            if (isChecksumOk.equals("ok")){
+                                FinalListData = GetRealDataFromHexaImbera.convert(listData, "Handshake","","");
+                                listData = GetRealDataFromHexaImbera.GetRealData(FinalListData, "Handshake","","");
+                                tvfwversion.setText("Modelo TREFPB:" + listData.get(1)
+                                        + "\nVersión:" + listData.get(2)
+                                        + "\nPlantilla:" + listData.get(3));
+                                esp.putString("modelo",listData.get(1));
+                                esp.putString("numversion",listData.get(2));
+                                esp.putString("plantillaVersion",listData.get(3));
+                                esp.putString("trefpVersionName",name);
+                                esp.apply();
+                            }else if (isChecksumOk.equals("notFirmware")){
+                                //Toast.makeText(getContext(), "", Toast.LENGTH_SHORT).show();
+                                GlobalTools.showInfoPopup("Información del equipo","Tu control BLE no está respondiendo como se esperaba, intenta de nuevo o contacta a personal autorizado. (NFW)",getContext());
+                                esp.putString("trefpVersionName","");
+                                esp.putString("numversion","");
+                                esp.putString("plantillaVersion","");
+                                esp.apply();
+                                desconectarBLE();
+                            }else if (isChecksumOk.equals("notok")){
+                                GlobalTools.showInfoPopup("Información del equipo","Tu control BLE no está respondiendo como se esperaba, intenta de nuevo o contacta a personal autorizado. (CHKSM)",getContext());
+                                esp.putString("trefpVersionName","");
+                                esp.putString("numversion","");
+                                esp.putString("plantillaVersion","");
+                                esp.apply();
+                                desconectarBLE();
+                            }
+                        //}
 
 
                     }else{

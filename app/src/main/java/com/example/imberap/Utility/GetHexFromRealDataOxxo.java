@@ -29,7 +29,7 @@ public class GetHexFromRealDataOxxo {
                     }else if (Integer.signum(num)==-1){
                         arrayListInfo.add(getNeg((numfinal))); //get negativos
                     }else{//Es 0 cero
-                        arrayListInfo.add("0000"); //get negativos
+                        arrayListInfo.add("0000");
                     }
                     break;
                 }

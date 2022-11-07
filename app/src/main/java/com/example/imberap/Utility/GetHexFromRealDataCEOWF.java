@@ -5,7 +5,7 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GetHexFromRealDataOxxoDisplay {
+public class GetHexFromRealDataCEOWF {
     public static String TAG = "GetHexFromRealDataOxxoDisplay";
     static List<String> arrayListInfo = new ArrayList<>();
     public static String T0, T1, A6 , A7;
@@ -497,15 +497,23 @@ public class GetHexFromRealDataOxxoDisplay {
                 }
                 case 47:{//password
                     arrayListInfo.add(convertDecimalIntToHexa(dataListPlantilla.get(i))); //decimales sin punto
-                    arrayListInfo.add("0000000000");
                     break;
                 }
-                case 48:{//modelo
+                case 48:{//d2
+                    arrayListInfo.add(convertDecimalIntToHexa(dataListPlantilla.get(i))); //decimales sin punto
+                    break;
+                }
+                case 49:{//d3
+                    arrayListInfo.add(convertDecimalIntToHexa(dataListPlantilla.get(i))); //decimales sin punto
+                    arrayListInfo.add("000000");
+                    break;
+                }
+                case 50:{//modelo
                     arrayListInfo.add(convertDecimalToHexa8(dataListPlantilla.get(i))); //decimales con punto
                     arrayListInfo.add("00");
                     break;
                 }
-                case 49:{
+                case 51:{
                     /**
                      * Pensar en esto màs adelante cuando se empiece a dividir la app en permisos o en dos apps, pues este valor es candado para no poder agregar plantillas a versiones viejas excepto que sea superusuario
                      * Por ahora:Permitir al usuario que edita la plantilla que edite la version
@@ -546,7 +554,7 @@ public class GetHexFromRealDataOxxoDisplay {
 
                     break;
                 }
-                case 50:{
+                case 52:{
                     //String s = dataListPlantilla.get(i).replace(".","");
                     arrayListInfo.add("00"+convertDecimalToHexa8(dataListPlantilla.get(i))); //decimales sin punto
                     arrayListInfo.add("CC");

@@ -24,6 +24,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.FragmentManager;
 import com.example.imberap.R;
 import com.example.imberap.Utility.GetRealDataFromHexaImbera;
+import com.example.imberap.Utility.GetRealDataFromHexaOxxoDisplay;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -350,8 +352,30 @@ public class BluetoothServices {
         if (bluetoothLeService == null){
             showInfoPopup("Información","La respuesta obtenida por el control presentó un detalle, intenta de nuevo o vuelve a conectarte al equipo.");
         }else{
-            //command = "BLE_WIFI_NEW_SSID="+ssid+";0X08"+pass+";0x08";
+            bytesTemp=null;
             command = "BLE_WIFI_NEW_SSID="+ssid+";"+(char) 0x08+pass+";"+(char) 0x08;
+            bytesTemp = new Byte[(command.getBytes()).length];
+            for(int i = 0; i < (command.getBytes()).length; i++){
+                bytesTemp[i] = (command.getBytes())[i];
+            }
+
+            toSendb = new byte[bytesTemp.length];
+            int j=0;
+            for(Byte b: bytesTemp){
+                toSendb[j++] = b.byteValue();
+            }
+            titulo="Wifi";
+            new MyAsyncTaskSendCommandWifi().execute();
+        }
+    }
+
+    public void sendCommandWifiInfo(){
+        if (bluetoothLeService == null){
+            showInfoPopup("Información","La respuesta obtenida por el control presentó un detalle, intenta de nuevo o vuelve a conectarte al equipo.");
+        }else{
+            //command = "BLE_WIFI_NEW_SSID="+ssid+";0X08"+pass+";0x08";
+            bytesTemp=null;
+            command = "BLE_WIFI_STATE=?";
             bytesTemp = new Byte[(command.getBytes()).length];
             for(int i = 0; i < (command.getBytes()).length; i++){
                 bytesTemp[i] = (command.getBytes())[i];
@@ -627,6 +651,32 @@ public class BluetoothServices {
         tv1.setText(tittle);
         TextView tv2 = (TextView) dialogView.findViewById(R.id.tvsubtitulo);
         tv2.setText(content);
+
+        alexaDialog = adb.create();
+        alexaDialog.setCanceledOnTouchOutside(false);
+        alexaDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        alexaDialog.show();
+        dialogView.findViewById(R.id.welcomeAlexaButtonLater).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alexaDialog.dismiss();
+            }
+        });
+
+    }
+
+    private void showInfoPopupWifiinfo(String tittle, List<String> content){
+        final AlertDialog alexaDialog;
+        LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);//getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.popup_info, null, false);
+        AlertDialog.Builder adb = new AlertDialog.Builder(context,R.style.Theme_AppCompat_Light_Dialog_Alert_eltc);
+        adb.setView(dialogView);
+
+        TextView tv1 = (TextView) dialogView.findViewById(R.id.tvTituloData);
+        tv1.setText(tittle);
+        String data = GetRealDataFromHexaOxxoDisplay.hexToAsciiWifi(content);
+        TextView tv2 = (TextView) dialogView.findViewById(R.id.tvsubtitulo);
+        tv2.setText(data);
 
         alexaDialog = adb.create();
         alexaDialog.setCanceledOnTouchOutside(false);
@@ -943,15 +993,12 @@ public class BluetoothServices {
     class MyAsyncTaskSendCommandWifi extends AsyncTask<Integer, Integer, String> {
         @Override
         protected String doInBackground(Integer... params) {
-
             if (bluetoothLeService == null) {
                 Toast.makeText(context, "Conéctate a un BLE", Toast.LENGTH_SHORT).show();
             } else{
                 Log.d("wifiCommand", ":" + command);
                 bluetoothLeService.sendComandoW(command,toSendb);
             }
-
-
             return "resp";
         }
 
@@ -965,7 +1012,7 @@ public class BluetoothServices {
                 listData.clear();
                 listData = bluetoothLeService.getDataFromBroadcastUpdate();
                 FinalListData.clear();
-                showInfoPopup("Respuesta:","Contenido:"+listData);
+                showInfoPopupWifiinfo("Respuesta:",listData);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -1040,27 +1087,27 @@ public class BluetoothServices {
             String modeloActual = sp.getString("modelo","");
             String modeloEnFw = newFimwareModelo;
 
-            if (fw.equals("")){//
+            //if (fw.equals("")){
                 //if (modeloActual.equals(modeloEnFw)){
                     if (bluetoothLeService==null){
                         Toast.makeText(context, "Conéctate a un BLE", Toast.LENGTH_SHORT).show();
                     }else
                         bluetoothLeService.sendComando(command);
                     return "resp";
-                //}else{
-                //    return "noCompatibleModelo";
-                //}
-            }else{
-                //if (modeloActual.equals(modeloEnFw)){
+                /*}else{
+                    return "noCompatibleModelo";
+                }*/
+            /*}else{
+                if (modeloActual.equals(modeloEnFw)){
                     if (bluetoothLeService==null){
                         Toast.makeText(context, "Conéctate a un BLE", Toast.LENGTH_SHORT).show();
                     }else
                         bluetoothLeService.sendComando(command);
                     return "resp";
-                //}else{
-                    //return "noCompatibleModelo";
-                //}
-            }
+                }else{
+                    return "noCompatibleModelo";
+                }
+            }*/
 
 
         }

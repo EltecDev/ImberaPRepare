@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@color/white_background"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/ivlogo"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="80dp"
+            android:src="@drawable/logo_imberatconfig" />
+
+        <LinearLayout
+            android:layout_below="@+id/ivlogo"
+            android:orientation="vertical"
+            android:layout_marginHorizontal="45dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:layout_marginVertical="15dp"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <TextView
+                    android:textColor="@color/black"
+                    android:textSize="20sp"
+                    android:text="Usuario:         "
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+                <TextView
+                    android:id="@+id/tvUserName"
+                    android:textColor="@color/black"
+                    android:textSize="20sp"
+                    android:text=""
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_marginVertical="15dp"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <TextView
+
+                    android:textColor="@color/black"
+                    android:textSize="20sp"
+                    android:text="Jerarquía:      "
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+                <TextView
+                    android:id="@+id/tvjerarquia"
+                    android:textColor="@color/black"
+                    android:textSize="20sp"
+                    android:text=""
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+
+
+            <Button
+                android:layout_marginHorizontal="25dp"
+                android:layout_marginTop="15dp"
+                android:id="@+id/btnLogin"
+                android:layout_width="match_parent"
+                android:layout_height="46dp"
+                android:background="@drawable/round_corner_black"
+                android:text="Cerrar sesión"
+                android:textColor="#FFF"
+                android:textSize="18sp" />
+
+        </LinearLayout>
+
+
+    </RelativeLayout>
+
+</RelativeLayout>

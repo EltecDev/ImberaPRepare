@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:text="Aquí puedes editar plantillas y mandarlas como parámetros a tu dispositivo IMBERA-OXXO"
+        android:text="Aquí puedes editar plantillas y mandarlas como parámetros a tu dispositivo IMBERA-WF"
         android:textSize="15sp" />
 
     <RelativeLayout
@@ -1617,6 +1617,66 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etOxxoPassword"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="0 a 99"
+                android:inputType="numberDecimal" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="D2.- Tiempo para registrar puerta abierta (0 a 99 segundos, predeterminado 5)"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+
+            <TextView
+                android:id="@+id/tvTiempoRegistrarPuertaAbierta"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0 a 99" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etTiempoRegistrarPuertaAbierta"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="0 a 99"
+                android:inputType="numberDecimal" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="D3.- Tiempo para Loggear datos (0 a 99, por defecto: 60 minutos)"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+
+            <TextView
+                android:id="@+id/tvTiempoLoggearDatos"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0 a 99" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etTiempoLoggearDatos"
                 android:layout_width="120dp"
                 android:layout_height="wrap_content"
                 android:hint="0 a 99"

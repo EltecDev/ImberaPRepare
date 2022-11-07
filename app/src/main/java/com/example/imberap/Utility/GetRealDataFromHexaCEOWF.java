@@ -1,12 +1,13 @@
 package com.example.imberap.Utility;
 
 import android.util.Log;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class GetRealDataFromHexaOxxoDisplay {
+public class GetRealDataFromHexaCEOWF {
     static List<String> arrayListInfo = new ArrayList<>();
     final static String TAG = "GetRealDataFromHexa";
     public static List<String> convert(List<String> arrayLists, String action){
@@ -179,9 +180,11 @@ public class GetRealDataFromHexaOxxoDisplay {
                     newData.add(String.valueOf(getDecimal(data.get(3))));
 
                     //buffer
+
                     int i = 4;
                     do {
-                        if (i==20 ||i==21 ||i==22 || i==23|| i==24 ||i==25 || i == 26 || i == 27 ||i==28 || i == 29|| i == 30 || i == 31|| i==34 || i==36|| i == 50 || i==51 ){
+                        //Log.d("ASDASD","i:"+i+" dato:"+data.get(i));
+                        if (i==20 ||i==21 ||i==22 || i==23|| i==24 ||i==25 || i == 26 || i == 27 ||i==28 || i == 29|| i == 30 || i == 31|| i==34 || i==36|| i == 50 || i==51 || i == 52 || i==53 ){
                             newData.add(String.valueOf(getDecimal(data.get(i))));//decimales sin punto
                         }else {
                             if (i==4||  i==6 || i==7 || i==8 || i==9 || i==10 || i==13 || i==14 || i==15  || i==16 || i==17 ){ //positivos y negativos de -99.0 a 99.0
@@ -221,7 +224,7 @@ public class GetRealDataFromHexaOxxoDisplay {
                         i++;
                     } while (i < data.size());
                 }
-                Log.d("","crudoOXXONewData:"+newData);
+                Log.d("","crudoIMBERAWF PARAMAS:"+newData);
                 return newData;
             }
             case "Lectura de datos tipo Tiempo real": {

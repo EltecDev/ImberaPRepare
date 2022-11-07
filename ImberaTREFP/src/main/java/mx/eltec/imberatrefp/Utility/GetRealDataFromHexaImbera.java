@@ -661,7 +661,7 @@ public class GetRealDataFromHexaImbera {
                         stringBuilder.append("Modo ahorro 1: ON\n");
                         break;
                     case 5:
-                        stringBuilder.append("Estado de puerta: ON\n");
+                        stringBuilder.append("Estado de puerta: Abierta\n");
                         break;
                     case 6:
                         stringBuilder.append("Estado de deshielo: ON\n");
@@ -679,7 +679,7 @@ public class GetRealDataFromHexaImbera {
                         stringBuilder.append("Modo ahorro 1: OFF\n");
                         break;
                     case 5:
-                        stringBuilder.append("Estado de puerta: OFF\n");
+                        stringBuilder.append("Estado de puerta: Cerrada\n");
                         break;
                     case 6:
                         stringBuilder.append("Estado de deshielo: OFF\n");

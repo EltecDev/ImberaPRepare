@@ -6,7 +6,6 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,24 +26,23 @@ import androidx.fragment.app.Fragment;
 import com.example.imberap.BluetoothServices.BluetoothLeService;
 import com.example.imberap.BluetoothServices.BluetoothServices;
 import com.example.imberap.R;
+import com.example.imberap.Utility.GetHexFromRealDataCEOWF;
 import com.example.imberap.Utility.GetHexFromRealDataImbera;
 import com.example.imberap.Utility.GetHexFromRealDataOxxoDisplay;
-import com.example.imberap.Utility.GetRealDataFromHexaImbera;
+import com.example.imberap.Utility.GetRealDataFromHexaCEOWF;
 import com.example.imberap.Utility.GetRealDataFromHexaOxxoDisplay;
 import com.example.imberap.Utility.GlobalTools;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
-import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 
-public class PlantillaOxxoDisplayFragment extends Fragment implements AdapterView.OnItemSelectedListener {
+public class PlantillaCEOWiFiFragment extends Fragment implements AdapterView.OnItemSelectedListener {
     String TAG="PlantillaOxxoDisplayFragment";
     listener listenermain;
     SharedPreferences sp;
@@ -68,7 +66,7 @@ public class PlantillaOxxoDisplayFragment extends Fragment implements AdapterVie
             ,tvActOxxoTemperaturaEvaporadorTerminarDeshielo,tvActOxxoTemperaturaAmbienteTerminarDeshielo,tvActOxxoTemperaturaPulldown,tvActOxxoAlarmaTemperaturaAlta,tvActOxxoAlarmaTemperaturaBaja,tvActOxxoDiferencialAlarmasTemperatura,tvActOxxoVoltajeProteccionMinimo120,tvOxxoVoltajeProteccionMaximo120minimo220,
             tvOxxoVoltajeProteccionMaximo220,tvOxxoTiempoValidarFallaVoltaje,tvOxxoTiempoEntreDeshielos,tvOxxoTiempoMaximoDeshielo,tvOxxoTiempoPuertaAbiertaControlVentiladorPorPuerta,tvOxxoTiempoValidacionAlarmaPuertaAbierta,
             tvOxxoTiempoPermanenciaModoNocturno,tvOxxoIntensidadFiltroParaSensorAmbienteALaSubida,tvOxxoTiempoAdaptivoDeshielo,tvOxxoHisteresisParaProteccionVoltaje,
-            tvOxxoTiempoValidacionSalirFallaVoltaje,tvOxxoTiempoGoteo,tvOxxoTiempoDescansoMinimoCompresor,tvOxxotiempoMaximoCompresorEncendido,tvOxxoTiempoDescansoCompresorCumpleF4,tvOxxoTiempoEncendidoApagadoDeVentilador,tvOxxoTiempoPuertaCerradaEntrarModoAhorro1,tvOxxoTiempoPuertaCerradaEntrarModoAhorro2,tvOxxoDireccionModbus,tvOxxoPassword,tvactualPlantilla;
+            tvOxxoTiempoValidacionSalirFallaVoltaje,tvOxxoTiempoGoteo,tvOxxoTiempoDescansoMinimoCompresor,tvOxxotiempoMaximoCompresorEncendido,tvOxxoTiempoDescansoCompresorCumpleF4,tvOxxoTiempoEncendidoApagadoDeVentilador,tvOxxoTiempoPuertaCerradaEntrarModoAhorro1,tvOxxoTiempoPuertaCerradaEntrarModoAhorro2,tvOxxoDireccionModbus,tvOxxoPassword,tvTiempoRegistrarPuertaAbierta,tvTiempoLogger,tvactualPlantilla;
 
     TextView tvTemperaturaDeReinicio,tvTemperaturaParaIniciarDeshielo,tvDiferencialDeTemperaturaParaAlarmaDeDeficiencia,tvTiempoBloqueoDisplayDespuesDeshielo,tvTiempoCompresorEncendidoParaMedicionesDeficiencia, tvRetardoParaEncenderSegundoCompresor;
 
@@ -76,7 +74,7 @@ public class PlantillaOxxoDisplayFragment extends Fragment implements AdapterVie
             ,etActOxxoTemperaturaEvaporadorTerminarDeshielo,etActOxxoTemperaturaAmbienteTerminarDeshielo,etActOxxoTemperaturaPulldown,etActOxxoAlarmaTemperaturaAlta,etActOxxoalarmaTemperaturaBaja,etActOxxoDiferencialAlarmasTemperatura,etActOxxoVoltajeProteccionMinimo120,etOxxoVoltajeProteccionMaximo120minimo220,
             etOxxoVoltajeProteccionMaximo220,etOxxoTiempoValidarFallaVoltaje,etOxxoTiempoEntreDeshielos,etOxxoTiempoMaximoDeshielo,etOxxoTiempoPuertaAbiertaControlVentiladorPorPuerta,etOxxoTiempoValidacionAlarmaPuertaAbierta,
             etOxxoTiempoPermanenciaModoNocturno,etOxxoIntensidadFiltroParaSensorAmbienteALaSubida,etOxxoTiempoAdaptivoDeshielo,etOxxoHisteresisParaProteccionVoltaje,etOxxoTiempoValidacionSalirFallaVoltaje,
-            etOxxoTiempoGoteo,etOxxoTiempoDescansoMinimoCompresor,etOxxotiempoMaximoCompresorEncendido,etOxxoTiempoDescansoCompresorCumpleF4,etOxxoTiempoEncendidoApagadoDeVentilador,etOxxoTiempoPuertaCerradaEntrarModoAhorro1,etOxxoTiempoPuertaCerradaEntrarModoAhorro2,etOxxoDireccionModbus,etOxxoPassword,etOxxoNewPlantillaversion,etOxxoactualFirmwareVersion,etOxxoModelTrefp;
+            etOxxoTiempoGoteo,etOxxoTiempoDescansoMinimoCompresor,etOxxotiempoMaximoCompresorEncendido,etOxxoTiempoDescansoCompresorCumpleF4,etOxxoTiempoEncendidoApagadoDeVentilador,etOxxoTiempoPuertaCerradaEntrarModoAhorro1,etOxxoTiempoPuertaCerradaEntrarModoAhorro2,etOxxoDireccionModbus,etOxxoPassword,etTiempoRegistrarPuertaAbierta,etTiempoLogger,etOxxoNewPlantillaversion,etOxxoactualFirmwareVersion,etOxxoModelTrefp;
 
     EditText etTemperaturaDeReinicio,etTemperaturaParaIniciarDeshielo,etDiferencialDeTemperaturaParaAlarmaDeDeficiencia,etTiempoBloqueoDisplayDespuesDeshielo,etTiempoCompresorEncendidoParaMedicionesDeficiencia, etRetardoParaEncenderSegundoCompresor;
     TextView tvsubtituloPlantillaOxxo, tvtituloPlantillaOxxo;
@@ -94,9 +92,9 @@ public class PlantillaOxxoDisplayFragment extends Fragment implements AdapterVie
     List<String> dataListPlantilla = new ArrayList<String>();
     Context context;
 
-    public PlantillaOxxoDisplayFragment(){}
+    public PlantillaCEOWiFiFragment(){}
 
-    public PlantillaOxxoDisplayFragment(BluetoothServices bluetoothServices, Context context) {
+    public PlantillaCEOWiFiFragment(BluetoothServices bluetoothServices, Context context) {
         this.bluetoothServices = bluetoothServices;
         this.context = context;
         sp = context.getSharedPreferences("connection_preferences" , Context.MODE_PRIVATE);
@@ -111,7 +109,7 @@ public class PlantillaOxxoDisplayFragment extends Fragment implements AdapterVie
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_plantilla_oxxo_display, container, false);
+        View view = inflater.inflate(R.layout.fragment_plantilla_ceowifi, container, false);
         init(view);
 
         view.findViewById(R.id.btnDownloadPlantillas).setOnClickListener(new View.OnClickListener() {
@@ -169,9 +167,14 @@ public class PlantillaOxxoDisplayFragment extends Fragment implements AdapterVie
 
     public void actualizarUIJerarquia(){
         if (!sp.getString("userId","").equals("")){//si no hay usuario logeado entonces no escanear
-            switch (sp.getString("userjerarquia","")){
+            tvsubtituloPlantillaOxxo.setVisibility(View.GONE);
+            spinnerPlantillas.setVisibility(View.GONE);
+            btnDownloadPlantillas.setVisibility(View.GONE);
+            btnenviarfwOperadores.setVisibility(View.GONE);
+            btnenviarPlantillaOperadores.setVisibility(View.GONE);
+            /*switch (sp.getString("userjerarquia","")){
                 case "1":{
-                    tvtituloPlantillaOxxo.setText("Aquí puedes editar plantillas y mandarlas como parámetros a tu dispositivo IMBERA-OXXO");
+                    tvtituloPlantillaOxxo.setText("Aquí puedes editar plantillas y mandarlas como parámetros a tu dispositivo IMBERA-WF");
                     tvsubtituloPlantillaOxxo.setVisibility(View.VISIBLE);
                     spinnerPlantillas.setVisibility(View.VISIBLE);
                     btnDownloadPlantillas.setVisibility(View.VISIBLE);
@@ -191,7 +194,7 @@ public class PlantillaOxxoDisplayFragment extends Fragment implements AdapterVie
                     break;
                 }
                 case "4":{
-                    tvtituloPlantillaOxxo.setText("Aquí puedes editar plantillas y mandarlas como parámetros a tu dispositivo IMBERA-OXXO");
+                    tvtituloPlantillaOxxo.setText("Aquí puedes editar plantillas y mandarlas como parámetros a tu dispositivo IMBERA-WF");
                     tvsubtituloPlantillaOxxo.setVisibility(View.VISIBLE);
                     spinnerPlantillas.setVisibility(View.VISIBLE);
                     btnDownloadPlantillas.setVisibility(View.VISIBLE);
@@ -201,7 +204,7 @@ public class PlantillaOxxoDisplayFragment extends Fragment implements AdapterVie
                     break;
                 }
                 case "5":{
-                    tvtituloPlantillaOxxo.setText("Usa los botones de abajo para proceder a actualizar el equipo CEO");
+                    tvtituloPlantillaOxxo.setText("Usa los botones de abajo para proceder a actualizar el equipo IMBERA-WF");
                     tvsubtituloPlantillaOxxo.setVisibility(View.GONE);
                     btnenviarfwOperadores.setVisibility(View.VISIBLE);
                     spinnerPlantillas.setVisibility(View.GONE);
@@ -212,7 +215,7 @@ public class PlantillaOxxoDisplayFragment extends Fragment implements AdapterVie
                     btnsendPlantilla.setVisibility(View.GONE);
                     break;
                 }
-            }
+            }*/
 
         }
     }
@@ -277,6 +280,8 @@ public class PlantillaOxxoDisplayFragment extends Fragment implements AdapterVie
         tvOxxoTiempoPuertaCerradaEntrarModoAhorro2 = view.findViewById(R.id.tvOxxoTiempoPuertaCerradaEntrarModoAhorro2);
         tvOxxoDireccionModbus = view.findViewById(R.id.tvOxxoDireccionModbus);
         tvOxxoPassword = view.findViewById(R.id.tvOxxoPassword);
+        tvTiempoRegistrarPuertaAbierta = view.findViewById(R.id.tvTiempoRegistrarPuertaAbierta);
+        tvTiempoLogger = view.findViewById(R.id.tvTiempoLoggearDatos);
         tvactualPlantilla = view.findViewById(R.id.tvactualPlantilla);
 
 
@@ -321,7 +326,8 @@ public class PlantillaOxxoDisplayFragment extends Fragment implements AdapterVie
         tvList.add(tvOxxoTiempoPuertaCerradaEntrarModoAhorro2);
         tvList.add(tvOxxoDireccionModbus);
         tvList.add(tvOxxoPassword);
-        tvList.add(tvactualPlantilla);
+        tvList.add(tvTiempoRegistrarPuertaAbierta);
+        tvList.add(tvTiempoLogger);
 
         etActOxxoSetpointDiurno = view.findViewById(R.id.etActOxxoSetpointDiurno);
         etActOxxoDiferencialDiurno = view.findViewById(R.id.etActOxxoDiferencialDiurno);
@@ -365,6 +371,8 @@ public class PlantillaOxxoDisplayFragment extends Fragment implements AdapterVie
         etOxxoTiempoPuertaCerradaEntrarModoAhorro2 = view.findViewById(R.id.etOxxoTiempoPuertaCerradaEntrarModoAhorro2);
         etOxxoDireccionModbus = view.findViewById(R.id.etOxxoDireccionModbus);
         etOxxoPassword = view.findViewById(R.id.etOxxoPassword);
+        etTiempoRegistrarPuertaAbierta = view.findViewById(R.id.etTiempoRegistrarPuertaAbierta);
+        etTiempoLogger = view.findViewById(R.id.etTiempoLoggearDatos);
         etOxxoNewPlantillaversion = view.findViewById(R.id.etOxxoNewPlantillaversion);
         etOxxoactualFirmwareVersion = view.findViewById(R.id.etOxxoactualFirmwareVersion);
         etOxxoModelTrefp = view.findViewById(R.id.etOxxoModelTrefp);
@@ -410,6 +418,8 @@ public class PlantillaOxxoDisplayFragment extends Fragment implements AdapterVie
         ListEditText.add(etOxxoTiempoPuertaCerradaEntrarModoAhorro2);
         ListEditText.add(etOxxoDireccionModbus);
         ListEditText.add(etOxxoPassword);
+        ListEditText.add(etTiempoRegistrarPuertaAbierta);
+        ListEditText.add(etTiempoLogger);
         ListEditText.add(etOxxoNewPlantillaversion);
         ListEditText.add(etOxxoactualFirmwareVersion);
         ListEditText.add(etOxxoModelTrefp);
@@ -536,6 +546,8 @@ public class PlantillaOxxoDisplayFragment extends Fragment implements AdapterVie
             tvOxxoTiempoPuertaCerradaEntrarModoAhorro2.setText(dataListPlantilla.get(49));
             tvOxxoDireccionModbus.setText(dataListPlantilla.get(50));
             tvOxxoPassword.setText(dataListPlantilla.get(51));
+            tvTiempoRegistrarPuertaAbierta.setText(dataListPlantilla.get(52));
+            tvTiempoLogger.setText(dataListPlantilla.get(53));
 
             //tvactualPlantilla.setText(dataListPlantilla.get(37));
 
@@ -582,6 +594,8 @@ public class PlantillaOxxoDisplayFragment extends Fragment implements AdapterVie
             etOxxoTiempoPuertaCerradaEntrarModoAhorro2.setText(dataListPlantilla.get(49));
             etOxxoDireccionModbus.setText(dataListPlantilla.get(50));
             etOxxoPassword.setText(dataListPlantilla.get(51));
+            etTiempoRegistrarPuertaAbierta.setText(dataListPlantilla.get(52));
+            etTiempoLogger.setText(dataListPlantilla.get(53));
             String fw = dataListPlantilla.get(59)+dataListPlantilla.get(60);
             fw = fw.replace(".","");
             fw = fw.substring(0,2)+"."+fw.substring(2);
@@ -904,7 +918,7 @@ public class PlantillaOxxoDisplayFragment extends Fragment implements AdapterVie
         List<EditText> editTextsList = new ArrayList<>(checkCorrectData());
         if (editTextsList.isEmpty()) {
             if (sp.getString("modelo","").equals(etOxxoModelTrefp.getText().toString())){
-                List<String> arrayListInfo = new ArrayList<>(GetHexFromRealDataOxxoDisplay.getData(getList()));
+                List<String> arrayListInfo = new ArrayList<>(GetHexFromRealDataCEOWF.getData(getList()));
                 StringBuilder stringBuilder = new StringBuilder();
                 for (String dato:arrayListInfo){
                     stringBuilder.append(dato.toUpperCase());
@@ -1053,7 +1067,6 @@ public class PlantillaOxxoDisplayFragment extends Fragment implements AdapterVie
 
     List<EditText> editTextsWrongDataList = new ArrayList<>();
     for (int i =0 ; i<editTextsList.size(); i++){
-
         if (i==12){//A6 = *rango de (T0+T1+1.0) a (T7+15.0)
             float numf = Float.parseFloat(editTextsList.get(i).getText().toString());
             limiteInf = T0+T1+1.0;
@@ -1090,7 +1103,7 @@ public class PlantillaOxxoDisplayFragment extends Fragment implements AdapterVie
             }
         }
 
-        if (  i == 16|| i == 17|| i == 18 || i == 19 || i == 20 || i == 21 ||i == 22 || i == 23 || i == 24|| i==25 || i == 26 || i == 27 || i == 40){//00 a 99
+        if (  i == 16|| i == 17|| i == 18 || i == 19 || i == 20 || i == 21 ||i == 22 || i == 23 || i == 24|| i==25 || i == 26 || i == 27 || i == 40|| i == 41|| i == 42){//00 a 99
             float numf = Float.parseFloat(editTextsList.get(i).getText().toString());
             int num = (int) numf;
             if (num<-0 || num > 99){
@@ -1179,7 +1192,7 @@ public class PlantillaOxxoDisplayFragment extends Fragment implements AdapterVie
         }
 
         //plantilla formato correcto
-        if (i==43){
+        if (i==45){
             if (editTextsList.get(i).getText().toString().contains(".")){
                 if (editTextsList.get(i).getText().toString().length() >= 3){
                     String n = editTextsList.get(i).getText().toString();
@@ -1205,7 +1218,7 @@ public class PlantillaOxxoDisplayFragment extends Fragment implements AdapterVie
         }
 
         //firmware correcto
-        if (i==42){
+        if (i==44){
             if (editTextsList.get(i).getText().toString().contains(".")){
                 if (editTextsList.get(i).getText().toString().length() >= 3){
                     String n = editTextsList.get(i).getText().toString();
@@ -1231,7 +1244,7 @@ public class PlantillaOxxoDisplayFragment extends Fragment implements AdapterVie
         }
 
         //modelo correcto
-        if (i==41){
+        if (i==43){
             if (editTextsList.get(i).getText().toString().contains(".")){
                 if (editTextsList.get(i).getText().toString().length() >= 3){
                     String n = editTextsList.get(i).getText().toString();
@@ -1444,8 +1457,8 @@ public class PlantillaOxxoDisplayFragment extends Fragment implements AdapterVie
                 return "";
             }else {
                 listData = bluetoothLeService.getDataFromBroadcastUpdate();
-                FinalListData = GetRealDataFromHexaOxxoDisplay.convert(listData,"Lectura de parámetros de operación");
-                dataListPlantilla = GetRealDataFromHexaOxxoDisplay.GetRealData(FinalListData,"Lectura de parámetros de operación");
+                FinalListData = GetRealDataFromHexaCEOWF.convert(listData,"Lectura de parámetros de operación");
+                dataListPlantilla = GetRealDataFromHexaCEOWF.GetRealData(FinalListData,"Lectura de parámetros de operación");
                 return "resp";
             }
 
@@ -1782,6 +1795,8 @@ public class PlantillaOxxoDisplayFragment extends Fragment implements AdapterVie
         editTextsList.add(etOxxoTiempoPuertaCerradaEntrarModoAhorro2);
         editTextsList.add(etOxxoDireccionModbus);
         editTextsList.add(etOxxoPassword);
+        editTextsList.add(etTiempoRegistrarPuertaAbierta);
+        editTextsList.add(etTiempoLogger);
         editTextsList.add(etOxxoNewPlantillaversion);
         editTextsList.add(etOxxoactualFirmwareVersion);
         editTextsList.add(etOxxoModelTrefp);
@@ -1838,6 +1853,8 @@ public class PlantillaOxxoDisplayFragment extends Fragment implements AdapterVie
         arrayListInfo.add(etOxxoTiempoPuertaCerradaEntrarModoAhorro2.getText().toString());
         arrayListInfo.add(etOxxoDireccionModbus.getText().toString());
         arrayListInfo.add(etOxxoPassword.getText().toString());
+        arrayListInfo.add(etTiempoRegistrarPuertaAbierta.getText().toString());
+        arrayListInfo.add(etTiempoLogger.getText().toString());
         arrayListInfo.add(etOxxoModelTrefp.getText().toString());
         arrayListInfo.add(etOxxoactualFirmwareVersion.getText().toString());
         arrayListInfo.add(etOxxoNewPlantillaversion.getText().toString());

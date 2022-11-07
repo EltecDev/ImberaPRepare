@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/fragment_list_BLE_devices"
+    android:background="@color/white_background"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/tvtitulo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginVertical="15dp"
+        android:fontFamily="sans-serif-black"
+        android:text="Lista de dispositivos"
+        android:textColor="@color/blue"
+        android:textSize="25sp" />
+
+    <TextView
+        android:id="@+id/tvsubtitulo"
+        android:layout_below="@id/tvtitulo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="15dp"
+        android:text="Aquí se muestran los dispositivos encontrados mediante el escaneo Bluetooth, procura no superar los 4 metros de distancia."
+        android:textSize="15sp" />
+
+    <androidx.recyclerview.widget.RecyclerView
+
+        android:id="@+id/rvbleDevices"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/tvsubtitulo"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="100dp" />
+
+    <Button
+        android:id="@+id/btnDesconect"
+        android:layout_alignParentStart="true"
+        android:layout_marginHorizontal="15dp"
+        android:layout_width="140dp"
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="15dp"
+        android:background="@drawable/round_corner_white"
+        android:text="Desconectar"
+        android:textAlignment="center"
+        android:textColor="#000"
+        android:textSize="13sp" />
+
+    <Button
+        android:layout_marginHorizontal="15dp"
+        android:layout_alignParentEnd="true"
+        android:id="@+id/btnEscanear"
+        android:layout_width="140dp"
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="15dp"
+        android:background="@drawable/round_corner_black"
+        android:text="Escanear"
+        android:textAlignment="center"
+        android:textColor="#FFF"
+        android:textSize="13sp" />
+
+</RelativeLayout>

@@ -94,18 +94,37 @@ public class GetRealDataFromHexaImbera {
             case "Lectura de datos tipo Tiempo real":{
                 if (!arrayLists.isEmpty()){
                     StringBuilder s = cleanSpace(arrayLists);
-                    //head
-                    arrayListInfo.add(s.substring(0,4));//head
-                    arrayListInfo.add(s.substring(4,12));//
-                    arrayListInfo.add(s.substring(12,14));//modelo trefpb
-                    arrayListInfo.add(s.substring(14,16));//version
+                    Log.d("PPP",":"+s);
+                    if (fwversion.equals("1.04")){
+                        //head
+                        arrayListInfo.add(s.substring(0,4));//head
+                        arrayListInfo.add(s.substring(4,12));//
+                        arrayListInfo.add(s.substring(12,14));//modelo trefpb
+                        arrayListInfo.add(s.substring(14,16));//version
 
-                    arrayListInfo.add(s.substring(16,20));//temp1
-                    arrayListInfo.add(s.substring(20,24));//temp2
-                    arrayListInfo.add(s.substring(24,26));//voltaje
-                    arrayListInfo.add(s.substring(26,28));//actuadores
-                    arrayListInfo.add(s.substring(28,32));//alarmas
-                    Log.d("","crudoTR:"+arrayListInfo);
+                        arrayListInfo.add(s.substring(16,20));//temp1
+                        arrayListInfo.add(s.substring(20,24));//temp2
+                        arrayListInfo.add(s.substring(24,28));//temp3
+                        arrayListInfo.add(s.substring(28,32));//tempDisplay
+                        arrayListInfo.add(s.substring(32,34));//voltaje
+                        arrayListInfo.add(s.substring(34,38));//actuadores
+                        arrayListInfo.add(s.substring(38,42));//alarmas
+                        Log.d("","crudoTR104:"+arrayListInfo);
+                    }else{
+                        //head
+                        arrayListInfo.add(s.substring(0,4));//head
+                        arrayListInfo.add(s.substring(4,12));//
+                        arrayListInfo.add(s.substring(12,14));//modelo trefpb
+                        arrayListInfo.add(s.substring(14,16));//version
+
+                        arrayListInfo.add(s.substring(16,20));//temp1
+                        arrayListInfo.add(s.substring(20,24));//temp2
+                        arrayListInfo.add(s.substring(24,26));//voltaje
+                        arrayListInfo.add(s.substring(26,28));//actuadores
+                        arrayListInfo.add(s.substring(28,32));//alarmas
+                        Log.d("","crudoTR102:"+arrayListInfo);
+                    }
+
                     //arrayListInfo.add(s.substring(28,32));//plantilla
                     //arrayListInfo.add(s.substring(34));//checksum
                 }
@@ -280,7 +299,7 @@ public class GetRealDataFromHexaImbera {
         return arrayListInfo;
     }
 
-    public static List<String> GetRealData(List<String> data, String action, String modelo, String fwversion){
+    public static List<String> GetRealData(List<String> data, String action, String fwversion, String modelo){
         //USO SOLO DE LOS DATOS BUFFER IMPORTANTES PARA MOSTRARLOS EN PANTALLA, LAS POSICIONES RESTANTES (HEADER) SON CORRECTAS
         switch (action){
             case "Handshake":{
@@ -381,41 +400,91 @@ public class GetRealDataFromHexaImbera {
 
                      */
                     //buffer
-                    float numf = getDecimalFloat(data.get(4));
-                    //numf = getDecimalFloat("FFCE");
-                    int num = (int) numf;
-                    if (num<99.99){
-                        newData.add(String.valueOf(getDecimalFloat(data.get(4)))); //decimales con punto //get temp positivo
-                    }else if (num>99.99){
-                        //newData.add(getNegativeTemp("FFFF"+data.get(i).substring(22,26))); //get negativos
-                        newData.add(getNegativeTemp("FFFF"+data.get(4))); //get negativos
-                    }else{//Es 0 cero
-                        newData.add("0000"); //get negativos
-                    }
+                    if (fwversion.equals("1.04")){
+                        float numf = getDecimalFloat(data.get(4));
+                        //numf = getDecimalFloat("FFCE");
+                        int num = (int) numf;
+                        if (num<99.99){
+                            newData.add(String.valueOf(getDecimalFloat(data.get(4)))); //decimales con punto //get temp positivo
+                        }else if (num>99.99){
+                            //newData.add(getNegativeTemp("FFFF"+data.get(i).substring(22,26))); //get negativos
+                            newData.add(getNegativeTemp("FFFF"+data.get(4))); //get negativos
+                        }else{//Es 0 cero
+                            newData.add("0000"); //get negativos
+                        }
+
+
+                        numf = getDecimalFloat(data.get(5));
+                        num = (int) numf;
+                        if (num<99.99){
+                            newData.add(String.valueOf(getDecimalFloat(data.get(5)))); //decimales con punto //get temp positivo
+                        }else if (num>99.99){
+                            newData.add(getNegativeTemp("FFFF"+data.get(5))); //get negativos
+                        }else{//Es 0 cero
+                            newData.add("0000"); //get negativos
+                        }
+
+                        numf = getDecimalFloat(data.get(6));
+                        num = (int) numf;
+                        if (num<99.99){
+                            newData.add(String.valueOf(getDecimalFloat(data.get(6)))); //decimales con punto //get temp positivo
+                        }else if (num>99.99){
+                            newData.add(getNegativeTemp("FFFF"+data.get(6))); //get negativos
+                        }else{//Es 0 cero
+                            newData.add("0000"); //get negativos
+                        }
+
+                        numf = getDecimalFloat(data.get(7));
+                        num = (int) numf;
+                        if (num<99.99){
+                            newData.add(String.valueOf(getDecimalFloat(data.get(7)))); //decimales con punto //get temp positivo
+                        }else if (num>99.99){
+                            newData.add(getNegativeTemp("FFFF"+data.get(7))); //get negativos
+                        }else{//Es 0 cero
+                            newData.add("0000"); //get negativos
+                        }
+
+                        newData.add(String.valueOf(getDecimal(data.get(8))));//voltage
+                        newData.add(getActuador104(data.get(9)));
+                        newData.add(getAlarma(data.get(10)));
+                    }else{
+                        float numf = getDecimalFloat(data.get(4));
+                        //numf = getDecimalFloat("FFCE");
+                        int num = (int) numf;
+                        if (num<99.99){
+                            newData.add(String.valueOf(getDecimalFloat(data.get(4)))); //decimales con punto //get temp positivo
+                        }else if (num>99.99){
+                            //newData.add(getNegativeTemp("FFFF"+data.get(i).substring(22,26))); //get negativos
+                            newData.add(getNegativeTemp("FFFF"+data.get(4))); //get negativos
+                        }else{//Es 0 cero
+                            newData.add("0000"); //get negativos
+                        }
 //32*10 bits=320,000/9600
 
-                    //115,000
-                    //send rate
-                    //33sec  115,000
-                    //45sec
+                        //115,000
+                        //send rate
+                        //33sec  115,000
+                        //45sec
 
-                    numf = getDecimalFloat(data.get(5));
-                    num = (int) numf;
-                    if (num<99.99){
-                        newData.add(String.valueOf(getDecimalFloat(data.get(5)))); //decimales con punto //get temp positivo
-                    }else if (num>99.99){
-                        newData.add(getNegativeTemp("FFFF"+data.get(5))); //get negativos
-                    }else{//Es 0 cero
-                        newData.add("0000"); //get negativos
+                        numf = getDecimalFloat(data.get(5));
+                        num = (int) numf;
+                        if (num<99.99){
+                            newData.add(String.valueOf(getDecimalFloat(data.get(5)))); //decimales con punto //get temp positivo
+                        }else if (num>99.99){
+                            newData.add(getNegativeTemp("FFFF"+data.get(5))); //get negativos
+                        }else{//Es 0 cero
+                            newData.add("0000"); //get negativos
+                        }
+
+                        //newData.add(String.valueOf(getDecimalFloat(data.get(4)) ));//temp2
+                        //newData.add(String.valueOf(getDecimalFloat(data.get(5)) ));//temp1
+                        newData.add(String.valueOf(getDecimal(data.get(6))));//voltage
+                        newData.add(getActuador(data.get(7)));
+                        newData.add(getAlarma(data.get(8)));
+                        //newData.add(getSameData(data.get(9), "trefpversion")); // decimales con punto
+                        //newData.add(hexToAscii(data.get(9)));
                     }
 
-                    //newData.add(String.valueOf(getDecimalFloat(data.get(4)) ));//temp2
-                    //newData.add(String.valueOf(getDecimalFloat(data.get(5)) ));//temp1
-                    newData.add(String.valueOf(getDecimal(data.get(6))));//voltage
-                    newData.add(getActuador(data.get(7)));
-                    newData.add(getAlarma(data.get(8)));
-                    //newData.add(getSameData(data.get(9), "trefpversion")); // decimales con punto
-                    //newData.add(hexToAscii(data.get(9)));
                 }
                 return newData;
             }
@@ -553,8 +622,8 @@ public class GetRealDataFromHexaImbera {
                         Date date;
                         Date date2;
                         int i=4;
-                        long timeStampOriginal = getDecimal(data.get(data.size()-1).substring(8,16));
-                        long timeStampOriginal2 = getDecimal(data.get(data.size()-2).substring(8,16));
+                        long timeStampOriginal = getDecimal(data.get(data.size()-1).substring(0,8));
+                        long timeStampOriginal2 = getDecimal(data.get(data.size()-1).substring(8,16));//getDecimal(data.get(data.size()-2).substring(8,16));
                         long unixTime = System.currentTimeMillis() /1000;
                         long diferencialTimeStamp =  unixTime - timeStampOriginal  ;
                         long diferencialTimeStamp2 =  unixTime - timeStampOriginal2  ;
@@ -873,7 +942,7 @@ public class GetRealDataFromHexaImbera {
                         stringBuilder.append("Modo ahorro 1: ON\n");
                         break;
                     case 5:
-                        stringBuilder.append("Estado de puerta: ON\n");
+                        stringBuilder.append("Estado de puerta: Abierta\n");
                         break;
                     case 6:
                         stringBuilder.append("Estado de deshielo: ON\n");
@@ -891,7 +960,7 @@ public class GetRealDataFromHexaImbera {
                         stringBuilder.append("Modo ahorro 1: OFF\n");
                         break;
                     case 5:
-                        stringBuilder.append("Estado de puerta: OFF\n");
+                        stringBuilder.append("Estado de puerta: Cerrada\n");
                         break;
                     case 6:
                         stringBuilder.append("Estado de deshielo: OFF\n");
@@ -902,6 +971,191 @@ public class GetRealDataFromHexaImbera {
                 }
             }
         }
+        return stringBuilder.toString();
+    }
+
+    private static String getActuador104(String s){
+        Log.d("LOaL",":"+s);
+        String ss3 = HexToBinary(s.substring(0,2));
+        String ss2 = HexToBinary(s.substring(2));
+        String ss = ss3+ss2;
+        Log.d("LOL",":"+ss);
+        StringBuilder stringBuilder = new StringBuilder();
+        String c;
+        for (int i=ss.length(); i>=0 ; i--){
+            if (i-1<0){
+                c = ss.substring(0,1);
+            }else{
+                c = ss.substring(i-1,i);
+            }
+            Log.d("C",":"+c);
+            Log.d("i",":"+i);
+            if (c.equals("1")){
+                switch (i-1)  {
+                    /**
+                     * lAS COMENTO POR EL MOMENTO PUESTO QUE NO HA SALIDO LA VERSIÓN COMPLETA PERO YA ESTÁ LISTO
+                     * */
+                    /*case 15:
+                        stringBuilder.append("\nEquipo en deshielo: Si\n");
+                        break;
+                    case 14:
+                        stringBuilder.append("Equipo enfriando encendido: Si\n");
+                        break;
+                    case 13:
+                        stringBuilder.append("Equipo enfriando apagado: Si\n");
+                        break;
+                    case 12:
+                        stringBuilder.append("Estado general: Encendido\n");
+                        break;*/
+                    case 0:
+                        stringBuilder.append("Estado iluminación: Activo\n");
+                        break;
+                    case 1:
+                        stringBuilder.append("Estado vendilador: Encendido\n");
+                        break;
+                    case 2:
+                        stringBuilder.append("Modo nocturno: Encendido\n");
+                        break;
+                    case 3:
+                        stringBuilder.append("Modo ahorro 2: Activo\n");
+                        break;
+                    case 4:
+                        stringBuilder.append("Modo ahorro 1: Activo\n");
+                        break;
+                    case 5:
+                        stringBuilder.append("Estado de puerta: Abierta\n");
+                        break;
+                    case 6:
+                        stringBuilder.append("Estado de deshielo: Activo\n");
+                        break;
+                    case 7:
+                        stringBuilder.append("\nEstado de compresor: Activo\n");
+                        break;
+                }
+            }else{
+                switch (i-1)  {//00101
+                    /*case 15:
+                        stringBuilder.append("\nEquipo en deshielo: No\n");
+                        break;
+                    case 14:
+                        stringBuilder.append("Equipo enfriando encendido: No\n");
+                        break;
+                    case 13:
+                        stringBuilder.append("Equipo enfriando apagado: No\n");
+                        break;
+                    case 12:
+                        stringBuilder.append("Estado general: Apagado\n");
+                        break;*/
+                    case 0:
+                        stringBuilder.append("Estado iluminación: Inactivo\n");
+                        break;
+                    case 1:
+                        stringBuilder.append("Estado vendilador: Apagado\n");
+                        break;
+                    case 2:
+                        stringBuilder.append("Modo nocturno: Apagado\n");
+                        break;
+                    case 3:
+                        stringBuilder.append("Modo ahorro 2: Inactivo\n");
+                        break;
+                    case 4:
+                        stringBuilder.append("Modo ahorro 1: Inactivo\n");
+                        break;
+                    case 5:
+                        stringBuilder.append("Estado de puerta: Cerrada\n");
+                        break;
+                    case 6:
+                        stringBuilder.append("Estado de deshielo: Inactivo\n");
+                        break;
+                    case 7:
+                        stringBuilder.append("\nEstado de compresor: Inactivo\n");
+                        break;
+                }
+            }
+        }
+
+        /*for (int i=0; i<=15 ; i++){
+            c = ss.substring(i,i+1);
+            if (c.equals("1")){
+                switch (i)  {
+                    case 0:
+                        stringBuilder.append("\nEquipo en deshielo: Si\n");
+                        break;
+                    case 1:
+                        stringBuilder.append("Equipo enfriando encendido: Si\n");
+                        break;
+                    case 2:
+                        stringBuilder.append("Equipo enfriando apagadp: Si\n");
+                        break;
+                    case 3:
+                        stringBuilder.append("Estado general: Encendido\n");
+                        break;
+                    case 15:
+                        stringBuilder.append("\nEstado iluminación: Activo\n");
+                        break;
+                    case 14:
+                        stringBuilder.append("Estado vendilador: Encendido\n");
+                        break;
+                    case 13:
+                        stringBuilder.append("Modo nocturno: Encendido\n");
+                        break;
+                    case 12:
+                        stringBuilder.append("\nModo ahorro 2: Activo\n");
+                        break;
+                    case 11:
+                        stringBuilder.append("Modo ahorro 1: Activo\n");
+                        break;
+                    case 10:
+                        stringBuilder.append("Estado de puerta: Abierta\n");
+                        break;
+                    case 9:
+                        stringBuilder.append("Estado de deshielo: Activo\n");
+                        break;
+                    case 8:
+                        stringBuilder.append("Estado de compresor: Activo");
+                        break;
+                }
+            }else{
+                switch (i)  {//00101
+                    case 0:
+                        stringBuilder.append("\nEquipo en deshielo: No\n");
+                        break;
+                    case 1:
+                        stringBuilder.append("Equipo enfriando encendido: No\n");
+                        break;
+                    case 2:
+                        stringBuilder.append("Equipo enfriando apagadp: No\n");
+                        break;
+                    case 3:
+                        stringBuilder.append("Estado general: Apagado\n");
+                        break;
+                    case 15:
+                        stringBuilder.append("\nEstado iluminación: Inactivo\n");
+                        break;
+                    case 14:
+                        stringBuilder.append("Estado vendilador: Apagado\n");
+                        break;
+                    case 13:
+                        stringBuilder.append("Modo nocturno: Apagado\n");
+                        break;
+                    case 12:
+                        stringBuilder.append("\nModo ahorro 2: Inactivo\n");
+                        break;
+                    case 11:
+                        stringBuilder.append("Modo ahorro 1: Inactivo\n");
+                        break;
+                    case 10:
+                        stringBuilder.append("Estado de puerta: Cerrada\n");
+                        break;
+                    case 9:
+                        stringBuilder.append("Estado de deshielo: Inactivo\n");
+                        break;
+                    case 8:
+                        stringBuilder.append("Estado de compresor: Inactivo");
+                        break;
+                }
+            }
+        }*/
         return stringBuilder.toString();
     }
 

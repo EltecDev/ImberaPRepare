@@ -46,7 +46,8 @@ public class ConexionTrefp {
     }
 
     public void getTREFPBLEHandshake(){
-        new MyAsyncTaskGetHandshakeTREFP().execute();
+        //new MyAsyncTaskGetHandshakeTREFP().execute();
+        new MyAsyncTaskGetHandshakeTREFPBytes().execute();
     }
 
     public void getOXXOHandshake(){
@@ -61,6 +62,20 @@ public class ConexionTrefp {
         new MyAsyncTaskGetActualStatusCEO().execute();
     }
 
+    public void isConnectionAlive(){
+        new MyAsyncTaskGetHandshakeTREFPCheckConnection().execute();
+
+        /*if (bluetoothServices==null){
+            return "Conexión Activa";
+        }else{
+            return "Conexión inactiva";
+        }*/
+    }
+
+    public void desconectar(){
+        bluetoothServices.disconnect();
+    }
+
     class MyAsyncTaskConnectBLETrefp extends AsyncTask<Integer, Integer, String> {
         String mac="";
         public MyAsyncTaskConnectBLETrefp(String  mac) {
@@ -72,15 +87,26 @@ public class ConexionTrefp {
             bluetoothServices.connect("TREFP-IMBERA",mac);
             try {
                 Thread.sleep(2000);
+                bluetoothLeService = bluetoothServices.getBluetoothLeService();
+                if (bluetoothLeService == null){
+                    return "notConnected";
+                }else{
+                    return "connected";
+                }
             } catch (InterruptedException e) {
                 e.printStackTrace();
+                return "noConnected";
             }
-            return "resp";
         }
 
         @Override
         protected void onPostExecute(String result) {
-            Log.d("CONNECTED","onPostExecute");
+            if (result.equals("connected")){
+                Log.d("CONNECTED","OK");
+            }else{
+                listenerTREFP.onError("Error al intentar conectar con:"+mac);
+            }
+
         }
 
         @Override
@@ -195,8 +221,8 @@ public class ConexionTrefp {
 
                         String isChecksumOk = GlobalTools.checkChecksumImberaTREFPB(GetRealDataFromHexaImbera.cleanSpace(listData).toString());
                         if (isChecksumOk.equals("ok")){
-                            FinalListData = GetRealDataFromHexaImbera.convert(listData, "Handshake");
-                            listData = GetRealDataFromHexaImbera.GetRealData(FinalListData, "Handshake");
+                            //FinalListData = GetRealDataFromHexaImbera.convert(listData, "Handshake");
+                            //listData = GetRealDataFromHexaImbera.GetRealData(FinalListData, "Handshake");
                             listenerTREFP.getInfo(listData);
                         }else if (isChecksumOk.equals("notFirmware")){
                             listData.add("noFirmware");
@@ -214,6 +240,148 @@ public class ConexionTrefp {
                     listenerTREFP.getInfo(listData);
                 }
             }
+        }
+
+        @Override
+        protected void onPreExecute() {
+            //createProgressDialog("Obteniendo primera comunicación...");
+        }
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+
+        }
+    }
+
+    class MyAsyncTaskGetHandshakeTREFPBytes extends AsyncTask<Integer, Integer, String> {
+        @Override
+        protected String doInBackground(Integer... params) {
+            bluetoothLeService = bluetoothServices.getBluetoothLeService();
+            if (bluetoothLeService.sendFirstComando("4021")){
+                Log.d("","dataChecksum total:7");
+                return "ok";
+            }else
+                Log.d("","dataChecksum total:8");
+            return "not";
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            try {
+                Thread.sleep(400);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            if (result.equals("ok")){
+                byte[] listData;
+                listData = bluetoothLeService.getDataFromBroadcastUpdateByte();
+                listenerTREFP.getInfoBytes(listData);
+            }else{
+                listenerTREFP.onError("No se pudo obtener datos, ¿Estás conectado?");
+            }
+
+            /*if (result.equals("noconnected")) {
+                listData.add("noconnected");
+                listenerTREFP.getInfo(listData);
+            }else {*/
+
+                /*if (result.equals("ok")){
+                    if (!listData.isEmpty()){
+
+                        String isChecksumOk = GlobalTools.checkChecksumImberaTREFPB(GetRealDataFromHexaImbera.cleanSpace(listData).toString());
+                        if (isChecksumOk.equals("ok")){
+                            //FinalListData = GetRealDataFromHexaImbera.convert(listData, "Handshake");
+                            //listData = GetRealDataFromHexaImbera.GetRealData(FinalListData, "Handshake");
+                            listenerTREFP.getInfo(listData);
+                        }else if (isChecksumOk.equals("notFirmware")){
+                            listData.add("noFirmware");
+                            listenerTREFP.getInfo(listData);
+                        }else if (isChecksumOk.equals("notok")){
+                            listData.add("notOkChecksum");
+                            listenerTREFP.getInfo(listData);
+                        }
+                    }else{
+                        //listData.add("No se pudo obtener información, ¿estás conectado?");
+                        listenerTREFP.getInfo(listData);
+                    }
+                }else{
+                    //listData.add("Fallo al conectar a un BLE");
+                    listenerTREFP.getInfo(listData);
+                }*/
+            //}
+        }
+
+        @Override
+        protected void onPreExecute() {
+            //createProgressDialog("Obteniendo primera comunicación...");
+        }
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+
+        }
+    }
+
+    class MyAsyncTaskGetHandshakeTREFPCheckConnection extends AsyncTask<Integer, Integer, String> {
+        @Override
+        protected String doInBackground(Integer... params) {
+            bluetoothLeService = bluetoothServices.getBluetoothLeService();
+            if (bluetoothLeService == null){
+                return "not";
+            }else{
+                return "ok";
+            }
+            /*if (bluetoothLeService.sendFirstComando("4021")){
+                Log.d("","dataChecksum total:7");
+                return "ok";
+            }else
+                Log.d("","dataChecksum total:8");
+            return "not";*/
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            try {
+                Thread.sleep(400);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            if (result.equals("ok")){
+                listenerTREFP.isConnectionAlive("Conectado");
+            }else{
+                listenerTREFP.isConnectionAlive("Desconectado");
+            }
+            /*byte[] listData;
+            listData = bluetoothLeService.getDataFromBroadcastUpdateByte();
+            listenerTREFP.getInfoBytes(listData);*/
+            /*if (result.equals("noconnected")) {
+                listData.add("noconnected");
+                listenerTREFP.getInfo(listData);
+            }else {*/
+
+                /*if (result.equals("ok")){
+                    if (!listData.isEmpty()){
+
+                        String isChecksumOk = GlobalTools.checkChecksumImberaTREFPB(GetRealDataFromHexaImbera.cleanSpace(listData).toString());
+                        if (isChecksumOk.equals("ok")){
+                            //FinalListData = GetRealDataFromHexaImbera.convert(listData, "Handshake");
+                            //listData = GetRealDataFromHexaImbera.GetRealData(FinalListData, "Handshake");
+                            listenerTREFP.getInfo(listData);
+                        }else if (isChecksumOk.equals("notFirmware")){
+                            listData.add("noFirmware");
+                            listenerTREFP.getInfo(listData);
+                        }else if (isChecksumOk.equals("notok")){
+                            listData.add("notOkChecksum");
+                            listenerTREFP.getInfo(listData);
+                        }
+                    }else{
+                        //listData.add("No se pudo obtener información, ¿estás conectado?");
+                        listenerTREFP.getInfo(listData);
+                    }
+                }else{
+                    //listData.add("Fallo al conectar a un BLE");
+                    listenerTREFP.getInfo(listData);
+                }*/
+            //}
         }
 
         @Override
@@ -358,7 +526,10 @@ public class ConexionTrefp {
     }
 
     public interface ListenerTREFP{
+        public void onError(String error);
+        public void isConnectionAlive(String resp);
         public void getInfo(List<String> data);
+        public void getInfoBytes(byte[] data);
     }
 
     public void ConexionTREFPListener(ListenerTREFP listenerTREFP) {

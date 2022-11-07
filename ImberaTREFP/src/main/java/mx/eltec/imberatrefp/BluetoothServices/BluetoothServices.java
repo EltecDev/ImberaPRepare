@@ -116,8 +116,6 @@ public class BluetoothServices {
         context.registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
     }
 
-
-
     public void disconnect(){
         if (bluetoothLeService!= null){
             bluetoothLeService.disconnect();
@@ -126,7 +124,6 @@ public class BluetoothServices {
             context.unbindService(mServiceConnection);
             context.unregisterReceiver(mGattUpdateReceiver);
         }
-
     }
 
     private static IntentFilter makeGattUpdateIntentFilter() {

@@ -710,6 +710,7 @@ public class GetRealDataFromHexaOxxoDisplay {
     }
 
     public static float getDecimalFloat(String hex){
+        Log.d("exa",""+hex);
         String digits = "0123456789ABCDEF";
         hex = hex.toUpperCase();
         float val = 0;
@@ -729,7 +730,27 @@ public class GetRealDataFromHexaOxxoDisplay {
             String str = hexStr.substring(i, i+2);
             output.append((char)Integer.parseInt(str, 16));
         }
+        return output.toString();
+    }
 
+    public static String hexToAsciiWifi(List<String> hex) {
+        StringBuilder hexStrr = new StringBuilder();
+        for (int i = 0; i<hex.size(); i++){
+            hexStrr.append(hex.get(i));
+        }
+        String hexStr = hexStrr.toString().replace(" ","");
+        StringBuilder output = new StringBuilder();
+
+        for (int i = 0; i < hexStr.length(); i+=2) {
+            String strSeparacion = hexStr.substring(i, i+4);
+            if (strSeparacion.equals("3B08")){//punto y coma ;
+                output.append("\n");
+                i+=2;
+            }else{
+                String str = hexStr.substring(i, i+2);
+                output.append((char)Integer.parseInt(str, 16));
+            }
+        }
         return output.toString();
     }
 

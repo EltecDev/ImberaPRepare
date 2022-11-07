@@ -38,7 +38,9 @@ import com.example.imberap.BluetoothServices.BluetoothServices;
 import com.example.imberap.Fragment.ListaBLEFragment;
 import com.example.imberap.Fragment.EstatusBLEFragment;
 import com.example.imberap.Fragment.LoginFragment;
+import com.example.imberap.Fragment.OperacionesFragmentCeoWifi;
 import com.example.imberap.Fragment.OperacionesFragmentOxxo;
+import com.example.imberap.Fragment.PlantillaCEOWiFiFragment;
 import com.example.imberap.Fragment.PlantillaFragment;
 import com.example.imberap.Fragment.OperacionesFragment;
 import com.example.imberap.Fragment.UsuarioFragment;
@@ -95,9 +97,11 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
     UsuarioFragment usuarioFragment;
     ListaBLEFragment listaBLEFragment;
     PlantillaFragment plantillaFragment;
+    PlantillaCEOWiFiFragment plantillaCEOWiFiFragment;
     PlantillaOxxoDisplayFragment plantillaOxxoDisplayFragment;
     EstatusBLEFragment estatusBLEFragment;
     OperacionesFragment operacionesFragment;
+    OperacionesFragmentCeoWifi operacionesFragmentCeoWifi;
     OperacionesFragmentOxxo operacionesFragmentOxxo;
     Fragment active;
     FragmentManager fragmentManager ;
@@ -213,9 +217,11 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
                 usuarioFragment = new UsuarioFragment(bluetoothServices, tvUsuarioActual , this);
                 listaBLEFragment = new ListaBLEFragment(bluetoothServices,tvConnectionState, tvfwversion);
                 plantillaFragment = new PlantillaFragment(bluetoothServices,this);
+                plantillaCEOWiFiFragment = new PlantillaCEOWiFiFragment(bluetoothServices,this);
                 plantillaOxxoDisplayFragment = new PlantillaOxxoDisplayFragment(bluetoothServices,this);
                 estatusBLEFragment = new EstatusBLEFragment(bluetoothServices,this);
                 operacionesFragment = new OperacionesFragment(bluetoothServices,this);
+                operacionesFragmentCeoWifi = new OperacionesFragmentCeoWifi(bluetoothServices,this);
                 operacionesFragmentOxxo = new OperacionesFragmentOxxo(bluetoothServices,this);
                 active = loginFragment;
             }else {
@@ -235,15 +241,19 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
         plantillaFragment.setListener(this);
         usuarioFragment.logoutListener(this);
         loginFragment.loginListener(this);
+        //plantillaCEOWiFiFragment.setListener(this);
         plantillaOxxoDisplayFragment.setListener(this);
         operacionesFragment.setOperacionesListener(this);
+        //operacionesFragmentceowifi.setOperacionesListener(this);
 
         fragmentManager.beginTransaction().add(R.id.flFragment,loginFragment, "").hide(loginFragment).commit();
         fragmentManager.beginTransaction().add(R.id.flFragment,usuarioFragment, "").hide(usuarioFragment).commit();
         fragmentManager.beginTransaction().add(R.id.flFragment, estatusBLEFragment, "").hide(estatusBLEFragment).commit();
         fragmentManager.beginTransaction().add(R.id.flFragment, operacionesFragment, "").hide(operacionesFragment).commit();
+        fragmentManager.beginTransaction().add(R.id.flFragment, operacionesFragmentCeoWifi, "").hide(operacionesFragmentCeoWifi).commit();
         fragmentManager.beginTransaction().add(R.id.flFragment, operacionesFragmentOxxo, "").hide(operacionesFragmentOxxo).commit();
         fragmentManager.beginTransaction().add(R.id.flFragment, plantillaFragment, "").hide(plantillaFragment).commit();
+        fragmentManager.beginTransaction().add(R.id.flFragment, plantillaCEOWiFiFragment, "").hide(plantillaCEOWiFiFragment).commit();
         fragmentManager.beginTransaction().add(R.id.flFragment, plantillaOxxoDisplayFragment, "PlantillaOxxo").hide(plantillaOxxoDisplayFragment).commit();
         fragmentManager.beginTransaction().add(R.id.flFragment,listaBLEFragment, "").hide(listaBLEFragment).commit();
 
@@ -336,13 +346,16 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
                     /*if (sp.getString("userjerarquia","").equals("4")){//jerarquia 4  = producción
                         showInfoPopup("Jerarquía de usuarios","Tu usuario no puede utilizar esta función, contacta con el administrador del sistema.");
                     }else{*/
-                        if (sp.getString("trefpVersionName","").equals("IMBERA-OXXO")){
-                            fragmentManager.beginTransaction().hide(active).show(plantillaOxxoDisplayFragment).commit();
-                            active=plantillaOxxoDisplayFragment;
-                        }else if (sp.getString("trefpVersionName","").equals("IMBERA-TREFP")){
-                            fragmentManager.beginTransaction().hide(active).show(plantillaFragment).commit();
-                            active=plantillaFragment;
-                        }else if (sp.getString("trefpVersionName","").equals("")){
+                    if (sp.getString("trefpVersionName","").equals("IMBERA-WF")){
+                        fragmentManager.beginTransaction().hide(active).show(plantillaCEOWiFiFragment).commit();
+                        active=plantillaCEOWiFiFragment;
+                    }else if (sp.getString("trefpVersionName","").equals("IMBERA-OXXO")){
+                        fragmentManager.beginTransaction().hide(active).show(plantillaOxxoDisplayFragment).commit();
+                        active=plantillaOxxoDisplayFragment;
+                    }else if (sp.getString("trefpVersionName","").equals("IMBERA-TREFP")){
+                        fragmentManager.beginTransaction().hide(active).show(plantillaFragment).commit();
+                        active=plantillaFragment;
+                    }else if (sp.getString("trefpVersionName","").equals("")){
                             Toast.makeText(this, "Conéctate a un BLE primero", Toast.LENGTH_SHORT).show();
                         }
                     //}
@@ -376,7 +389,10 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
                     if (sp.getString("userjerarquia","").equals("4") || sp.getString("userjerarquia","").equals("5")){//jerarquia 4  = producción; 5 = Operador
                         showInfoPopup("Jerarquía de usuarios","Tu usuario no puede utilizar esta función, contacta con el administrador del sistema.");
                     }else{
-                        if (sp.getString("trefpVersionName","").equals("IMBERA-OXXO")){
+                        if (sp.getString("trefpVersionName","").equals("IMBERA-WF")){
+                            fragmentManager.beginTransaction().hide(active).show(operacionesFragmentCeoWifi).commit();
+                            active= operacionesFragmentCeoWifi;
+                        }else if (sp.getString("trefpVersionName","").equals("IMBERA-OXXO")){
                             fragmentManager.beginTransaction().hide(active).show(operacionesFragmentOxxo).commit();
                             active= operacionesFragmentOxxo;
                         }else if (sp.getString("trefpVersionName","").equals("IMBERA-TREFP")){
@@ -619,6 +635,12 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
     }
 
     private void createExcelFileCrudototalImberaExtendido(List<String> data,List<String> dataEvento,List<String> dataTiempo){
+        Log.d("EXCELELES",":"+data.get(0));
+        Log.d("EXCELELES",":"+data.get(1));
+        Log.d("EXCELELES",":"+data.get(2));
+
+        Log.d("EXCELELES","EENTO:"+dataEvento);
+        Log.d("EXCELELES","tiempo:"+dataTiempo);
 
         String nombreFile= "CrudoTREFPBExt.xls";
         File file = new File(this.getExternalFilesDir(null),nombreFile);
@@ -648,8 +670,6 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
             hssfRow = hssfSheet.createRow(i);
             hssfCell.setCellValue(dataTiempo.get(i));
         }
-
-
 
         hssfSheet = wb.createSheet("Datos tipo evento");
         Log.d("GGG",":"+dataEvento.size());

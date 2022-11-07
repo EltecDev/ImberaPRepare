@@ -1079,6 +1079,9 @@ public class PlantillaFragment extends Fragment {
                 progressdialog=null;
             }else if (sp.getString("modelo","").equals("3.5") && sp.getString("numversion","").equals("1.04")){
                 List<String> fin = new ArrayList<String>();
+                Log.d("LOGG1",":"+FinalListDataHandshake.get(0));
+                Log.d("LOGG2",":"+FinalListDataRealState.get(0));
+                Log.d("LOGG3",":"+FinalListDataPlantilla.get(0));
                 fin.add(FinalListDataHandshake.get(0));
                 fin.add(FinalListDataRealState.get(0));
                 fin.add(FinalListDataPlantilla.get(0));
@@ -1229,7 +1232,7 @@ public class PlantillaFragment extends Fragment {
 
 
             }else if ((sp.getString("modelo","").equals("3.5") && sp.getString("numversion","").equals("1.04")) ||
-                    (sp.getString("modelo","").equals("3.5") && sp.getString("numversion","").equals("1.14"))){
+                    (sp.getString("modelo","").equals("3.5") && sp.getString("numversion","").equals("1.04"))){
                 FinalListData.clear();
                 listData.clear();
                 bluetoothServices.sendCommand("time","4060");

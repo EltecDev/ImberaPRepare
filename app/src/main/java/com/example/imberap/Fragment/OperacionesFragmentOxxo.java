@@ -77,6 +77,12 @@ public class OperacionesFragmentOxxo extends Fragment {
                 updateWifi();
             }
         });
+        view.findViewById(R.id.btnVerConfWifi).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                WifiInfo();
+            }
+        });
         TextView tvtitulo = view.findViewById(R.id.tvtitulo);
         tvtitulo.setText("Aquí se muestran las operaciones actuales posibles con el equipo IMBERA-OXXO");
 
@@ -97,6 +103,10 @@ public class OperacionesFragmentOxxo extends Fragment {
 
     private void updateWifi() {
         createProgressDialogwifi();
+    }
+
+    private void WifiInfo() {
+        createProgressDialogwifiInfo();
     }
 
     public void createProgressDialogwifi(){
@@ -131,6 +141,41 @@ public class OperacionesFragmentOxxo extends Fragment {
                 }
             });
         }
+    }
+
+    public void createProgressDialogwifiInfo(){
+        bluetoothServices.sendCommandWifiInfo();
+        /*if(progressdialog == null){
+            //Crear dialogos de "pantalla de carga" y "popups if"
+            LayoutInflater inflater = getLayoutInflater();
+            final View dialogView = inflater.inflate(R.layout.popup_wifi, null, false);
+            AlertDialog.Builder adb = new AlertDialog.Builder(context,R.style.Theme_AppCompat_Light_Dialog_Alert_eltc);
+            adb.setView(dialogView);
+            progressdialog = adb.create();
+            progressdialog.setCanceledOnTouchOutside(false);
+            progressdialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            progressdialog.show();
+
+            dialogView.findViewById(R.id.btnSendWifi).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    progressdialog.dismiss();
+                    progressdialog = null;
+                    EditText etSsid= dialogView.findViewById(R.id.etSSID);
+                    EditText etpass= dialogView.findViewById(R.id.etWifiPass);
+                    String ssid = etSsid.getText().toString();
+                    String pass = etpass.getText().toString();
+                    bluetoothServices.sendCommandWifiInfo(ssid,pass);
+                }
+            });
+            dialogView.findViewById(R.id.btndontSendwifi).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    progressdialog.dismiss();
+                    progressdialog = null;
+                }
+            });
+        }*/
     }
 
 }

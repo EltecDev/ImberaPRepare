@@ -4,15 +4,12 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,24 +18,20 @@ import androidx.fragment.app.Fragment;
 
 import com.example.imberap.BluetoothServices.BluetoothLeService;
 import com.example.imberap.BluetoothServices.BluetoothServices;
-import com.example.imberap.MainActivity;
 import com.example.imberap.R;
-import com.example.imberap.Utility.GetRealDataFromHexaImbera;
 
-import java.util.List;
-
-public class OperacionesFragmentOxxo extends Fragment {
+public class OperacionesFragmentCeoWifi extends Fragment {
     SharedPreferences sp;
     SharedPreferences.Editor esp;
     BluetoothServices bluetoothServices;
     BluetoothLeService bluetoothLeService;
     Context context;
 
-    androidx.appcompat.app.AlertDialog progressdialog=null;
+    AlertDialog progressdialog=null;
 
-    public OperacionesFragmentOxxo(){}
+    public OperacionesFragmentCeoWifi(){}
 
-    public OperacionesFragmentOxxo(BluetoothServices bluetoothServices, Context context) {
+    public OperacionesFragmentCeoWifi(BluetoothServices bluetoothServices, Context context) {
         this.bluetoothServices = bluetoothServices;
         this.context = context;
         sp = context.getSharedPreferences("connection_preferences" , Context.MODE_PRIVATE);
@@ -60,7 +53,7 @@ public class OperacionesFragmentOxxo extends Fragment {
         view.findViewById(R.id.btnupdateFw).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                updatefw();
+                //updatefw();
                 //Toast.makeText(context, "Función no disponible en esta versión", Toast.LENGTH_SHORT).show();
             }
         });
@@ -68,7 +61,7 @@ public class OperacionesFragmentOxxo extends Fragment {
             @Override
             public void onClick(View v) {
                 //Toast.makeText(context, "Función no disponible en esta versión", Toast.LENGTH_SHORT).show();
-                updatefwOriginal();
+                //updatefwOriginal();
             }
         });
         view.findViewById(R.id.btnconfigurarWifi).setOnClickListener(new View.OnClickListener() {
