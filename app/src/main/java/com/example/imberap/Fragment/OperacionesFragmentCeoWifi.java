@@ -46,14 +46,14 @@ public class OperacionesFragmentCeoWifi extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_operaciones_oxxo, container, false);
+        View view = inflater.inflate(R.layout.fragment_operaciones_ceowifi, container, false);
         init();
 
 
         view.findViewById(R.id.btnupdateFw).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //updatefw();
+                updatefw();
                 //Toast.makeText(context, "Función no disponible en esta versión", Toast.LENGTH_SHORT).show();
             }
         });
@@ -61,7 +61,7 @@ public class OperacionesFragmentCeoWifi extends Fragment {
             @Override
             public void onClick(View v) {
                 //Toast.makeText(context, "Función no disponible en esta versión", Toast.LENGTH_SHORT).show();
-                //updatefwOriginal();
+                updatefwOriginal();
             }
         });
         view.findViewById(R.id.btnconfigurarWifi).setOnClickListener(new View.OnClickListener() {
@@ -87,11 +87,11 @@ public class OperacionesFragmentCeoWifi extends Fragment {
     }
 
     private void updatefw() {
-        bluetoothServices.sendCommand("NewFirmwareOxxo");
+        bluetoothServices.sendCommand("NewFirmwareCEOWIFI");
     }
 
     private void updatefwOriginal() {
-        bluetoothServices.sendCommand("OriginalFirmwareOxxo");
+        bluetoothServices.sendCommand("OriginalFirmwareCEOWIFI");
     }
 
     private void updateWifi() {

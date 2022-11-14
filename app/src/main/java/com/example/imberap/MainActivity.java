@@ -46,6 +46,7 @@ import com.example.imberap.Fragment.OperacionesFragment;
 import com.example.imberap.Fragment.UsuarioFragment;
 import com.example.imberap.Utility.GlobalTools;
 import com.example.imberap.Fragment.PlantillaOxxoDisplayFragment;
+
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
@@ -69,23 +70,23 @@ import java.util.List;
  * Revisar a fondo el bug que sucede en el "Toast" al enviar comando fallido
  * El problema de los crashes por variables null (en ble sucede bastante cuando el equipo se desconectó automáticamente y se intenta hacer uso de conexión)
  * El control retiene su basura cuando se queda a la mitad del envio de esta (por ejemplo enviar el logger de evento), al pedir otro comando el control se vuelve loco hasta vaciar su basura.
- *
+ * <p>
  * Urgente:
  * Se debe manejar la actualizaciòn del firmware mediante el modelo que se lea en la conexiòn (handshake). Isaac porporciona tabla para poder coordinar que modelos pueden actualizar a que equipos
  * El comando es 0x4054: comando para limpiar la memoria, hay que agregarlo en el proceso de envio de firmware.
  * REVISAR LA PETICION DE ESTADO DE TREFPB (PEQUEÑO CON BLE) NO OBTIENE EL ESTADO CORRECTAMENTE CON EQUIPO SIN MODELO Y TAMPOCO HAY REVISIÓN DE COMO RECIBIR CORRECTAMENTE LA INFORMACIÓN
- *
+ * <p>
  * No Urgente:
- *agregar el resto de compatibilidad a la interfaz respecto al uso de Operador, en TREFPB debería no poder verse el sroll ni botones
- * */
-public class MainActivity extends AppCompatActivity implements NavigationBarView.OnItemSelectedListener , ListaBLEFragment.connectListener, PlantillaFragment.listener, UsuarioFragment.MainActivityistener, LoginFragment.listener, OperacionesFragment.listener, PlantillaOxxoDisplayFragment.listener{
+ * agregar el resto de compatibilidad a la interfaz respecto al uso de Operador, en TREFPB debería no poder verse el sroll ni botones
+ */
+public class MainActivity extends AppCompatActivity implements NavigationBarView.OnItemSelectedListener, ListaBLEFragment.connectListener, PlantillaFragment.listener, UsuarioFragment.MainActivityistener, LoginFragment.listener, OperacionesFragment.listener, PlantillaOxxoDisplayFragment.listener {
     BottomNavigationView bottomNavigationView;
-    TextView tvConnectionState, tvfwversion , tvUsuarioActual, tvappversion;
+    TextView tvConnectionState, tvfwversion, tvUsuarioActual, tvappversion;
     private BluetoothAdapter mBluetoothAdapter;
     String deviceName, deviceMacAddress;
     LayoutInflater inflater;
 
-    androidx.appcompat.app.AlertDialog progressdialog=null;
+    androidx.appcompat.app.AlertDialog progressdialog = null;
     View dialogViewProgressBar;
 
     //Pantalla de peticion inicial de permisos
@@ -104,8 +105,8 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
     OperacionesFragmentCeoWifi operacionesFragmentCeoWifi;
     OperacionesFragmentOxxo operacionesFragmentOxxo;
     Fragment active;
-    FragmentManager fragmentManager ;
-    int position=1;
+    FragmentManager fragmentManager;
+    int position = 1;
 
     //Bluetooth Services
     BluetoothServices bluetoothServices;
@@ -116,54 +117,60 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
         setContentView(R.layout.activity_main);
         init();
     }
+
     @Override
     protected void onResume() {
         super.onResume();
         initOnResume();
     }
 
-    private void initOnResume(){
-        if (!sp.getString("userId","").equals("")){//si no hay usuario logeado entonces no escanear
-            switch (sp.getString("userjerarquia","")){
-                case "1":{
-                    tvUsuarioActual.setText("Usuario:"+sp.getString("userId","")+"\nJerarquía: Administrador");
+    private void initOnResume() {
+        if (!sp.getString("userId", "").equals("")) {//si no hay usuario logeado entonces no escanear
+            switch (sp.getString("userjerarquia", "")) {
+                case "1": {
+                    tvUsuarioActual.setText("Usuario:" + sp.getString("userId", "") + "\nJerarquía: Administrador");
                     /*bottomNavigationView.findViewById(R.id.bottom_menu_item4).setVisibility(View.VISIBLE);
                     bottomNavigationView.findViewById(R.id.bottom_menu_item3).setVisibility(View.VISIBLE);*/
                     break;
                 }
-                case "2":{
-                    tvUsuarioActual.setText("Usuario:"+sp.getString("userId","")+"\nJerarquía: Ingeniería");
+                case "2": {
+                    tvUsuarioActual.setText("Usuario:" + sp.getString("userId", "") + "\nJerarquía: Ingeniería");
                     break;
                 }
-                case "3":{
-                    tvUsuarioActual.setText("Usuario:"+sp.getString("userId","")+"\nJerarquía: Laboratorio");
+                case "3": {
+                    tvUsuarioActual.setText("Usuario:" + sp.getString("userId", "") + "\nJerarquía: Laboratorio");
                     break;
                 }
-                case "4":{
-                    tvUsuarioActual.setText("Usuario:"+sp.getString("userId","")+"\nJerarquía: Producción");
+                case "4": {
+                    tvUsuarioActual.setText("Usuario:" + sp.getString("userId", "") + "\nJerarquía: Producción");
                     /*bottomNavigationView.findViewById(R.id.bottom_menu_item4).setVisibility(View.GONE);
                     bottomNavigationView.findViewById(R.id.bottom_menu_item3).setVisibility(View.GONE);*/
                     break;
                 }
-                case "5":{
-                    tvUsuarioActual.setText("Usuario:"+sp.getString("userId","")+"\nJerarquía: Operador");
+                case "5": {
+                    tvUsuarioActual.setText("Usuario:" + sp.getString("userId", "") + "\nJerarquía: Operador");
+                    break;
+                }
+                case "6": {
+                    tvUsuarioActual.setText("Usuario:" + sp.getString("userId", "") + "\nJerarquía: Técnico");
                     break;
                 }
             }
-            BluetoothLeService BLE= bluetoothServices.getBluetoothLeService();
-            if (BLE==null){
-                esp.putBoolean("isconnected",false);
-                esp.putString("mac","");
-                esp.putString("trefpVersionName","");
+            BluetoothLeService BLE = bluetoothServices.getBluetoothLeService();
+            if (BLE == null) {
+                esp.putBoolean("isconnected", false);
+                esp.putString("mac", "");
+                esp.putString("trefpVersionName", "");
                 esp.apply();
                 disconnectBLE();
-                GlobalTools.changeScreenConnectionStatus(tvConnectionState,sp);
+                GlobalTools.changeScreenConnectionStatus(tvConnectionState, sp);
             }
         }
 
     }
-    private void init(){
-        RestrictionsManager myRestrictionsMgr =(RestrictionsManager) this.getSystemService(Context.RESTRICTIONS_SERVICE);
+
+    private void init() {
+        RestrictionsManager myRestrictionsMgr = (RestrictionsManager) this.getSystemService(Context.RESTRICTIONS_SERVICE);
         Bundle appRestrictions = myRestrictionsMgr.getApplicationRestrictions();
 
 
@@ -194,8 +201,7 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
         }
 
 
-
-        if (!sp.getBoolean("permissionGiven",false))
+        if (!sp.getBoolean("permissionGiven", false))
             askPermission();
 
         //campos
@@ -204,36 +210,36 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
         tvfwversion = findViewById(R.id.tvfwversion);
         tvappversion = findViewById(R.id.tvappVersion);
 
-        tvappversion.setText("Versión: "+BuildConfig.VERSION_NAME);
+        tvappversion.setText("Versión: " + BuildConfig.VERSION_NAME);
 
         //servicios bluetooth
-        fragmentManager= getSupportFragmentManager();
-        bluetoothServices = new BluetoothServices(this, fragmentManager,tvConnectionState,tvfwversion);
+        fragmentManager = getSupportFragmentManager();
+        bluetoothServices = new BluetoothServices(this, fragmentManager, tvConnectionState, tvfwversion);
 
 
-        if (bluetoothServices.BLESupport()){
-            if (bluetoothServices.isBluetoothAdapterEnabled()){
-                loginFragment = new LoginFragment(bluetoothServices, tvUsuarioActual , this);
-                usuarioFragment = new UsuarioFragment(bluetoothServices, tvUsuarioActual , this);
-                listaBLEFragment = new ListaBLEFragment(bluetoothServices,tvConnectionState, tvfwversion);
-                plantillaFragment = new PlantillaFragment(bluetoothServices,this);
-                plantillaCEOWiFiFragment = new PlantillaCEOWiFiFragment(bluetoothServices,this);
-                plantillaOxxoDisplayFragment = new PlantillaOxxoDisplayFragment(bluetoothServices,this);
-                estatusBLEFragment = new EstatusBLEFragment(bluetoothServices,this);
-                operacionesFragment = new OperacionesFragment(bluetoothServices,this);
-                operacionesFragmentCeoWifi = new OperacionesFragmentCeoWifi(bluetoothServices,this);
-                operacionesFragmentOxxo = new OperacionesFragmentOxxo(bluetoothServices,this);
+        if (bluetoothServices.BLESupport()) {
+            if (bluetoothServices.isBluetoothAdapterEnabled()) {
+                loginFragment = new LoginFragment(bluetoothServices, tvUsuarioActual, this);
+                usuarioFragment = new UsuarioFragment(bluetoothServices, tvUsuarioActual, this);
+                listaBLEFragment = new ListaBLEFragment(bluetoothServices, tvConnectionState, tvfwversion);
+                plantillaFragment = new PlantillaFragment(bluetoothServices, this);
+                plantillaCEOWiFiFragment = new PlantillaCEOWiFiFragment(bluetoothServices, this);
+                plantillaOxxoDisplayFragment = new PlantillaOxxoDisplayFragment(bluetoothServices, this);
+                estatusBLEFragment = new EstatusBLEFragment(bluetoothServices, this);
+                operacionesFragment = new OperacionesFragment(bluetoothServices, this);
+                operacionesFragmentCeoWifi = new OperacionesFragmentCeoWifi(bluetoothServices, this);
+                operacionesFragmentOxxo = new OperacionesFragmentOxxo(bluetoothServices, this);
                 active = loginFragment;
-            }else {
+            } else {
                 Toast.makeText(MainActivity.this, "El dispositivo tiene problemas con el Bluetooth o está apagado", Toast.LENGTH_SHORT).show();
             }
-        }else{
+        } else {
             Toast.makeText(MainActivity.this, "El dispositivo no soporta deteccion de BLE", Toast.LENGTH_SHORT).show();
         }
 
 
         //Inicializar interfaz MainActivity
-        bottomNavigationView = (BottomNavigationView)findViewById(R.id.bottom_navigation);
+        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnItemSelectedListener(this);
 
 
@@ -246,8 +252,8 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
         operacionesFragment.setOperacionesListener(this);
         //operacionesFragmentceowifi.setOperacionesListener(this);
 
-        fragmentManager.beginTransaction().add(R.id.flFragment,loginFragment, "").hide(loginFragment).commit();
-        fragmentManager.beginTransaction().add(R.id.flFragment,usuarioFragment, "").hide(usuarioFragment).commit();
+        fragmentManager.beginTransaction().add(R.id.flFragment, loginFragment, "").hide(loginFragment).commit();
+        fragmentManager.beginTransaction().add(R.id.flFragment, usuarioFragment, "").hide(usuarioFragment).commit();
         fragmentManager.beginTransaction().add(R.id.flFragment, estatusBLEFragment, "").hide(estatusBLEFragment).commit();
         fragmentManager.beginTransaction().add(R.id.flFragment, operacionesFragment, "").hide(operacionesFragment).commit();
         fragmentManager.beginTransaction().add(R.id.flFragment, operacionesFragmentCeoWifi, "").hide(operacionesFragmentCeoWifi).commit();
@@ -255,46 +261,48 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
         fragmentManager.beginTransaction().add(R.id.flFragment, plantillaFragment, "").hide(plantillaFragment).commit();
         fragmentManager.beginTransaction().add(R.id.flFragment, plantillaCEOWiFiFragment, "").hide(plantillaCEOWiFiFragment).commit();
         fragmentManager.beginTransaction().add(R.id.flFragment, plantillaOxxoDisplayFragment, "PlantillaOxxo").hide(plantillaOxxoDisplayFragment).commit();
-        fragmentManager.beginTransaction().add(R.id.flFragment,listaBLEFragment, "").hide(listaBLEFragment).commit();
+        fragmentManager.beginTransaction().add(R.id.flFragment, listaBLEFragment, "").hide(listaBLEFragment).commit();
 
         //si ya hay login exitoso no mostrar pantalla de login al inicio, en su lugar mostrar pantalla de usuario y logout
-        if (sp.getString("userId","").equals("")){
+        if (sp.getString("userId", "").equals("")) {
             bottomNavigationView.setSelectedItemId(R.id.bottom_menu_item5);
             fragmentManager.beginTransaction().show(loginFragment).commit();
-            active= loginFragment;
-        }else{
+            active = loginFragment;
+        } else {
             bottomNavigationView.setSelectedItemId(R.id.bottom_menu_item1);
             fragmentManager.beginTransaction().show(listaBLEFragment).commit();
-            active= listaBLEFragment;
+            active = listaBLEFragment;
         }
 
 
     }
 
-    private void askPermission(){
+    private void askPermission() {
 
-        if (Build.VERSION.SDK_INT >= 31){
-            String[] perms = {  Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.BLUETOOTH_CONNECT};
+        if (Build.VERSION.SDK_INT >= 31) {
+            String[] perms = {Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.BLUETOOTH_CONNECT};
             if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED) {
-                esp.putBoolean("permissionGiven",true);
+                esp.putBoolean("permissionGiven", true);
                 esp.apply();
             } else {
-                requestPermissions(perms,100);
+                requestPermissions(perms, 100);
             }
-        }else{
-            ActivityCompat.requestPermissions( this, new String[] {  android.Manifest.permission.ACCESS_FINE_LOCATION  }, 1666);
+        } else {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1666);
             LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-            boolean         locationEnabled = false;
+            boolean locationEnabled = false;
             try {
                 locationEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-            } catch(Exception ignored) {}
+            } catch (Exception ignored) {
+            }
             try {
                 locationEnabled |= locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-            } catch(Exception ignored) {}
-            if(!locationEnabled)
-                Log.d("PERMISSION LOCATION ENABLED","CORREWCTO");
+            } catch (Exception ignored) {
+            }
+            if (!locationEnabled)
+                Log.d("PERMISSION LOCATION ENABLED", "CORREWCTO");
             else
-                Log.d("PERMISSION LOCATION ENABLED","IJNININCORREWCTO");
+                Log.d("PERMISSION LOCATION ENABLED", "IJNININCORREWCTO");
         }
     }
 
@@ -302,21 +310,21 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // User chose not to enable Bluetooth.
         if (requestCode == 1 && resultCode == Activity.RESULT_CANCELED) {
-            esp.putBoolean("permissionGiven",false);
+            esp.putBoolean("permissionGiven", false);
             esp.apply();
             finish();
             return;
         }
-        if (requestCode==100) {
-            esp.putBoolean("permissionGiven",true);
+        if (requestCode == 100) {
+            esp.putBoolean("permissionGiven", true);
             esp.apply();
             Toast.makeText(MainActivity.this, "¡Ahora puedes escanear!", Toast.LENGTH_SHORT).show();
-        }else if (requestCode==1666){
-            esp.putBoolean("permissionGiven",true);
+        } else if (requestCode == 1666) {
+            esp.putBoolean("permissionGiven", true);
             esp.apply();
             Toast.makeText(MainActivity.this, "¡Ahora puedes escanear!", Toast.LENGTH_SHORT).show();
-        }else{
-            esp.putBoolean("permissionGiven",false);
+        } else {
+            esp.putBoolean("permissionGiven", false);
             esp.apply();
         }
 
@@ -327,55 +335,56 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.bottom_menu_item1:
-                if (sp.getString("userId","").equals("")){
+                if (sp.getString("userId", "").equals("")) {
                     fragmentManager.beginTransaction().hide(active).show(loginFragment).commit();
-                    active= loginFragment;
+                    active = loginFragment;
                     Toast.makeText(this, "Conéctate con un usuario primero", Toast.LENGTH_SHORT).show();
-                }else{
+                } else {
                     fragmentManager.beginTransaction().hide(active).show(listaBLEFragment).commit();
-                    active=listaBLEFragment;
+                    active = listaBLEFragment;
                 }
                 return true;
             case R.id.bottom_menu_item2:
-
-                if (sp.getString("userId","").equals("")){
+                if (sp.getString("userId", "").equals("")) {
                     fragmentManager.beginTransaction().hide(active).show(loginFragment).commit();
-                    active= loginFragment;
+                    active = loginFragment;
                     Toast.makeText(this, "Conéctate con un usuario primero", Toast.LENGTH_SHORT).show();
-                }else{
+                } else {
                     /*if (sp.getString("userjerarquia","").equals("4")){//jerarquia 4  = producción
                         showInfoPopup("Jerarquía de usuarios","Tu usuario no puede utilizar esta función, contacta con el administrador del sistema.");
                     }else{*/
-                    if (sp.getString("trefpVersionName","").equals("IMBERA-WF")){
+                    Log.d("TESTT",":"+sp.getString("trefpVersionName",""));
+
+                    if (sp.getString("trefpVersionName", "").equals("IMBERA-WF  ")) {
                         fragmentManager.beginTransaction().hide(active).show(plantillaCEOWiFiFragment).commit();
-                        active=plantillaCEOWiFiFragment;
-                    }else if (sp.getString("trefpVersionName","").equals("IMBERA-OXXO")){
+                        active = plantillaCEOWiFiFragment;
+                    } else if (sp.getString("trefpVersionName", "").equals("IMBERA-OXXO")) {
                         fragmentManager.beginTransaction().hide(active).show(plantillaOxxoDisplayFragment).commit();
-                        active=plantillaOxxoDisplayFragment;
-                    }else if (sp.getString("trefpVersionName","").equals("IMBERA-TREFP")){
+                        active = plantillaOxxoDisplayFragment;
+                    } else if (sp.getString("trefpVersionName", "").equals("IMBERA-TREFP")) {
                         fragmentManager.beginTransaction().hide(active).show(plantillaFragment).commit();
-                        active=plantillaFragment;
-                    }else if (sp.getString("trefpVersionName","").equals("")){
-                            Toast.makeText(this, "Conéctate a un BLE primero", Toast.LENGTH_SHORT).show();
-                        }
+                        active = plantillaFragment;
+                    } else if (sp.getString("trefpVersionName", "").equals("")) {
+                        Toast.makeText(this, "Conéctate a un BLE primero", Toast.LENGTH_SHORT).show();
+                    }
                     //}
 
                 }
                 return true;
             case R.id.bottom_menu_item3:
-                if (sp.getString("userId","").equals("")){
+                if (sp.getString("userId", "").equals("")) {
                     fragmentManager.beginTransaction().hide(active).show(loginFragment).commit();
-                    active= loginFragment;
+                    active = loginFragment;
                     Toast.makeText(this, "Conéctate con un usuario primero", Toast.LENGTH_SHORT).show();
-                }else{
-                    if (sp.getString("userjerarquia","").equals("4") || sp.getString("userjerarquia","").equals("5")){//jerarquia 4  = producción; 5 = Operador
-                        showInfoPopup("Jerarquía de usuarios","Tu usuario no puede utilizar esta función, contacta con el administrador del sistema.");
-                    }else{
-                        if (sp.getString("trefpVersionName","").equals("")){
+                } else {
+                    if (sp.getString("userjerarquia", "").equals("4") || sp.getString("userjerarquia", "").equals("5")) {//jerarquia 4  = producción; 5 = Operador
+                        showInfoPopup("Jerarquía de usuarios", "Tu usuario no puede utilizar esta función, contacta con el administrador del sistema.");
+                    } else {
+                        if (sp.getString("trefpVersionName", "").equals("")) {
                             Toast.makeText(this, "Conéctate a un BLE primero", Toast.LENGTH_SHORT).show();
-                        }else{
+                        } else {
                             fragmentManager.beginTransaction().hide(active).show(estatusBLEFragment).commit();
-                            active= estatusBLEFragment;
+                            active = estatusBLEFragment;
                         }
                     }
 
@@ -383,50 +392,49 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
                 }
                 return true;
             case R.id.bottom_menu_item4:
-                if (sp.getString("userId","").equals("")){
+                if (sp.getString("userId", "").equals("")) {
                     Toast.makeText(this, "Conéctate con un usuario primero", Toast.LENGTH_SHORT).show();
-                }else{
-                    if (sp.getString("userjerarquia","").equals("4") || sp.getString("userjerarquia","").equals("5")){//jerarquia 4  = producción; 5 = Operador
-                        showInfoPopup("Jerarquía de usuarios","Tu usuario no puede utilizar esta función, contacta con el administrador del sistema.");
-                    }else{
-                        if (sp.getString("trefpVersionName","").equals("IMBERA-WF")){
+                } else {
+                    if (sp.getString("userjerarquia", "").equals("4") || sp.getString("userjerarquia", "").equals("5")|| sp.getString("userjerarquia", "").equals("6")) {//jerarquia 4  = producción; 5 = Operador
+                        showInfoPopup("Jerarquía de usuarios", "Tu usuario no puede utilizar esta función, contacta con el administrador del sistema.");
+                    } else {
+                        if (sp.getString("trefpVersionName", "").equals("IMBERA-WF  ")) {
                             fragmentManager.beginTransaction().hide(active).show(operacionesFragmentCeoWifi).commit();
-                            active= operacionesFragmentCeoWifi;
-                        }else if (sp.getString("trefpVersionName","").equals("IMBERA-OXXO")){
+                            active = operacionesFragmentCeoWifi;
+                        } else if (sp.getString("trefpVersionName", "").equals("IMBERA-OXXO")) {
                             fragmentManager.beginTransaction().hide(active).show(operacionesFragmentOxxo).commit();
-                            active= operacionesFragmentOxxo;
-                        }else if (sp.getString("trefpVersionName","").equals("IMBERA-TREFP")){
+                            active = operacionesFragmentOxxo;
+                        } else if (sp.getString("trefpVersionName", "").equals("IMBERA-TREFP")) {
                             fragmentManager.beginTransaction().hide(active).show(operacionesFragment).commit();
-                            active= operacionesFragment;
-                        }else if (sp.getString("trefpVersionName","").equals("")){
+                            active = operacionesFragment;
+                        } else if (sp.getString("trefpVersionName", "").equals("")) {
                             Toast.makeText(this, "Conéctate a un BLE primero", Toast.LENGTH_SHORT).show();
                         }
                     }
 
 
                 }
-            return true;
+                return true;
             case R.id.bottom_menu_item5:
                 //todo login, acceso y cuando hay una sesión abierta mostras las demás acciones posibles según su jerarquia
-                if (sp.getString("userId","").equals("")){
+                if (sp.getString("userId", "").equals("")) {
                     fragmentManager.beginTransaction().hide(active).show(loginFragment).commit();
-                    active= loginFragment;
-                }else{
+                    active = loginFragment;
+                } else {
                     //todo mostrar las opciones del usuario en cuanto a cuentas
                     fragmentManager.beginTransaction().hide(active).show(usuarioFragment).commit();
-                    active= usuarioFragment;
+                    active = usuarioFragment;
                 }
-
                 return true;
         }
         return false;
     }
 
     @Override
-    public void connectBLE(String name,String mac) {
+    public void connectBLE(String name, String mac) {
         deviceName = name;
         deviceMacAddress = mac;
-        bluetoothServices.connect(name,mac);
+        bluetoothServices.connect(name, mac);
     }
 
     @Override
@@ -438,21 +446,21 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
     public boolean isPermissionEnabled() {
         if (Build.VERSION.SDK_INT >= 31) {
             if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED) {
-                esp.putBoolean("permissionGiven",true);
+                esp.putBoolean("permissionGiven", true);
                 esp.apply();
                 return true;
             } else {
-                esp.putBoolean("permissionGiven",false);
+                esp.putBoolean("permissionGiven", false);
                 esp.apply();
                 return false;
             }
-        }else{
+        } else {
             if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                esp.putBoolean("permissionGiven",true);
+                esp.putBoolean("permissionGiven", true);
                 esp.apply();
                 return true;
             } else {
-                esp.putBoolean("permissionGiven",false);
+                esp.putBoolean("permissionGiven", false);
                 esp.apply();
                 return false;
                 //requestPermissions(perms,100);
@@ -469,13 +477,13 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
 
     @Override
     public void logout() {
-        esp.putString("userId","");
-        esp.putString("userjerarquia","");
+        esp.putString("userId", "");
+        esp.putString("userjerarquia", "");
         esp.apply();
         tvUsuarioActual.setText("");
         bottomNavigationView.setSelectedItemId(R.id.bottom_menu_item5);
         fragmentManager.beginTransaction().hide(active).show(loginFragment).commit();
-        active= loginFragment;
+        active = loginFragment;
     }
 
     @Override
@@ -485,49 +493,54 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
         plantillaOxxoDisplayFragment.actualizarUIJerarquia();
         plantillaFragment.actualizarUIJerarquia();
         //fragmentManager.findFragmentByTag("PlantillaOxxo").
-        View v  = usuarioFragment.getView();
-        TextView tv =v.findViewById(R.id.tvUserName);
-        TextView tv2 =v.findViewById(R.id.tvjerarquia);
-        tv.setText(sp.getString("userId",""));
-        switch (sp.getString("userjerarquia","")){
-            case "1":{
+        View v = usuarioFragment.getView();
+        TextView tv = v.findViewById(R.id.tvUserName);
+        TextView tv2 = v.findViewById(R.id.tvjerarquia);
+        tv.setText(sp.getString("userId", ""));
+        switch (sp.getString("userjerarquia", "")) {
+            case "1": {
                 tv2.setText("Administrador");
                 //Mostrar menus para este superusuario
                 break;
             }
-            case "4":{
+            case "4": {
                 //ocultar menus para este usuario
                 tv2.setText("Producción");
                 break;
             }
-            case "5":{
+            case "5": {
                 //ocultar menus para este usuario
                 tv2.setText("Operador");
                 break;
             }
+            case "6": {
+                //ocultar menus para este usuario
+                tv2.setText("Técnico");
+                break;
+            }
         }
 
-        active= usuarioFragment;
+        active = usuarioFragment;
     }
 
     /**
      * Empiezan funciones de excel
-     * */
+     */
     @Override
     public void printExcel(List<String> data, String deviceName) {
-        createProgressDialogExcelDoc(data,deviceName);
+        createProgressDialogExcelDoc(data, deviceName);
     }
 
     @Override
     public void printExcelCrudoExtendido(List<String> data, List<String> evento, List<String> tiempo) {
-        createExcelFileCrudototalImberaExtendido(data,evento,tiempo);
+        createExcelFileCrudototalImberaExtendido(data, evento, tiempo);
     }
 
-    private void showInfoPopup(String tittle, String content){
+    private void showInfoPopup(String tittle, String content) {
         final AlertDialog alexaDialog;
         LayoutInflater inflater = getLayoutInflater();//getLayoutInflater();
         final View dialogView = inflater.inflate(R.layout.popup_info, null, false);
-        AlertDialog.Builder adb = new AlertDialog.Builder(this,R.style.Theme_AppCompat_Light_Dialog_Alert_eltc);
+        AlertDialog.Builder adb = new AlertDialog.Builder(this, R.style.Theme_AppCompat_Light_Dialog_Alert_eltc);
         adb.setView(dialogView);
 
         TextView tv1 = (TextView) dialogView.findViewById(R.id.tvTituloData);
@@ -548,12 +561,12 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
 
     }
 
-    public void createProgressDialogExcelDoc(List<String> data, String name){
-        if(progressdialog == null){
+    public void createProgressDialogExcelDoc(List<String> data, String name) {
+        if (progressdialog == null) {
             //Crear dialogos de "pantalla de carga" y "popups if"
             LayoutInflater inflater = getLayoutInflater();
             final View dialogView = inflater.inflate(R.layout.popup_option, null, false);
-            AlertDialog.Builder adb = new AlertDialog.Builder(MainActivity.this,R.style.Theme_AppCompat_Light_Dialog_Alert_eltc);
+            AlertDialog.Builder adb = new AlertDialog.Builder(MainActivity.this, R.style.Theme_AppCompat_Light_Dialog_Alert_eltc);
             adb.setView(dialogView);
 
             progressdialog = adb.create();
@@ -567,9 +580,9 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
                     progressdialog.dismiss();
                     progressdialog = null;
 
-                    if (name.equals("oxxo")){
+                    if (name.equals("oxxo")) {
                         createExcelFileOxxoDisplay(data);
-                    }else if (name.equals("imbera"))
+                    } else if (name.equals("imbera"))
                         createExcelFileImberaTREFP(data);
                     else if (name.equals("crudototalImbera"))
                         createExcelFileCrudototalImbera(data);
@@ -587,13 +600,13 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
         }
     }
 
-    private void createExcelFileCrudototalOxxo(List<String> data){
+    private void createExcelFileCrudototalOxxo(List<String> data) {
 
-        String nombreFile= "InfoTotalCrudoOxxo.xls";
-        File file = new File(this.getExternalFilesDir(null),nombreFile);
+        String nombreFile = "InfoTotalCrudoOxxo.xls";
+        File file = new File(this.getExternalFilesDir(null), nombreFile);
         FileOutputStream outputStream = null;
 
-        HSSFWorkbook wb= new HSSFWorkbook();
+        HSSFWorkbook wb = new HSSFWorkbook();
         HSSFSheet hssfSheet = wb.createSheet("Handshake");
 
         HSSFRow hssfRow = hssfSheet.createRow(0);
@@ -618,7 +631,7 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
         try {
             outputStream = new FileOutputStream(file);
             wb.write(outputStream);
-            Toast.makeText(this.getApplicationContext(),"Reporte generado correctamente",Toast.LENGTH_LONG).show();
+            Toast.makeText(this.getApplicationContext(), "Reporte generado correctamente", Toast.LENGTH_LONG).show();
             try {
                 outputStream.close();
                 setupEmailImberaOxxoCrudo();
@@ -628,25 +641,25 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
 
 
         } catch (java.io.IOException e) {
-            Toast.makeText(this.getApplicationContext(),"Reporte no generado",Toast.LENGTH_LONG).show();
+            Toast.makeText(this.getApplicationContext(), "Reporte no generado", Toast.LENGTH_LONG).show();
             e.printStackTrace();
 
         }
     }
 
-    private void createExcelFileCrudototalImberaExtendido(List<String> data,List<String> dataEvento,List<String> dataTiempo){
-        Log.d("EXCELELES",":"+data.get(0));
-        Log.d("EXCELELES",":"+data.get(1));
-        Log.d("EXCELELES",":"+data.get(2));
+    private void createExcelFileCrudototalImberaExtendido(List<String> data, List<String> dataEvento, List<String> dataTiempo) {
+        Log.d("EXCELELES", ":" + data.get(0));
+        Log.d("EXCELELES", ":" + data.get(1));
+        Log.d("EXCELELES", ":" + data.get(2));
 
-        Log.d("EXCELELES","EENTO:"+dataEvento);
-        Log.d("EXCELELES","tiempo:"+dataTiempo);
+        Log.d("EXCELELES", "EENTO:" + dataEvento);
+        Log.d("EXCELELES", "tiempo:" + dataTiempo);
 
-        String nombreFile= "CrudoTREFPBExt.xls";
-        File file = new File(this.getExternalFilesDir(null),nombreFile);
+        String nombreFile = "CrudoTREFPBExt.xls";
+        File file = new File(this.getExternalFilesDir(null), nombreFile);
         FileOutputStream outputStream = null;
 
-        HSSFWorkbook wb= new HSSFWorkbook();
+        HSSFWorkbook wb = new HSSFWorkbook();
         HSSFSheet hssfSheet = wb.createSheet("Handshake");
 
         HSSFRow hssfRow = hssfSheet.createRow(0);
@@ -662,20 +675,20 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
         hssfCell.setCellValue(data.get(1));
 
         hssfSheet = wb.createSheet("Datos tipo tiempo");
-        Log.d("GGG",":"+dataTiempo.size());
+        Log.d("GGG", ":" + dataTiempo.size());
         /*hssfRow = hssfSheet.createRow(0);
         hssfCell = hssfRow.createCell(0);*/
-        for (int i=0; i<dataTiempo.size(); i++){
+        for (int i = 0; i < dataTiempo.size(); i++) {
             hssfCell = hssfRow.createCell(0);
             hssfRow = hssfSheet.createRow(i);
             hssfCell.setCellValue(dataTiempo.get(i));
         }
 
         hssfSheet = wb.createSheet("Datos tipo evento");
-        Log.d("GGG",":"+dataEvento.size());
+        Log.d("GGG", ":" + dataEvento.size());
 
         hssfCell = hssfRow.createCell(0);
-        for (int i=0; i<dataEvento.size(); i++){
+        for (int i = 0; i < dataEvento.size(); i++) {
             hssfRow = hssfSheet.createRow(i);
             hssfCell.setCellValue(dataEvento.get(i));
         }
@@ -690,7 +703,7 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
         try {
             outputStream = new FileOutputStream(file);
             wb.write(outputStream);
-            Toast.makeText(this.getApplicationContext(),"Reporte generado correctamente",Toast.LENGTH_LONG).show();
+            Toast.makeText(this.getApplicationContext(), "Reporte generado correctamente", Toast.LENGTH_LONG).show();
             try {
                 outputStream.close();
                 setupEmailImberaTREFPCrudoExtendido();
@@ -700,19 +713,19 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
 
 
         } catch (java.io.IOException e) {
-            Toast.makeText(this.getApplicationContext(),"Reporte no generado",Toast.LENGTH_LONG).show();
+            Toast.makeText(this.getApplicationContext(), "Reporte no generado", Toast.LENGTH_LONG).show();
             e.printStackTrace();
 
         }
     }
 
-    private void createExcelFileCrudototalImbera(List<String> data){
+    private void createExcelFileCrudototalImbera(List<String> data) {
 
-        String nombreFile= "InfoTotalCrudoTREFPB.xls";
-        File file = new File(this.getExternalFilesDir(null),nombreFile);
+        String nombreFile = "InfoTotalCrudoTREFPB.xls";
+        File file = new File(this.getExternalFilesDir(null), nombreFile);
         FileOutputStream outputStream = null;
 
-        HSSFWorkbook wb= new HSSFWorkbook();
+        HSSFWorkbook wb = new HSSFWorkbook();
         HSSFSheet hssfSheet = wb.createSheet("Handshake");
 
         HSSFRow hssfRow = hssfSheet.createRow(0);
@@ -751,7 +764,7 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
         try {
             outputStream = new FileOutputStream(file);
             wb.write(outputStream);
-            Toast.makeText(this.getApplicationContext(),"Reporte generado correctamente",Toast.LENGTH_LONG).show();
+            Toast.makeText(this.getApplicationContext(), "Reporte generado correctamente", Toast.LENGTH_LONG).show();
             try {
                 outputStream.close();
                 setupEmailImberaTREFPCrudo();
@@ -761,19 +774,19 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
 
 
         } catch (java.io.IOException e) {
-            Toast.makeText(this.getApplicationContext(),"Reporte no generado",Toast.LENGTH_LONG).show();
+            Toast.makeText(this.getApplicationContext(), "Reporte no generado", Toast.LENGTH_LONG).show();
             e.printStackTrace();
 
         }
     }
 
-    private void createExcelFileImberaTREFP(List<String> data){
+    private void createExcelFileImberaTREFP(List<String> data) {
 
-        String nombreFile= "PlantillaImberaP.xls";
-        File file = new File(this.getExternalFilesDir(null),nombreFile);
+        String nombreFile = "PlantillaImberaP.xls";
+        File file = new File(this.getExternalFilesDir(null), nombreFile);
         FileOutputStream outputStream = null;
 
-        HSSFWorkbook wb= new HSSFWorkbook();
+        HSSFWorkbook wb = new HSSFWorkbook();
         HSSFSheet hssfSheet = wb.createSheet("Plantilla");
 
         HSSFRow hssfRow = hssfSheet.createRow(0);
@@ -1079,7 +1092,7 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
         try {
             outputStream = new FileOutputStream(file);
             wb.write(outputStream);
-            Toast.makeText(this.getApplicationContext(),"Reporte generado correctamente",Toast.LENGTH_LONG).show();
+            Toast.makeText(this.getApplicationContext(), "Reporte generado correctamente", Toast.LENGTH_LONG).show();
             try {
                 outputStream.close();
                 setupEmailImberaTREFP(data);
@@ -1089,19 +1102,19 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
 
 
         } catch (java.io.IOException e) {
-            Toast.makeText(this.getApplicationContext(),"Reporte no generado",Toast.LENGTH_LONG).show();
+            Toast.makeText(this.getApplicationContext(), "Reporte no generado", Toast.LENGTH_LONG).show();
             e.printStackTrace();
 
         }
     }
 
-    private void createExcelFileOxxoDisplay(List<String> data){
+    private void createExcelFileOxxoDisplay(List<String> data) {
 
-        String nombreFile= "PlantillaImberaP.xls";
-        File file = new File(this.getExternalFilesDir(null),nombreFile);
+        String nombreFile = "PlantillaImberaP.xls";
+        File file = new File(this.getExternalFilesDir(null), nombreFile);
         FileOutputStream outputStream = null;
 
-        HSSFWorkbook wb= new HSSFWorkbook();
+        HSSFWorkbook wb = new HSSFWorkbook();
         HSSFSheet hssfSheet = wb.createSheet("Plantilla");
 
         HSSFRow hssfRow = hssfSheet.createRow(0);
@@ -1231,13 +1244,13 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
         hssfCell = hssfRow.createCell(0);
         hssfCell.setCellValue("L1.- Voltaje de protección máximo 120 mínimo 220 (Volts, por defecto:40)");
         hssfCell = hssfRow.createCell(1);
-        hssfCell.setCellValue("1"+data.get(17));
+        hssfCell.setCellValue("1" + data.get(17));
 
         hssfRow = hssfSheet.createRow(20);
         hssfCell = hssfRow.createCell(0);
         hssfCell.setCellValue("L2.- Voltaje de protección máximo para 220 (Volts, por defecto:40)");
         hssfCell = hssfRow.createCell(1);
-        hssfCell.setCellValue("2"+data.get(18));
+        hssfCell.setCellValue("2" + data.get(18));
 
         hssfRow = hssfSheet.createRow(21);
         hssfCell = hssfRow.createCell(0);
@@ -1447,11 +1460,10 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
         hssfCell.setCellValue(data.get(50));
 
 
-
         try {
             outputStream = new FileOutputStream(file);
             wb.write(outputStream);
-            Toast.makeText(this.getApplicationContext(),"Reporte generado correctamente",Toast.LENGTH_LONG).show();
+            Toast.makeText(this.getApplicationContext(), "Reporte generado correctamente", Toast.LENGTH_LONG).show();
             try {
                 outputStream.close();
                 setupEmailOxxo(data);
@@ -1461,25 +1473,25 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
 
 
         } catch (java.io.IOException e) {
-            Toast.makeText(this.getApplicationContext(),"Reporte no generado",Toast.LENGTH_LONG).show();
+            Toast.makeText(this.getApplicationContext(), "Reporte no generado", Toast.LENGTH_LONG).show();
             e.printStackTrace();
 
         }
     }
 
-    private void setupEmailImberaTREFPCrudoExtendido (){
+    private void setupEmailImberaTREFPCrudoExtendido() {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("application/excel");
         //intent.putExtra(Intent.EXTRA_EMAIL, email);
         intent.putExtra(Intent.EXTRA_SUBJECT, "Información en crudo");
-        intent.putExtra(Intent.EXTRA_TEXT,"Envío de archivo HEX enviado desde la aplicación ImberaP\nFecha:"+ Calendar.getInstance().getTime());
+        intent.putExtra(Intent.EXTRA_TEXT, "Envío de archivo HEX enviado desde la aplicación ImberaP\nFecha:" + Calendar.getInstance().getTime());
 
-        String nombreFile= "CrudoTREFPBExt.xls";
-        File file = new File(this.getExternalFilesDir(null),nombreFile);
-        if (file.exists()){
-            Log.v("TEST EMAILExtendido", "Email file_exists!" );
-        } else{
-            Log.v("TEST EMAIL", "Email file does not exist!" );
+        String nombreFile = "CrudoTREFPBExt.xls";
+        File file = new File(this.getExternalFilesDir(null), nombreFile);
+        if (file.exists()) {
+            Log.v("TEST EMAILExtendido", "Email file_exists!");
+        } else {
+            Log.v("TEST EMAIL", "Email file does not exist!");
         }
 
         Uri uri = FileProvider.getUriForFile(
@@ -1491,19 +1503,19 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
         this.startActivity(Intent.createChooser(intent, "Send mail..."));
     }
 
-    private void setupEmailImberaTREFPCrudo (){
+    private void setupEmailImberaTREFPCrudo() {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("application/excel");
         //intent.putExtra(Intent.EXTRA_EMAIL, email);
         intent.putExtra(Intent.EXTRA_SUBJECT, "Información en crudo");
-        intent.putExtra(Intent.EXTRA_TEXT,"Envío de archivo HEX enviado desde la aplicación ImberaP\nFecha:"+ Calendar.getInstance().getTime());
+        intent.putExtra(Intent.EXTRA_TEXT, "Envío de archivo HEX enviado desde la aplicación ImberaP\nFecha:" + Calendar.getInstance().getTime());
 
-        String nombreFile= "InfoTotalCrudoTREFPB.xls";
-        File file = new File(this.getExternalFilesDir(null),nombreFile);
-        if (file.exists()){
-            Log.v("TEST EMAIL", "Email file_exists!" );
-        } else{
-            Log.v("TEST EMAIL", "Email file does not exist!" );
+        String nombreFile = "InfoTotalCrudoTREFPB.xls";
+        File file = new File(this.getExternalFilesDir(null), nombreFile);
+        if (file.exists()) {
+            Log.v("TEST EMAIL", "Email file_exists!");
+        } else {
+            Log.v("TEST EMAIL", "Email file does not exist!");
         }
 
         Uri uri = FileProvider.getUriForFile(
@@ -1515,19 +1527,19 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
         this.startActivity(Intent.createChooser(intent, "Send mail..."));
     }
 
-    private void setupEmailImberaOxxoCrudo (){
+    private void setupEmailImberaOxxoCrudo() {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("application/excel");
         //intent.putExtra(Intent.EXTRA_EMAIL, email);
         intent.putExtra(Intent.EXTRA_SUBJECT, "Información en crudo");
-        intent.putExtra(Intent.EXTRA_TEXT,"Envío de archivo HEX enviado desde la aplicación ImberaP\nFecha:"+ Calendar.getInstance().getTime());
+        intent.putExtra(Intent.EXTRA_TEXT, "Envío de archivo HEX enviado desde la aplicación ImberaP\nFecha:" + Calendar.getInstance().getTime());
 
-        String nombreFile= "InfoTotalCrudoOxxo.xls";
-        File file = new File(this.getExternalFilesDir(null),nombreFile);
-        if (file.exists()){
-            Log.v("TEST EMAIL", "Email file_exists!" );
-        } else{
-            Log.v("TEST EMAIL", "Email file does not exist!" );
+        String nombreFile = "InfoTotalCrudoOxxo.xls";
+        File file = new File(this.getExternalFilesDir(null), nombreFile);
+        if (file.exists()) {
+            Log.v("TEST EMAIL", "Email file_exists!");
+        } else {
+            Log.v("TEST EMAIL", "Email file does not exist!");
         }
 
         Uri uri = FileProvider.getUriForFile(
@@ -1539,19 +1551,19 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
         this.startActivity(Intent.createChooser(intent, "Send mail..."));
     }
 
-    private void setupEmailImberaTREFP (List<String> data){
+    private void setupEmailImberaTREFP(List<String> data) {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("application/excel");
         //intent.putExtra(Intent.EXTRA_EMAIL, email);
-        intent.putExtra(Intent.EXTRA_SUBJECT, "PLANTILLA DE CONFIGURACIÓN:"+data.get(43));
-        intent.putExtra(Intent.EXTRA_TEXT,"Envío de archivo de configuración enviado desde la aplicación ImberaP\nFecha:"+ Calendar.getInstance().getTime());
+        intent.putExtra(Intent.EXTRA_SUBJECT, "PLANTILLA DE CONFIGURACIÓN:" + data.get(43));
+        intent.putExtra(Intent.EXTRA_TEXT, "Envío de archivo de configuración enviado desde la aplicación ImberaP\nFecha:" + Calendar.getInstance().getTime());
 
-        String nombreFile= "PlantillaImberaP.xls";
-        File file = new File(this.getExternalFilesDir(null),nombreFile);
-        if (file.exists()){
-            Log.v("TEST EMAIL", "Email file_exists!" );
-        } else{
-            Log.v("TEST EMAIL", "Email file does not exist!" );
+        String nombreFile = "PlantillaImberaP.xls";
+        File file = new File(this.getExternalFilesDir(null), nombreFile);
+        if (file.exists()) {
+            Log.v("TEST EMAIL", "Email file_exists!");
+        } else {
+            Log.v("TEST EMAIL", "Email file does not exist!");
         }
 
         Uri uri = FileProvider.getUriForFile(
@@ -1563,7 +1575,7 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
         this.startActivity(Intent.createChooser(intent, "Send mail..."));
     }
 
-    private void setupEmailOxxo (List<String> data){
+    private void setupEmailOxxo(List<String> data) {
         //String[] email = new String[1];
         //email[0] = "luise@eltec.mx";
         //email[0] = "eduard_vis@hotmail.com";
@@ -1571,15 +1583,15 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("application/excel");
         //intent.putExtra(Intent.EXTRA_EMAIL, email);
-        intent.putExtra(Intent.EXTRA_SUBJECT, "PLANTILLA DE CONFIGURACIÓN:"+data.get(50));
-        intent.putExtra(Intent.EXTRA_TEXT,"Envío de archivo de configuración enviado desde la aplicación ImberaP\nFecha:"+ Calendar.getInstance().getTime());
+        intent.putExtra(Intent.EXTRA_SUBJECT, "PLANTILLA DE CONFIGURACIÓN:" + data.get(50));
+        intent.putExtra(Intent.EXTRA_TEXT, "Envío de archivo de configuración enviado desde la aplicación ImberaP\nFecha:" + Calendar.getInstance().getTime());
 
-        String nombreFile= "PlantillaImberaP.xls";
-        File file = new File(this.getExternalFilesDir(null),nombreFile);
-        if (file.exists()){
-            Log.v("TEST EMAIL", "Email file_exists!" );
-        } else{
-            Log.v("TEST EMAIL", "Email file does not exist!" );
+        String nombreFile = "PlantillaImberaP.xls";
+        File file = new File(this.getExternalFilesDir(null), nombreFile);
+        if (file.exists()) {
+            Log.v("TEST EMAIL", "Email file_exists!");
+        } else {
+            Log.v("TEST EMAIL", "Email file does not exist!");
         }
 
         Uri uri = FileProvider.getUriForFile(
@@ -1591,20 +1603,20 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
         this.startActivity(Intent.createChooser(intent, "Send mail..."));
     }
 
-    private void setupEmailEvent (String titulo,String descripcion, String filestring){
+    private void setupEmailEvent(String titulo, String descripcion, String filestring) {
 
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("application/excel");
         //intent.putExtra(Intent.EXTRA_EMAIL, email);
         intent.putExtra(Intent.EXTRA_SUBJECT, titulo);
-        intent.putExtra(Intent.EXTRA_TEXT,descripcion);
+        intent.putExtra(Intent.EXTRA_TEXT, descripcion);
 
 
-        File file = new File(this.getExternalFilesDir(null),filestring);
-        if (file.exists()){
-            Log.v("TEST EMAIL", "Email file_exists!" );
-        } else{
-            Log.v("TEST EMAIL", "Email file does not exist!" );
+        File file = new File(this.getExternalFilesDir(null), filestring);
+        if (file.exists()) {
+            Log.v("TEST EMAIL", "Email file_exists!");
+        } else {
+            Log.v("TEST EMAIL", "Email file does not exist!");
         }
 
         Uri uri = FileProvider.getUriForFile(
@@ -1617,12 +1629,12 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
     }
 
     @Override
-    public void createExcelTimeData(String name,List<String> data) {
-        String nombreFile= "DatosTipoTiempo.xls";
-        File file = new File(this.getExternalFilesDir(null),nombreFile);
+    public void createExcelTimeData(String name, List<String> data) {
+        String nombreFile = "DatosTipoTiempo.xls";
+        File file = new File(this.getExternalFilesDir(null), nombreFile);
         FileOutputStream outputStream = null;
 
-        HSSFWorkbook wb= new HSSFWorkbook();
+        HSSFWorkbook wb = new HSSFWorkbook();
         HSSFSheet hssfSheet = wb.createSheet("Datos tipo Tiempo");
 
         HSSFRow hssfRow = hssfSheet.createRow(0);
@@ -1630,22 +1642,22 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
 
         //se agregan los datos de quien lo genera y la fecha etc
         Date currentTime = Calendar.getInstance().getTime();
-        hssfCell.setCellValue("Creador:"+sp.getString("userId",""));
+        hssfCell.setCellValue("Creador:" + sp.getString("userId", ""));
         hssfRow = hssfSheet.createRow(1);
         hssfCell = hssfRow.createCell(0);
-        switch (sp.getString("userjerarquia","")){
-            case "1":{
+        switch (sp.getString("userjerarquia", "")) {
+            case "1": {
                 hssfCell.setCellValue("Jerarquía: Administrador");
                 break;
             }
-            case "4":{
+            case "4": {
                 hssfCell.setCellValue("Jerarquía: Producción");
                 break;
             }
         }
         hssfRow = hssfSheet.createRow(2);
         hssfCell = hssfRow.createCell(0);
-        hssfCell.setCellValue("Fecha:"+currentTime);
+        hssfCell.setCellValue("Fecha:" + currentTime);
 
         //titulos
         hssfRow = hssfSheet.createRow(4);
@@ -1658,34 +1670,34 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
         hssfCell = hssfRow.createCell(3);
         hssfCell.setCellValue("Voltaje");
 
-        int numeroReg = data.size()/4;
-        int numcons=0;
+        int numeroReg = data.size() / 4;
+        int numcons = 0;
 
-        Log.d("data:","size:"+data.size());
-        for(int i=0; i<numeroReg;i++){
-            hssfRow = hssfSheet.createRow(i+5);
-            for(int j = 0; j<4; j++){
+        Log.d("data:", "size:" + data.size());
+        for (int i = 0; i < numeroReg; i++) {
+            hssfRow = hssfSheet.createRow(i + 5);
+            for (int j = 0; j < 4; j++) {
                 hssfCell = hssfRow.createCell(j);
                 hssfCell.setCellValue(data.get(numcons));
                 numcons++;
             }
         }
-        Log.d("data:","numcons:"+numcons);
+        Log.d("data:", "numcons:" + numcons);
 
         try {
             outputStream = new FileOutputStream(file);
             wb.write(outputStream);
-            Toast.makeText(this.getApplicationContext(),"Reporte generado correctamente",Toast.LENGTH_LONG).show();
+            Toast.makeText(this.getApplicationContext(), "Reporte generado correctamente", Toast.LENGTH_LONG).show();
             try {
                 outputStream.close();
-                setupEmailEvent("Datos tipo Tiempo","Archivo generado en la fecha:"+Calendar.getInstance().getTime(),nombreFile);
+                setupEmailEvent("Datos tipo Tiempo", "Archivo generado en la fecha:" + Calendar.getInstance().getTime(), nombreFile);
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
 
 
         } catch (java.io.IOException e) {
-            Toast.makeText(this.getApplicationContext(),"Reporte no generado",Toast.LENGTH_LONG).show();
+            Toast.makeText(this.getApplicationContext(), "Reporte no generado", Toast.LENGTH_LONG).show();
             e.printStackTrace();
 
         }
@@ -1693,11 +1705,11 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
 
     @Override
     public void createExcelTimeDataCrudo(String name, List<String> data, List<String> crudo) {
-        String nombreFile= "DatosTipoTiempo.xls";
-        File file = new File(this.getExternalFilesDir(null),nombreFile);
+        String nombreFile = "DatosTipoTiempo.xls";
+        File file = new File(this.getExternalFilesDir(null), nombreFile);
         FileOutputStream outputStream = null;
 
-        HSSFWorkbook wb= new HSSFWorkbook();
+        HSSFWorkbook wb = new HSSFWorkbook();
         HSSFSheet hssfSheet = wb.createSheet("Datos tipo Tiempo");
 
         HSSFRow hssfRow = hssfSheet.createRow(0);
@@ -1705,22 +1717,22 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
 
         //se agregan los datos de quien lo genera y la fecha etc
         Date currentTime = Calendar.getInstance().getTime();
-        hssfCell.setCellValue("Creador:"+sp.getString("userId",""));
+        hssfCell.setCellValue("Creador:" + sp.getString("userId", ""));
         hssfRow = hssfSheet.createRow(1);
         hssfCell = hssfRow.createCell(0);
-        switch (sp.getString("userjerarquia","")){
-            case "1":{
+        switch (sp.getString("userjerarquia", "")) {
+            case "1": {
                 hssfCell.setCellValue("Jerarquía: Administrador");
                 break;
             }
-            case "4":{
+            case "4": {
                 hssfCell.setCellValue("Jerarquía: Producción");
                 break;
             }
         }
         hssfRow = hssfSheet.createRow(2);
         hssfCell = hssfRow.createCell(0);
-        hssfCell.setCellValue("Fecha:"+currentTime);
+        hssfCell.setCellValue("Fecha:" + currentTime);
 
         //titulos
         hssfRow = hssfSheet.createRow(4);
@@ -1733,41 +1745,41 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
         hssfCell = hssfRow.createCell(3);
         hssfCell.setCellValue("Voltaje");
 
-        int numeroReg = data.size()/4;
-        int numcons=0;
-        int numconscrudo=0;
+        int numeroReg = data.size() / 4;
+        int numcons = 0;
+        int numconscrudo = 0;
 
-        Log.d("data:","size:"+data.size());
-        for(int i=0; i<numeroReg*2;i+=2){
-            hssfRow = hssfSheet.createRow(i+5);
-            for(int j = 0; j<4; j++){
+        Log.d("data:", "size:" + data.size());
+        for (int i = 0; i < numeroReg * 2; i += 2) {
+            hssfRow = hssfSheet.createRow(i + 5);
+            for (int j = 0; j < 4; j++) {
                 hssfCell = hssfRow.createCell(j);
                 hssfCell.setCellValue(data.get(numcons));
                 numcons++;
             }
-            hssfRow = hssfSheet.createRow(i+6);
-            for(int j = 0; j<4; j++){
+            hssfRow = hssfSheet.createRow(i + 6);
+            for (int j = 0; j < 4; j++) {
                 hssfCell = hssfRow.createCell(j);
                 hssfCell.setCellValue(crudo.get(numconscrudo));
                 numconscrudo++;
             }
         }
-        Log.d("data:","numcons:"+numcons);
+        Log.d("data:", "numcons:" + numcons);
 
         try {
             outputStream = new FileOutputStream(file);
             wb.write(outputStream);
-            Toast.makeText(this.getApplicationContext(),"Reporte generado correctamente",Toast.LENGTH_LONG).show();
+            Toast.makeText(this.getApplicationContext(), "Reporte generado correctamente", Toast.LENGTH_LONG).show();
             try {
                 outputStream.close();
-                setupEmailEvent("Datos tipo Tiempo","Archivo generado en la fecha:"+Calendar.getInstance().getTime(),nombreFile);
+                setupEmailEvent("Datos tipo Tiempo", "Archivo generado en la fecha:" + Calendar.getInstance().getTime(), nombreFile);
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
 
 
         } catch (java.io.IOException e) {
-            Toast.makeText(this.getApplicationContext(),"Reporte no generado",Toast.LENGTH_LONG).show();
+            Toast.makeText(this.getApplicationContext(), "Reporte no generado", Toast.LENGTH_LONG).show();
             e.printStackTrace();
 
         }
@@ -1775,11 +1787,11 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
 
     @Override
     public void createExcelEventData(String name, List<String> data) {
-        String nombreFile= "DatosTipoEvento.xls";
-        File file = new File(this.getExternalFilesDir(null),nombreFile);
+        String nombreFile = "DatosTipoEvento.xls";
+        File file = new File(this.getExternalFilesDir(null), nombreFile);
         FileOutputStream outputStream = null;
 
-        HSSFWorkbook wb= new HSSFWorkbook();
+        HSSFWorkbook wb = new HSSFWorkbook();
         HSSFSheet hssfSheet = wb.createSheet("Datos tipo Evento");
 
         HSSFRow hssfRow = hssfSheet.createRow(0);
@@ -1787,22 +1799,22 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
 
         //se agregan los datos de quien lo genera y la fecha etc
         Date currentTime = Calendar.getInstance().getTime();
-        hssfCell.setCellValue("Creador:"+sp.getString("userId",""));
+        hssfCell.setCellValue("Creador:" + sp.getString("userId", ""));
         hssfRow = hssfSheet.createRow(1);
         hssfCell = hssfRow.createCell(0);
-        switch (sp.getString("userjerarquia","")){
-            case "1":{
+        switch (sp.getString("userjerarquia", "")) {
+            case "1": {
                 hssfCell.setCellValue("Jerarquía: Administrador");
                 break;
             }
-            case "4":{
+            case "4": {
                 hssfCell.setCellValue("Jerarquía: Producción");
                 break;
             }
         }
         hssfRow = hssfSheet.createRow(2);
         hssfCell = hssfRow.createCell(0);
-        hssfCell.setCellValue("Fecha:"+currentTime);
+        hssfCell.setCellValue("Fecha:" + currentTime);
 
         //titulos
         hssfRow = hssfSheet.createRow(4);
@@ -1820,11 +1832,11 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
         hssfCell.setCellValue("Voltaje");
 
 
-        int numeroReg = data.size()/6;
-        int numcons=0;
-        for(int i=0; i<numeroReg;i++){
-            hssfRow = hssfSheet.createRow(i+5);
-            for(int j = 0; j<6; j++){
+        int numeroReg = data.size() / 6;
+        int numcons = 0;
+        for (int i = 0; i < numeroReg; i++) {
+            hssfRow = hssfSheet.createRow(i + 5);
+            for (int j = 0; j < 6; j++) {
                 hssfCell = hssfRow.createCell(j);
                 hssfCell.setCellValue(data.get(numcons));
                 numcons++;
@@ -1834,17 +1846,17 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
         try {
             outputStream = new FileOutputStream(file);
             wb.write(outputStream);
-            Toast.makeText(this.getApplicationContext(),"Reporte generado correctamente",Toast.LENGTH_LONG).show();
+            Toast.makeText(this.getApplicationContext(), "Reporte generado correctamente", Toast.LENGTH_LONG).show();
             try {
                 outputStream.close();
-                setupEmailEvent("Datos tipo Evento","Archivo generado en la fecha:"+Calendar.getInstance().getTime(),nombreFile);
+                setupEmailEvent("Datos tipo Evento", "Archivo generado en la fecha:" + Calendar.getInstance().getTime(), nombreFile);
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
 
 
         } catch (java.io.IOException e) {
-            Toast.makeText(this.getApplicationContext(),"Reporte no generado",Toast.LENGTH_LONG).show();
+            Toast.makeText(this.getApplicationContext(), "Reporte no generado", Toast.LENGTH_LONG).show();
             e.printStackTrace();
 
         }
@@ -1852,11 +1864,11 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
 
     @Override
     public void createExcelEventDataCrudo(String name, List<String> data, List<String> crudo) {
-        String nombreFile= "DatosTipoEvento.xls";
-        File file = new File(this.getExternalFilesDir(null),nombreFile);
+        String nombreFile = "DatosTipoEvento.xls";
+        File file = new File(this.getExternalFilesDir(null), nombreFile);
         FileOutputStream outputStream = null;
 
-        HSSFWorkbook wb= new HSSFWorkbook();
+        HSSFWorkbook wb = new HSSFWorkbook();
         HSSFSheet hssfSheet = wb.createSheet("Datos tipo Evento");
 
         HSSFRow hssfRow = hssfSheet.createRow(0);
@@ -1864,22 +1876,22 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
 
         //se agregan los datos de quien lo genera y la fecha etc
         Date currentTime = Calendar.getInstance().getTime();
-        hssfCell.setCellValue("Creador:"+sp.getString("userId",""));
+        hssfCell.setCellValue("Creador:" + sp.getString("userId", ""));
         hssfRow = hssfSheet.createRow(1);
         hssfCell = hssfRow.createCell(0);
-        switch (sp.getString("userjerarquia","")){
-            case "1":{
+        switch (sp.getString("userjerarquia", "")) {
+            case "1": {
                 hssfCell.setCellValue("Jerarquía: Administrador");
                 break;
             }
-            case "4":{
+            case "4": {
                 hssfCell.setCellValue("Jerarquía: Producción");
                 break;
             }
         }
         hssfRow = hssfSheet.createRow(2);
         hssfCell = hssfRow.createCell(0);
-        hssfCell.setCellValue("Fecha:"+currentTime);
+        hssfCell.setCellValue("Fecha:" + currentTime);
 
         //titulos
         hssfRow = hssfSheet.createRow(4);
@@ -1897,18 +1909,18 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
         hssfCell.setCellValue("Voltaje");
 
 
-        int numeroReg = data.size()/6;
-        int numcons=0;
-        int numconscrudo=0;
-        for(int i=0; i<numeroReg*2;i+=2){
-            hssfRow = hssfSheet.createRow(i+5);
-            for(int j = 0; j<6; j++){
+        int numeroReg = data.size() / 6;
+        int numcons = 0;
+        int numconscrudo = 0;
+        for (int i = 0; i < numeroReg * 2; i += 2) {
+            hssfRow = hssfSheet.createRow(i + 5);
+            for (int j = 0; j < 6; j++) {
                 hssfCell = hssfRow.createCell(j);
                 hssfCell.setCellValue(data.get(numcons));
                 numcons++;
             }
-            hssfRow = hssfSheet.createRow(i+6);
-            for(int j = 0; j<6; j++){
+            hssfRow = hssfSheet.createRow(i + 6);
+            for (int j = 0; j < 6; j++) {
                 hssfCell = hssfRow.createCell(j);
                 hssfCell.setCellValue(crudo.get(numconscrudo));
                 numconscrudo++;
@@ -1918,17 +1930,17 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
         try {
             outputStream = new FileOutputStream(file);
             wb.write(outputStream);
-            Toast.makeText(this.getApplicationContext(),"Reporte generado correctamente",Toast.LENGTH_LONG).show();
+            Toast.makeText(this.getApplicationContext(), "Reporte generado correctamente", Toast.LENGTH_LONG).show();
             try {
                 outputStream.close();
-                setupEmailEvent("Datos tipo Evento","Archivo generado en la fecha:"+Calendar.getInstance().getTime(),nombreFile);
+                setupEmailEvent("Datos tipo Evento", "Archivo generado en la fecha:" + Calendar.getInstance().getTime(), nombreFile);
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
 
 
         } catch (java.io.IOException e) {
-            Toast.makeText(this.getApplicationContext(),"Reporte no generado",Toast.LENGTH_LONG).show();
+            Toast.makeText(this.getApplicationContext(), "Reporte no generado", Toast.LENGTH_LONG).show();
             e.printStackTrace();
 
         }

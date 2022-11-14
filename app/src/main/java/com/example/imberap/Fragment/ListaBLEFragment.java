@@ -133,8 +133,6 @@ public class ListaBLEFragment extends Fragment {
                     }else{
                         connectListener.requestPemission();
                     }
-
-
                 }
             }
         });
@@ -444,7 +442,7 @@ public class ListaBLEFragment extends Fragment {
                             if (isChecksumOk.equals("ok")){
                                 FinalListData = GetRealDataFromHexaImbera.convert(listData, "Handshake","","");
                                 listData = GetRealDataFromHexaImbera.GetRealData(FinalListData, "Handshake","","");
-                                tvfwversion.setText("Modelo TREFPB:" + listData.get(1)
+                                tvfwversion.setText("Modelo:" + listData.get(1)
                                         + "\nVersión:" + listData.get(2)
                                         + "\nPlantilla:" + listData.get(3));
                                 esp.putString("modelo",listData.get(1));

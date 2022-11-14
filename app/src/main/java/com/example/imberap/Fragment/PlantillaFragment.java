@@ -183,6 +183,15 @@ public class PlantillaFragment extends Fragment {
                     btnsendPlantilla.setVisibility(View.GONE);
                     break;
                 }
+                case "6":{
+                    tvPlantillatituloTREFP.setText("Usa los botones de abajo para proceder a actualizar el equipo TREFPB");
+                    btnenviarfwOperadores.setVisibility(View.VISIBLE);
+                    //btnenviarPlantillaOperadores.setVisibility(View.VISIBLE);
+                    scrollView.setVisibility(View.GONE);
+                    btnGetPlantilla.setVisibility(View.GONE);
+                    btnsendPlantilla.setVisibility(View.GONE);
+                    break;
+                }
             }
 
         }

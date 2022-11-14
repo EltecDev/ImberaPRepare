@@ -82,7 +82,7 @@
                 android:layout_height="50dp"/>
 
             <Button
-                android:visibility="gone"
+                android:visibility="visible"
                 android:layout_marginVertical="15dp"
                 android:layout_marginHorizontal="20dp"
                 android:background="@drawable/round_corner_black"
@@ -93,7 +93,7 @@
                 android:layout_height="50dp"/>
 
             <Button
-                android:visibility="gone"
+                android:visibility="visible"
                 android:layout_marginVertical="15dp"
                 android:layout_marginHorizontal="20dp"
                 android:background="@drawable/round_corner_black"
@@ -107,8 +107,8 @@
                 android:visibility="visible"
                 android:layout_marginVertical="15dp"
                 android:layout_marginHorizontal="20dp"
-                android:background="@drawable/round_corner_black"
-                android:textColor="#fff"
+                android:background="@drawable/round_corner_white"
+                android:textColor="#000"
                 android:id="@+id/btnconfigurarWifi"
                 android:text="configurar Wi-fi"
                 android:layout_width="match_parent"
@@ -118,8 +118,8 @@
                 android:visibility="visible"
                 android:layout_marginVertical="15dp"
                 android:layout_marginHorizontal="20dp"
-                android:background="@drawable/round_corner_black"
-                android:textColor="#fff"
+                android:background="@drawable/round_corner_white"
+                android:textColor="#000"
                 android:id="@+id/btnVerConfWifi"
                 android:text="Ver configuración Wi-fi"
                 android:layout_width="match_parent"

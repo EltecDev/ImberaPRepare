@@ -212,6 +212,18 @@ public class PlantillaOxxoDisplayFragment extends Fragment implements AdapterVie
                     btnsendPlantilla.setVisibility(View.GONE);
                     break;
                 }
+                case "6":{
+                    tvtituloPlantillaOxxo.setText("Usa los botones de abajo para proceder a actualizar el equipo CEO");
+                    tvsubtituloPlantillaOxxo.setVisibility(View.GONE);
+                    btnenviarfwOperadores.setVisibility(View.VISIBLE);
+                    spinnerPlantillas.setVisibility(View.GONE);
+                    btnenviarPlantillaOperadores.setVisibility(View.VISIBLE);
+                    btnDownloadPlantillas.setVisibility(View.GONE);
+                    scrollView.setVisibility(View.GONE);
+                    btnGetPlantilla.setVisibility(View.GONE);
+                    btnsendPlantilla.setVisibility(View.GONE);
+                    break;
+                }
             }
 
         }

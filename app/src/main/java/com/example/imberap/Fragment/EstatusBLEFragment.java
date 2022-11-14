@@ -105,6 +105,13 @@ public class EstatusBLEFragment extends Fragment {
     }
     private void init(View v){
         initCampos(v);
+        if (sp.getString("trefpVersionName","").equals("IMBERA-TREFP")){
+            v.findViewById(R.id.btnsendStatus).setVisibility(View.VISIBLE);
+            v.findViewById(R.id.btnGetCurrentLogger).setVisibility(View.VISIBLE);
+        }else{
+            v.findViewById(R.id.btnsendStatus).setVisibility(View.VISIBLE);
+            v.findViewById(R.id.btnGetCurrentLogger).setVisibility(View.GONE);
+        }
         /*if (bluetoothLeService!=null)new MyAsyncTaskGetActualStatus().execute();
         else Toast.makeText(getContext(), "No estás conectado a BLE", Toast.LENGTH_SHORT).show();*/
     }
@@ -161,7 +168,7 @@ public class EstatusBLEFragment extends Fragment {
                                 + "\nTemperatura 2:" + FinalListDataRealState.get(1) + " °C"
                                 + "\nTemperatura 3:" + FinalListDataRealState.get(2) + " °C"
                                 + "\nTemperatura Display:" + FinalListDataRealState.get(3) + " °\n"
-                                + "\nVoltaje:" + FinalListDataRealState.get(4)+"\n"
+                                + "\nVoltaje:" + FinalListDataRealState.get(4)+"\n"+" Vca"
                                 + "\nActuadores:" + FinalListDataRealState.get(5)
                                 + "\nAlarmas:" + FinalListDataRealState.get(6)+ "\n"
                         );
@@ -183,12 +190,12 @@ public class EstatusBLEFragment extends Fragment {
 
                         tvRealState.setText("\nTemperatura 1:" + FinalListDataRealState.get(0) + " °C"
                                 + "\nTemperatura 2:" + FinalListDataRealState.get(1) + " °C"
-                                + "\nVoltaje:" + FinalListDataRealState.get(2)
+                                + "\nVoltaje:" + FinalListDataRealState.get(2)+" Vca"
                                 + "\nActuadores:" + FinalListDataRealState.get(3)
                                 + "\nAlarmas:" + FinalListDataRealState.get(4)+ "\n"
                         );
                     }
-                }else if (sp.getString("trefpVersionName","").contains("IMBERA-OXXO")){
+                }else if (sp.getString("trefpVersionName","").contains("IMBERA-OXXO") || sp.getString("trefpVersionName","").contains("IMBERA-WF  ")){
                     tvsubtitulo.setText("Aquí se muestra el estado actual de tu dispositivo IMBERA-OXXO");
 
                     //OXXO no tiene LOGGER
@@ -212,16 +219,16 @@ public class EstatusBLEFragment extends Fragment {
                         if (FinalListDataRealState.get(0).equals("8")){
                             tvRealState.setText("\nTemperatura 1:" + FinalListDataRealState.get(1) + " °C"
                                     + "\nTemperatura 2:" + FinalListDataRealState.get(2) + " °C"
-                                    + "\nVoltaje:" + FinalListDataRealState.get(3)
-                                    + "\nActuadores:" + FinalListDataRealState.get(4)
+                                    + "\nVoltaje:" + FinalListDataRealState.get(3)+" Vca"
+                                    + "\n" + FinalListDataRealState.get(4)
                                     + "\nAlarmas:" + FinalListDataRealState.get(5)+ "\n"
                             );
                         }else{
                             tvRealState.setText("\nTemperatura 1:" + FinalListDataRealState.get(1) + " °C"
                                     + "\nTemperatura 2:" + FinalListDataRealState.get(2) + " °C"
                                     + "\nTemperatura 3:" + FinalListDataRealState.get(3) + " °C"
-                                    + "\nVoltaje:" + FinalListDataRealState.get(4)
-                                    + "\nActuadores:" + FinalListDataRealState.get(5)
+                                    + "\nVoltaje:" + FinalListDataRealState.get(4)+" Vca"
+                                    + "\n" + FinalListDataRealState.get(5)
                                     + "\nAlarmas:" + FinalListDataRealState.get(6)+ "\n"
                             );
                         }
@@ -290,7 +297,7 @@ public class EstatusBLEFragment extends Fragment {
                                     "\nTimeStamp:" + FinalListDataTiempo.get(i)
                                     +"\nTemperatura 1:" + FinalListDataTiempo.get(i+1) + " °C"
                                     + "\nTemperatura 2:" + FinalListDataTiempo.get(i+2) + " °C"
-                                    + "\nVoltaje:" + FinalListDataTiempo.get(i+3)+ "\n");
+                                    + "\nVoltaje:" + FinalListDataTiempo.get(i+3)+" Vca"+ "\n");
                             j++;
                         }
                     }
@@ -308,7 +315,7 @@ public class EstatusBLEFragment extends Fragment {
                                     +"\nTipo de evento:\n" + FinalListDataEvento.get(i+2)
                                     +"\nTemperatura 1I:" + FinalListDataEvento.get(i+3) + " °C"
                                     + "\nTemperatura 2F:" + FinalListDataEvento.get(i+4) + " °C"
-                                    + "\nVoltaje:" + FinalListDataEvento.get(i+5)+ "\n");
+                                    + "\nVoltaje:" + FinalListDataEvento.get(i+5)+" Vca"+ "\n");
                             j++;
                         }
                     }
@@ -328,7 +335,7 @@ public class EstatusBLEFragment extends Fragment {
                     tvRealState.setVisibility(View.VISIBLE);
                     if (!FinalListDataHandshake.isEmpty()){
                         tvhandshake.setText("MAC:" + FinalListDataHandshake.get(0)
-                                + "\nModelo TREFPB:" + FinalListDataHandshake.get(1)
+                                + "\nModelo:" + FinalListDataHandshake.get(1)
                                 + "\nVersión:" + FinalListDataHandshake.get(2)
                                 + "\nPlantilla:" + FinalListDataHandshake.get(3)+ "\n");
                     }else{
@@ -338,16 +345,16 @@ public class EstatusBLEFragment extends Fragment {
                         if (FinalListDataRealState.get(0).equals("8")){
                             tvRealState.setText("\nTemperatura 1:" + FinalListDataRealState.get(1) + " °C"
                                     + "\nTemperatura 2:" + FinalListDataRealState.get(2) + " °C"
-                                    + "\nVoltaje:" + FinalListDataRealState.get(3)
-                                    + "\nActuadores:" + FinalListDataRealState.get(4)
+                                    + "\nVoltaje:" + FinalListDataRealState.get(3)+" Vca"
+                                    + "\n" + FinalListDataRealState.get(4)
                                     + "\nAlarmas:" + FinalListDataRealState.get(5)+ "\n"
                             );
                         }else{
-                            tvRealState.setText("\nTemperatura 1:" + FinalListDataRealState.get(1) + " °C"
-                                    + "\nTemperatura 2:" + FinalListDataRealState.get(2) + " °C"
-                                    + "\nTemperatura 3:" + FinalListDataRealState.get(3) + " °C"
-                                    + "\nVoltaje:" + FinalListDataRealState.get(4)
-                                    + "\nActuadores:" + FinalListDataRealState.get(5)
+                            tvRealState.setText("\nTemperatura sensor 1:" + FinalListDataRealState.get(1) + " °C"
+                                    + "\nTemperatura sensor 2:" + FinalListDataRealState.get(2) + " °C"
+                                    + "\nTemperatura sensor 3:" + FinalListDataRealState.get(3) + " °C"
+                                    + "\nVoltaje:" + FinalListDataRealState.get(4)+" Vca"
+                                    + "\n" + FinalListDataRealState.get(5)
                                     + "\nAlarmas:" + FinalListDataRealState.get(6)+ "\n"
                             );
                         }
@@ -442,7 +449,7 @@ public class EstatusBLEFragment extends Fragment {
                 }
 
 
-            }else if( sp.getString("trefpVersionName","").equals("IMBERA-OXXO")){
+            }else if( sp.getString("trefpVersionName","").equals("IMBERA-OXXO")|| sp.getString("trefpVersionName","").equals("IMBERA-WF  ")){
                 bluetoothServices.sendCommand("handshake","4021");
                 Thread.sleep(250);
                 listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());

@@ -548,10 +548,58 @@ public class GetRealDataFromHexaOxxoDisplay {
 
     private static String getActuador(String s){
         String ss = HexToBinary(s);
-
         StringBuilder stringBuilder = new StringBuilder();
         String c;
-        for (int i=0; i<8 ; i++){
+
+        c = ss.substring(5,6);//estado de puerta
+        if(c.equals("1"))
+            stringBuilder.append("Estado de puerta: Abierta\n");
+        else
+            stringBuilder.append("Estado de puerta: Cerrada\n");
+
+        c = ss.substring(7,8);//Salida compresor
+        if(c.equals("1"))
+            stringBuilder.append("Salida compresor: Encendido\n");
+        else
+            stringBuilder.append("Salida compresor: Apagado\n");
+
+        c = ss.substring(1,2);//estado de ventilador
+        if(c.equals("1"))
+            stringBuilder.append("Salida ventilador: Encendido\n");
+        else
+            stringBuilder.append("Salida ventilador: Apagado\n");
+
+        c = ss.substring(6,7);//salida deshielo
+        if(c.equals("1"))
+            stringBuilder.append("Salida deshielo: Encendido\n");
+        else
+            stringBuilder.append("Salida deshielo: Apagado\n");
+
+        c = ss.substring(0,1);//Salida iluminación
+        if(c.equals("1"))
+            stringBuilder.append("Salida iluminación: Encendido\n");
+        else
+            stringBuilder.append("Salida iluminación: Apagado\n");
+
+        c = ss.substring(2,3);//Modo Nocturno
+        if(c.equals("1"))
+            stringBuilder.append("Modo Nocturno: Encendido\n");
+        else
+            stringBuilder.append("Modo Nocturno: Apagado\n");
+
+        c = ss.substring(4,5);//Modo ahorro1
+        if(c.equals("1"))
+            stringBuilder.append( "Modo ahorro 1: Encendido\n");
+        else
+            stringBuilder.append( "Modo ahorro 1: Apagado\n");
+
+        c = ss.substring(3,4);//modo ahorro2
+        if(c.equals("1"))
+            stringBuilder.append( "Modo ahorro 2: Encendido\n");
+        else
+            stringBuilder.append( "Modo ahorro 2: Apagado\n");
+
+        /*for (int i=0; i<8 ; i++){
             c = ss.substring(i,i+1);
             if (c.equals("1")){
                 switch (i)  {
@@ -608,7 +656,7 @@ public class GetRealDataFromHexaOxxoDisplay {
                         break;
                 }
             }
-        }
+        }*/
         return stringBuilder.toString();
     }
     //PENDIENTE
@@ -740,7 +788,7 @@ public class GetRealDataFromHexaOxxoDisplay {
         }
         String hexStr = hexStrr.toString().replace(" ","");
         StringBuilder output = new StringBuilder();
-
+        Log.d("YYY",":"+hexStr);
         for (int i = 0; i < hexStr.length(); i+=2) {
             String strSeparacion = hexStr.substring(i, i+4);
             if (strSeparacion.equals("3B08")){//punto y coma ;

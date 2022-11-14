@@ -131,7 +131,7 @@ public class LoginFragment extends Fragment {
 
                 if (count > 0 ){
                     //TODO SOLAMENTE SE ACEPTAN POR AHORA DOS USUARIOS, SUPERUSUARIO Y PRODUCCIÓN
-                    if (jerarquia.equals("1") || jerarquia.equals("4") || jerarquia.equals("5") ) {
+                    if (jerarquia.equals("1") || jerarquia.equals("4") || jerarquia.equals("5") || jerarquia.equals("6") ) {
                         esp.putString("userId", user);
                         esp.apply();
                         return "exito";
@@ -186,6 +186,10 @@ public class LoginFragment extends Fragment {
                         }
                         case "5":{
                             tvUsuarioActual.setText("Usuario:"+sp.getString("userId","")+"\nJerarquía: Operador");
+                            break;
+                        }
+                        case "6":{
+                            tvUsuarioActual.setText("Usuario:"+sp.getString("userId","")+"\nJerarquía: Técnico");
                             break;
                         }
                     }
