@@ -46,7 +46,6 @@ public class ConexionTrefp {
     }
 
     public void getTREFPBLEHandshake(){
-        //new MyAsyncTaskGetHandshakeTREFP().execute();
         new MyAsyncTaskGetHandshakeTREFPBytes().execute();
     }
 
@@ -64,12 +63,6 @@ public class ConexionTrefp {
 
     public void isConnectionAlive(){
         new MyAsyncTaskGetHandshakeTREFPCheckConnection().execute();
-
-        /*if (bluetoothServices==null){
-            return "Conexión Activa";
-        }else{
-            return "Conexión inactiva";
-        }*/
     }
 
     public void desconectar(){

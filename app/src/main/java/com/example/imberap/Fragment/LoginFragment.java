@@ -124,7 +124,7 @@ public class LoginFragment extends Fragment {
                 int count = 0;
 
                 while (result.next()){
-                    esp.putString("userjerarquia",result.getString("Jerarquia"));
+                    //esp.putString("userjerarquia",result.getString("Jerarquia"));
                     jerarquia = result.getString("Jerarquia");
                     count++;
                 }
@@ -133,6 +133,7 @@ public class LoginFragment extends Fragment {
                     //TODO SOLAMENTE SE ACEPTAN POR AHORA DOS USUARIOS, SUPERUSUARIO Y PRODUCCIÓN
                     if (jerarquia.equals("1") || jerarquia.equals("4") || jerarquia.equals("5") || jerarquia.equals("6") ) {
                         esp.putString("userId", user);
+                        esp.putString("userjerarquia",jerarquia);
                         esp.apply();
                         return "exito";
                     }else

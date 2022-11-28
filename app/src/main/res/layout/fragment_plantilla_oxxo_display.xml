@@ -1744,6 +1744,7 @@
             android:textSize="18sp" />
 
         <Button
+            android:visibility="gone"
             android:layout_marginHorizontal="10dp"
             android:id="@+id/btnSendFwOperador"
             android:layout_width="150dp"
@@ -1754,12 +1755,24 @@
             android:textColor="#FFF"
             android:textSize="18sp" />
         <Button
+            android:visibility="gone"
             android:layout_marginHorizontal="10dp"
             android:id="@+id/btnSendPlantillaOperador"
             android:layout_width="150dp"
             android:layout_height="56dp"
             android:background="@drawable/round_corner_black"
-            android:text="Actualizar Plantilla"
+            android:text="Actualizar plantilla"
+            android:textAlignment="center"
+            android:textColor="#FFF"
+            android:textSize="18sp" />
+
+        <Button
+            android:layout_marginHorizontal="10dp"
+            android:id="@+id/btnSendPlantillaFwTecnico"
+            android:layout_width="150dp"
+            android:layout_height="56dp"
+            android:background="@drawable/round_corner_black"
+            android:text="Actualizar CEO"
             android:textAlignment="center"
             android:textColor="#FFF"
             android:textSize="18sp" />

@@ -81,7 +81,7 @@ public class PlantillaOxxoDisplayFragment extends Fragment implements AdapterVie
     EditText etTemperaturaDeReinicio,etTemperaturaParaIniciarDeshielo,etDiferencialDeTemperaturaParaAlarmaDeDeficiencia,etTiempoBloqueoDisplayDespuesDeshielo,etTiempoCompresorEncendidoParaMedicionesDeficiencia, etRetardoParaEncenderSegundoCompresor;
     TextView tvsubtituloPlantillaOxxo, tvtituloPlantillaOxxo;
     Button btnGetPlantilla, btnDownloadPlantillas;
-    Button btnenviarfwOperadores,btnenviarPlantillaOperadores, btngetPlantilla, btnsendPlantilla;
+    Button btnenviarfwOperadores,btnenviarPlantillaOperadores, btngetPlantilla, btnsendPlantilla, btnEnviarFwYPlantilla;
 
     Spinner spinnerOxxoModosdeshielo ,spinnerOxxoProteccionVoltaje,spinnerPlantillas;
     Spinner spinnerOxxoNumeroSensores, spinnerNivelesTiempoMostrarFallas, spinnerconfigRelevadores;
@@ -120,18 +120,25 @@ public class PlantillaOxxoDisplayFragment extends Fragment implements AdapterVie
                 downloadPlantillas();
             }
         });
-        view.findViewById(R.id.btnSendFwOperador).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                updatefwOperador();
-            }
-        });
         view.findViewById(R.id.btnSendPlantillaOperador).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendDataPlantillaOperador();
+                sendPlantillaOperador();
             }
         });
+        view.findViewById(R.id.btnSendFwOperador).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendFwOperador();
+            }
+        });
+        view.findViewById(R.id.btnSendPlantillaFwTecnico).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendDataPlantillaFwTecnico();
+            }
+        });
+
         view.findViewById(R.id.btnSendPlantilla).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -172,6 +179,7 @@ public class PlantillaOxxoDisplayFragment extends Fragment implements AdapterVie
             switch (sp.getString("userjerarquia","")){
                 case "1":{
                     tvtituloPlantillaOxxo.setText("Aquí puedes editar plantillas y mandarlas como parámetros a tu dispositivo IMBERA-OXXO");
+                    btnEnviarFwYPlantilla.setVisibility(View.GONE);
                     tvsubtituloPlantillaOxxo.setVisibility(View.VISIBLE);
                     spinnerPlantillas.setVisibility(View.VISIBLE);
                     btnDownloadPlantillas.setVisibility(View.VISIBLE);
@@ -192,16 +200,18 @@ public class PlantillaOxxoDisplayFragment extends Fragment implements AdapterVie
                 }
                 case "4":{
                     tvtituloPlantillaOxxo.setText("Aquí puedes editar plantillas y mandarlas como parámetros a tu dispositivo IMBERA-OXXO");
+                    btnEnviarFwYPlantilla.setVisibility(View.GONE);
                     tvsubtituloPlantillaOxxo.setVisibility(View.VISIBLE);
                     spinnerPlantillas.setVisibility(View.VISIBLE);
                     btnDownloadPlantillas.setVisibility(View.VISIBLE);
-                    scrollView.setVisibility(View.GONE);
+                    scrollView.setVisibility(View.VISIBLE);
                     btnGetPlantilla.setVisibility(View.GONE);
                     btnenviarPlantillaOperadores.setVisibility(View.GONE);
                     break;
                 }
                 case "5":{
                     tvtituloPlantillaOxxo.setText("Usa los botones de abajo para proceder a actualizar el equipo CEO");
+                    btnEnviarFwYPlantilla.setVisibility(View.GONE);
                     tvsubtituloPlantillaOxxo.setVisibility(View.GONE);
                     btnenviarfwOperadores.setVisibility(View.VISIBLE);
                     spinnerPlantillas.setVisibility(View.GONE);
@@ -214,10 +224,11 @@ public class PlantillaOxxoDisplayFragment extends Fragment implements AdapterVie
                 }
                 case "6":{
                     tvtituloPlantillaOxxo.setText("Usa los botones de abajo para proceder a actualizar el equipo CEO");
+                    btnEnviarFwYPlantilla.setVisibility(View.VISIBLE);
                     tvsubtituloPlantillaOxxo.setVisibility(View.GONE);
-                    btnenviarfwOperadores.setVisibility(View.VISIBLE);
+                    btnenviarfwOperadores.setVisibility(View.GONE);
                     spinnerPlantillas.setVisibility(View.GONE);
-                    btnenviarPlantillaOperadores.setVisibility(View.VISIBLE);
+                    btnenviarPlantillaOperadores.setVisibility(View.GONE);
                     btnDownloadPlantillas.setVisibility(View.GONE);
                     scrollView.setVisibility(View.GONE);
                     btnGetPlantilla.setVisibility(View.GONE);
@@ -241,7 +252,8 @@ public class PlantillaOxxoDisplayFragment extends Fragment implements AdapterVie
         btnGetPlantilla = view.findViewById(R.id.btnGetPlantilla);
         btnenviarfwOperadores = view.findViewById(R.id.btnSendFwOperador);
         btnsendPlantilla = view.findViewById(R.id.btnSendPlantilla);
-        btnenviarPlantillaOperadores= view.findViewById(R.id.btnSendPlantillaOperador);
+        btnenviarPlantillaOperadores = view.findViewById(R.id.btnSendPlantillaOperador);
+        btnEnviarFwYPlantilla = view.findViewById(R.id.btnSendPlantillaFwTecnico);
 
         tvtituloPlantillaOxxo=  view.findViewById(R.id.tvtituloPlantillaOxxo);
         tvsubtituloPlantillaOxxo =  view.findViewById(R.id.tvSubtituloPlantillaOxxo);
@@ -854,7 +866,6 @@ public class PlantillaOxxoDisplayFragment extends Fragment implements AdapterVie
 
     private void sendDataPlantillaOperador() {
         bluetoothLeService = bluetoothServices.getBluetoothLeService();
-
         if (bluetoothServices != null && bluetoothLeService != null){
             //if (checkEmptydata()) {
                 sortFromDataToHexaOperador();
@@ -863,8 +874,6 @@ public class PlantillaOxxoDisplayFragment extends Fragment implements AdapterVie
            // }
         }else
             Toast.makeText(getContext(), "No te has conectados a un BLE", Toast.LENGTH_SHORT).show();
-
-
     }
 
     private boolean checkEmptydata() {
@@ -886,8 +895,21 @@ public class PlantillaOxxoDisplayFragment extends Fragment implements AdapterVie
         return true;
     }
 
-    private void sortFromDataToHexaOperador() {
+
+    private void sendPlantillaOperador(){
         new MyAsyncTaskSendNewPlantillaOperador().execute();
+    }
+
+    private void sendFwOperador(){
+        bluetoothServices.sendCommand("FirmwareOperador");
+    }
+
+    private void sendDataPlantillaFwTecnico(){
+        bluetoothServices.sendCommand("FirmwareYPlantillaOperador");
+    }
+
+    private void sortFromDataToHexaOperador() {
+
         /*List<EditText> editTextsList = new ArrayList<>(checkCorrectData());
         if (editTextsList.isEmpty()) {
             if (sp.getString("modelo","").equals(etOxxoModelTrefp.getText().toString())){
@@ -1606,7 +1628,6 @@ public class PlantillaOxxoDisplayFragment extends Fragment implements AdapterVie
                     Toast.makeText(getContext(), "Acabas de enviar plantilla, intenta reconectarte a BLE", Toast.LENGTH_SHORT).show();
                 if (result.equals("ok")){
                     Toast.makeText(getContext(), "Actualización de plantilla: Correcta", Toast.LENGTH_SHORT).show();
-                    //listenermain.printExcel(getListToExcel(),"oxxo");
                 }if (result.equals("noconnected")){
                     Toast.makeText(getContext(), "No te has conectados a un BLE", Toast.LENGTH_SHORT).show();
                 }if (result.equals("exception")){
@@ -1620,7 +1641,7 @@ public class PlantillaOxxoDisplayFragment extends Fragment implements AdapterVie
 
         @Override
         protected void onPreExecute() {
-            createProgressDialog("Acualizando a nueva plantilla...");
+            createProgressDialog("Acualizando a equipo CEO...");
         }
 
         @Override
@@ -1681,9 +1702,7 @@ public class PlantillaOxxoDisplayFragment extends Fragment implements AdapterVie
         }
     }
 
-    private void updatefwOperador() {
-        bluetoothServices.sendCommand("FirmwareOperadorOxxo");
-    }
+
 
     //utilidad
     /*public List<String> getOriginalList(){
@@ -1799,7 +1818,6 @@ public class PlantillaOxxoDisplayFragment extends Fragment implements AdapterVie
         editTextsList.add(etOxxoModelTrefp);
         return editTextsList;
     }
-
     public List<String> getList(){
         List<String> arrayListInfo = new ArrayList<>();
         arrayListInfo.add(etActOxxoSetpointDiurno.getText().toString());
