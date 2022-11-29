@@ -87,15 +87,15 @@ public class BluetoothLeService extends Service {
                                          BluetoothGattCharacteristic characteristic,
                                          int status) {
             //comentado para hacer función que solo manda bytes en lugar de telemetría}
-            //broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
-            broadcastUpdateBytes(BluetoothLeService.ACTION_DATA_AVAILABLE,characteristic);
+            broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
+            //broadcastUpdateBytes(BluetoothLeService.ACTION_DATA_AVAILABLE,characteristic);
         }
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt,
                                             BluetoothGattCharacteristic characteristic) {
             //comentado para hacer función que solo manda bytes en lugar de telemetría}
-            broadcastUpdateBytes(BluetoothLeService.ACTION_DATA_AVAILABLE,characteristic);
-            //broadcastUpdate(BluetoothLeService.ACTION_DATA_AVAILABLE,characteristic);
+            //broadcastUpdateBytes(BluetoothLeService.ACTION_DATA_AVAILABLE,characteristic);
+            broadcastUpdate(BluetoothLeService.ACTION_DATA_AVAILABLE,characteristic);
         }
 
 
@@ -187,38 +187,9 @@ public class BluetoothLeService extends Service {
         sendBroadcast(intent);
     }
 
-    private void broadcastUpdateBytes(final String action, final BluetoothGattCharacteristic characteristic) {
-        final Intent intent = new Intent(action);
-        if (UUID_TREFPB_RW.equals(characteristic.getUuid())) {
-            listDataB = characteristic.getValue();
-            /*if (data != null && data.length > 0) {
-                final StringBuilder stringBuilder = new StringBuilder(data.length);
-                for(byte byteChar : data)
-                    stringBuilder.append(String.format("%02X ", byteChar));
-                listData.add(stringBuilder.toString());
-            }*/
-        } else {
-            // No es la misma característica...
-            final byte[] data = characteristic.getValue();
-            if (data != null && data.length > 0) {
-                final StringBuilder stringBuilder = new StringBuilder(data.length);
-                for(byte byteChar : data)
-                    stringBuilder.append(String.format("%02X ", byteChar));
-                intent.putExtra(EXTRA_DATA, new String(data) + "\n" + stringBuilder.toString());
-            }
-        }
-        sendBroadcast(intent);
-    }
-
     public List<String> getDataFromBroadcastUpdate(){
         List<String> listData2 = new ArrayList<>(listData);
         listData.clear();
-        return listData2;
-    }
-
-    public byte[] getDataFromBroadcastUpdateByte(){
-        byte[] listData2 = listDataB;
-        listDataB = null;
         return listData2;
     }
 

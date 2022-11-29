@@ -35,6 +35,13 @@ public class ConexionTrefp {
 
     //Bluetooth Services
     BluetoothLeService bluetoothLeService;
+
+    ArrayList<String> listData = new ArrayList<String>() ;
+    ArrayList<String> FinalListDataEvento = new ArrayList<String>() ;
+    ArrayList<String> FinalListDataTiempo = new ArrayList<String>() ;
+
+
+
     public BluetoothServices bluetoothServices;
 
     public ConexionTrefp(Context context){
@@ -46,8 +53,15 @@ public class ConexionTrefp {
     }
 
     public void getTREFPBLEHandshake(){
-        new MyAsyncTaskGetHandshakeTREFPBytes().execute();
+        new MyAsyncTaskGetHandshakeTREFP().execute();
     }
+    public void getTREFPBLETiempo(){
+        new MyAsyncTaskGetTiempoTrefpb().execute();
+    }
+    public void getTREFPBLEEvento(){
+        new MyAsyncTaskGetEventoTrefpb().execute();
+    }
+
 
     public void getOXXOHandshake(){
         new MyAsyncTaskGetHandshakeCEO().execute();
@@ -62,11 +76,17 @@ public class ConexionTrefp {
     }
 
     public void isConnectionAlive(){
-        new MyAsyncTaskGetHandshakeTREFPCheckConnection().execute();
+        if (bluetoothLeService==null){
+            listenerTREFP.isConnectionAlive("Desconectado");
+        }else{
+            listenerTREFP.isConnectionAlive("Conectado");
+        }
+        //new MyAsyncTaskGetHandshakeTREFPCheckConnection().execute();
     }
 
     public void desconectar(){
         bluetoothServices.disconnect();
+        bluetoothLeService=null;
     }
 
     class MyAsyncTaskConnectBLETrefp extends AsyncTask<Integer, Integer, String> {
@@ -122,7 +142,7 @@ public class ConexionTrefp {
                 return "ok";
             }else
                 Log.d("","dataChecksum total:8");
-            return "not";
+            return "noconnected";
         }
 
         @Override
@@ -245,62 +265,16 @@ public class ConexionTrefp {
         }
     }
 
-    class MyAsyncTaskGetHandshakeTREFPBytes extends AsyncTask<Integer, Integer, String> {
+    class MyAsyncTaskGetTiempoTrefpb extends AsyncTask<Integer, Integer, String> {
         @Override
         protected String doInBackground(Integer... params) {
-            bluetoothLeService = bluetoothServices.getBluetoothLeService();
-            if (bluetoothLeService.sendFirstComando("4021")){
-                Log.d("","dataChecksum total:7");
-                return "ok";
-            }else
-                Log.d("","dataChecksum total:8");
-            return "not";
+            convertInfoLoggerTiempo();
+            return "";
         }
 
         @Override
         protected void onPostExecute(String result) {
-            try {
-                Thread.sleep(400);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            if (result.equals("ok")){
-                byte[] listData;
-                listData = bluetoothLeService.getDataFromBroadcastUpdateByte();
-                listenerTREFP.getInfoBytes(listData);
-            }else{
-                listenerTREFP.onError("No se pudo obtener datos, ¿Estás conectado?");
-            }
-
-            /*if (result.equals("noconnected")) {
-                listData.add("noconnected");
-                listenerTREFP.getInfo(listData);
-            }else {*/
-
-                /*if (result.equals("ok")){
-                    if (!listData.isEmpty()){
-
-                        String isChecksumOk = GlobalTools.checkChecksumImberaTREFPB(GetRealDataFromHexaImbera.cleanSpace(listData).toString());
-                        if (isChecksumOk.equals("ok")){
-                            //FinalListData = GetRealDataFromHexaImbera.convert(listData, "Handshake");
-                            //listData = GetRealDataFromHexaImbera.GetRealData(FinalListData, "Handshake");
-                            listenerTREFP.getInfo(listData);
-                        }else if (isChecksumOk.equals("notFirmware")){
-                            listData.add("noFirmware");
-                            listenerTREFP.getInfo(listData);
-                        }else if (isChecksumOk.equals("notok")){
-                            listData.add("notOkChecksum");
-                            listenerTREFP.getInfo(listData);
-                        }
-                    }else{
-                        //listData.add("No se pudo obtener información, ¿estás conectado?");
-                        listenerTREFP.getInfo(listData);
-                    }
-                }else{
-                    //listData.add("Fallo al conectar a un BLE");
-                    listenerTREFP.getInfo(listData);
-                }*/
-            //}
+            listenerTREFP.getInfo(FinalListDataTiempo);
         }
 
         @Override
@@ -312,6 +286,31 @@ public class ConexionTrefp {
 
         }
     }
+
+    class MyAsyncTaskGetEventoTrefpb extends AsyncTask<Integer, Integer, String> {
+        @Override
+        protected String doInBackground(Integer... params) {
+            convertInfoLoggerEvento();
+            return "";
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            listenerTREFP.getInfo(FinalListDataEvento);
+
+        }
+
+        @Override
+        protected void onPreExecute() {
+            //createProgressDialog("Obteniendo primera comunicación...");
+        }
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+
+        }
+    }
+
+
 
     class MyAsyncTaskGetHandshakeTREFPCheckConnection extends AsyncTask<Integer, Integer, String> {
         @Override
@@ -523,6 +522,217 @@ public class ConexionTrefp {
         public void isConnectionAlive(String resp);
         public void getInfo(List<String> data);
         public void getInfoBytes(byte[] data);
+    }
+
+    private String convertInfoLoggerTiempo(){
+        List<String> FinalListData = new ArrayList<String>() ;
+        List<String> FinalListTest = new ArrayList<String>() ;
+        String isChecksumOk;
+        listData.clear();
+        try {
+            FinalListData.clear();
+            listData.clear();
+            bluetoothServices.sendCommand("time","4060");
+            Thread.sleep(700);
+            listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+            Log.d("islistttt",":"+listData.get(0));
+            Thread.sleep(700);
+            listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+            Log.d("islistttt",":"+listData.get(1));
+            Thread.sleep(700);
+            listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+            Log.d("islistttt",":"+listData.get(2));
+            Thread.sleep(700);
+            listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+            Log.d("islistttt",":"+listData.get(3));
+            Thread.sleep(700);
+            listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+            Log.d("islistttt",":"+listData.get(4));
+            Thread.sleep(700);
+            listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+            Log.d("islistttt",":"+listData.get(5));
+            Thread.sleep(700);
+            listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+            Log.d("islistttt",":"+listData.get(6));
+            Thread.sleep(700);
+            listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+            Log.d("islistttt",":"+listData.get(7));
+            Thread.sleep(700);
+            listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+            Log.d("islistttt",":"+listData.get(8));
+            Thread.sleep(700);
+            listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+            Log.d("islistttt",":"+listData.get(9));
+            Thread.sleep(700);
+            listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+            Log.d("islistttt",":"+listData.get(10));
+            Thread.sleep(700);
+            listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+            Log.d("islistttt",":"+listData.get(11));
+            Thread.sleep(700);
+            listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+            Log.d("islistttt",":"+listData.get(12));
+            Thread.sleep(700);
+            listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+            Log.d("islistttt",":"+listData.get(13));
+            Thread.sleep(700);
+            listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+            Log.d("islistttt",":"+listData.get(14));
+            Thread.sleep(700);
+            listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+            Log.d("islistttt",":"+listData.get(15));
+            Thread.sleep(700);
+            listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+            Log.d("islistttt",":"+listData.get(16));
+            Thread.sleep(700);
+            listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+            Log.d("islistttt",":"+listData.get(17));
+            Thread.sleep(700);
+            listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+            Log.d("islistttt",":"+listData.get(18));
+            Thread.sleep(700);
+            listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+            Log.d("islistttt",":"+listData.get(19));
+            Thread.sleep(700);
+            listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+            Log.d("islistttt",":"+listData.get(20));
+            Thread.sleep(700);
+            listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+            Log.d("islistttt",":"+listData.get(21));
+
+            for (int i=0; i<listData.size(); i++){//comprobación de la obtención de datos sin lista vacía
+                if (listData.get(i).length() !=0){
+                    FinalListDataTiempo.add(listData.get(i));
+                }
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+
+        }
+
+        return "true";
+
+    }
+
+    private String convertInfoLoggerEvento(){
+        List<String> FinalListData = new ArrayList<String>() ;
+        List<String> FinalListTest = new ArrayList<String>() ;
+        String isChecksumOk;
+        listData.clear();
+        try {
+            FinalListTest.clear();
+            FinalListData.clear();
+            listData.clear();
+            bluetoothServices.sendCommand("event","4061");
+            Thread.sleep(700);
+            listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+            Log.d("islistttt",":"+listData.get(0));
+            Thread.sleep(700);
+            listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+            Log.d("islistttt",":"+listData.get(1));
+            Thread.sleep(700);
+            listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+            Log.d("islistttt",":"+listData.get(2));
+            Thread.sleep(700);
+            listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+            Log.d("islistttt",":"+listData.get(3));
+            Thread.sleep(700);
+            listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+            Log.d("islistttt",":"+listData.get(4));
+            Thread.sleep(700);
+            listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+            Log.d("islistttt",":"+listData.get(5));
+            Thread.sleep(700);
+            listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+            Log.d("islistttt",":"+listData.get(6));
+            Thread.sleep(700);
+            listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+            Log.d("islistttt",":"+listData.get(7));
+            Thread.sleep(700);
+            listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+            Log.d("islistttt",":"+listData.get(8));
+            Thread.sleep(700);
+            listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+            Log.d("islistttt",":"+listData.get(9));
+            Thread.sleep(700);
+            listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+            Log.d("islistttt",":"+listData.get(10));
+            Thread.sleep(700);
+            listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+            Log.d("islistttt",":"+listData.get(11));
+            Thread.sleep(700);
+            listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+            Log.d("islistttt",":"+listData.get(12));
+            Thread.sleep(700);
+            listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+            Log.d("islistttt",":"+listData.get(13));
+            Thread.sleep(700);
+            listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+            Log.d("islistttt",":"+listData.get(14));
+            Thread.sleep(700);
+            listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+            Log.d("islistttt",":"+listData.get(15));
+            Thread.sleep(700);
+            listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+            Log.d("islistttt",":"+listData.get(16));
+            Thread.sleep(700);
+            listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+            Log.d("islistttt",":"+listData.get(17));
+            Thread.sleep(700);
+            listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+            Log.d("islistttt",":"+listData.get(18));
+            Thread.sleep(700);
+            listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+            Log.d("islistttt",":"+listData.get(19));
+            Thread.sleep(700);
+            listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+            Log.d("islistttt",":"+listData.get(20));
+            Thread.sleep(700);
+            listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+            Log.d("islistttt",":"+listData.get(21));
+            Thread.sleep(700);
+            listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+            Log.d("islistttt",":"+listData.get(22));
+            Thread.sleep(700);
+            listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+            Log.d("islistttt",":"+listData.get(23));
+            Thread.sleep(700);
+            listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+            Log.d("islistttt",":"+listData.get(24));
+            Thread.sleep(700);
+            listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+            Log.d("islistttt",":"+listData.get(25));
+            Thread.sleep(700);
+            listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+            Log.d("islistttt",":"+listData.get(26));
+            Thread.sleep(700);
+            listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+            Log.d("islistttt",":"+listData.get(27));
+            Thread.sleep(700);
+            listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+            Log.d("islistttt",":"+listData.get(28));
+            Thread.sleep(700);
+            listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+            Log.d("islistttt",":"+listData.get(29));
+            Thread.sleep(700);
+            listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+            Log.d("islistttt",":"+listData.get(30));
+            Thread.sleep(700);
+            listData.add(bluetoothLeService.getDataFromBroadcastUpdateString());
+
+            for (int i=0; i<listData.size(); i++){//comprobación de la obtención de datos sin lista vacía
+                if (listData.get(i).length() !=0){
+                    FinalListDataEvento.add(listData.get(i));
+                }
+            }
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+
+        }
+
+        return "true";
+
     }
 
     public void ConexionTREFPListener(ListenerTREFP listenerTREFP) {
