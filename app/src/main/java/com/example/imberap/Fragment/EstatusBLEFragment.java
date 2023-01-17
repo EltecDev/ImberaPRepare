@@ -436,7 +436,6 @@ public class EstatusBLEFragment extends Fragment {
                     }else{
                         return "false";
                     }
-
                     /*if (sp.getString("modelo","").equals("3.3") && sp.getString("numversion","").equals("1.02")){
 
                     }else if (sp.getString("modelo","").equals("3.5") && sp.getString("numversion","").equals("1.04")){
@@ -444,8 +443,6 @@ public class EstatusBLEFragment extends Fragment {
                     }else{
 
                     }*/
-
-
                 }
 
 
@@ -513,7 +510,6 @@ public class EstatusBLEFragment extends Fragment {
         FinalListDataRealState.clear();
         try {
             if (sp.getString("trefpVersionName","").equals("IMBERA-TREFP") || sp.getString("trefpVersionName","").equals("OXXO-CMO")){
-
                     //if modelo actual es igual a 3.3 en adelante, entonces mostrar de forma de nuevo logger
                     Log.d("LOGGG2",":"+Double.parseDouble(sp.getString("numversion","")));
                     Log.d("LOGGG2",":"+Double.parseDouble(sp.getString("modelo","")));

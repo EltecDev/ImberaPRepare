@@ -1,0 +1,622 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@color/white_background"
+    android:id="@+id/fragment_list_BLE_devices"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <TextView
+        android:id="@+id/tvtituloPlantillaOxxo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:text="Aquí puedes editar plantillas y mandarlas como parámetros a tu dispositivo RutaFria"
+        android:textSize="15sp" />
+
+    <RelativeLayout
+        android:visibility="gone"
+        android:alpha="0.2"
+        android:background="@color/black"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"/>
+
+    <ScrollView
+        android:id="@+id/scrollPlantilla"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/layoutButtons"
+        android:layout_below="@+id/tvtituloPlantillaOxxo"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <!--
+             Datos de COMPRESOR
+             -->
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="T0.- Set point ventiladores (Cª, por defecto:-1.0)"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+
+            <TextView
+                android:id="@+id/tvT0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="-99 a 99" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etT0"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:digits="1234567890.-"
+                android:hint="-99 a 99"
+                android:inputType="" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="T1.- Diferencial ventiladores (Cª, por defecto:2.0)"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+
+            <TextView
+                android:id="@+id/tvT1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0.5 a 9.9" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etT1"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:digits="1234567890."
+                android:hint="0.5 a 9.9"
+                android:inputType="numberDecimal" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="T2.- Offset display ventiladores (Cª, por defecto:0.0)"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+
+            <TextView
+                android:id="@+id/tvT2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="-9.9 a 9.9" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etT2"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:digits="1234567890.-"
+                android:hint="-9.9 a 9.9"
+                android:inputType="" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="T3.- Set point compresor (Cª, por defecto:2.0)"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+
+            <TextView
+                android:id="@+id/tvT3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="-99 a 99" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etT3"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:digits="1234567890."
+                android:hint="-99 a 99"
+                android:inputType="numberDecimal" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="T4.- Diferencial ventiladores (Cª, por defecto:2.0)"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+
+            <TextView
+                android:id="@+id/tvT4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0.5 a 9.9" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etT4"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:digits="1234567890."
+                android:hint="0.5 a 9.9"
+                android:inputType="numberDecimal" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="L6.- Tiempo de puerta abierta para cancelar control de ventilador por puerta (minutos, por defecto:10)"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+
+            <TextView
+                android:id="@+id/tvL6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0 a 99" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etL6"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="0 a 99"
+                android:inputType="number" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="L7.- Tiempo de validación para alarma de puerta abierta (minutos, por defecto:3)"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+
+            <TextView
+                android:id="@+id/tvL7"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0 a 99" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etL7"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="00 a 99"
+                android:inputType="number" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="L8.- Tiempo de retardo de encendido de ventilador al cerrar puerta (minutos, por defecto:15)"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+
+            <TextView
+                android:id="@+id/tvL8"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0 a 250" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etL8"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="00 a 250"
+                android:inputType="number" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="C0.- Escala de temperatura (Encendido:Celcius Apagado:Fahrenheit, por defecto:Celcius)"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="Dato nuevo para TREFP : " />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="25dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Celcius" />
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/switchC0"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:checked="false"
+                    android:text="" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Fahrenheit" />
+            </LinearLayout>
+            <!-- -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="C1.- Banderas de configuración"
+                android:textStyle="bold" />
+
+
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Switch de puerta" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="25dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Normalmente cerrado" />
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/switchC1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:checked="false"
+                    android:text="" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Normalmente abierto" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="C2.- Intensidad del filtro para el sensor de ambiente a la subida (por defecto:0)"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+
+            <TextView
+                android:id="@+id/tvC2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0 a 09" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+
+            <Spinner
+                android:visibility="visible"
+                android:layout_marginTop="10dp"
+                android:id="@+id/spinnerC2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="C8.- Niveles de tiempo para mostrar fallas (por defecto: 4)"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="Dato nuevo para TREFP : " />
+
+            <Spinner
+                android:visibility="visible"
+                android:layout_marginTop="10dp"
+                android:id="@+id/spinnerC8"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="F3.- Tiempo de descanso mínimo de compresor (minutos, por defecto: 1.0)"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+
+            <TextView
+                android:id="@+id/tvF3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0.0 a 25" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etF3"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="0.0 a 25"
+                android:inputType="numberDecimal" />
+
+
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="F6.- Tiempo de encendido de ventilador (minutos, por defecto: 1)"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+            <TextView
+                android:id="@+id/tvF6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0 a 250" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+            <com.google.android.material.textfield.TextInputEditText
+                android:inputType="numberDecimal"
+                android:id="@+id/etF6"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="0 a 250" />
+
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="F7.- Tiempo de apagado de ventilador (minutos, por defecto: 1)"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+            <TextView
+                android:id="@+id/tvF7"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0 a 250" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+            <com.google.android.material.textfield.TextInputEditText
+                android:inputType="numberDecimal"
+                android:id="@+id/etF7"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="0 a 250" />
+
+
+
+            <!--Datos finales de versiones de firmware/Software -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="E3.- Versión de la plantilla"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etPlantilla"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text='E1 E2.- Versión Firmware Actual (ejemplo: "1.01" , "1.0" , "1.50")'
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:enabled="false"
+                android:id="@+id/etFW"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text='D7.- Modelo de TREFP (Ejemplo "2.0")'
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:enabled="false"
+                android:id="@+id/etModelo"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal" />
+
+            <LinearLayout
+                android:layout_marginBottom="10dp"
+                android:id="@+id/layoutButtonsGetCrudo"
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <Button
+                    android:id="@+id/btnSendInfoCrudo"
+                    android:layout_width="150dp"
+                    android:layout_height="56dp"
+                    android:background="@drawable/round_corner_white"
+                    android:text="Info sin proceso"
+                    android:textAlignment="center"
+                    android:textColor="#000"
+                    android:textSize="15sp" />
+
+                <Button
+                    android:layout_marginHorizontal="10dp"
+                    android:id="@+id/btnSendPlantillaObtenida"
+                    android:layout_width="150dp"
+                    android:layout_height="56dp"
+                    android:background="@drawable/round_corner_white"
+                    android:text="Excel de plantilla"
+                    android:textAlignment="center"
+                    android:textColor="#000"
+                    android:textSize="15sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+
+    </ScrollView>
+
+    <LinearLayout
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="10dp"
+        android:id="@+id/layoutButtons"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/btnSendPlantilla"
+            android:layout_width="150dp"
+            android:layout_height="56dp"
+            android:background="@drawable/round_corner_black"
+            android:text="Enviar plantilla"
+            android:textAlignment="center"
+            android:textColor="#FFF"
+            android:textSize="18sp" />
+
+        <Button
+            android:layout_marginHorizontal="10dp"
+            android:id="@+id/btnGetPlantilla"
+            android:layout_width="150dp"
+            android:layout_height="56dp"
+            android:background="@drawable/round_corner_black"
+            android:text="Obtener plantilla"
+            android:textAlignment="center"
+            android:textColor="#FFF"
+            android:textSize="18sp" />
+
+    </LinearLayout>
+
+</RelativeLayout>

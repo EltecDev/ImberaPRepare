@@ -43,6 +43,7 @@ import com.example.imberap.Fragment.OperacionesFragmentOxxo;
 import com.example.imberap.Fragment.PlantillaCEOWiFiFragment;
 import com.example.imberap.Fragment.PlantillaFragment;
 import com.example.imberap.Fragment.OperacionesFragment;
+import com.example.imberap.Fragment.PlantillaFragmentRutaFria;
 import com.example.imberap.Fragment.UsuarioFragment;
 import com.example.imberap.Utility.GlobalTools;
 import com.example.imberap.Fragment.PlantillaOxxoDisplayFragment;
@@ -77,7 +78,7 @@ import java.util.List;
  * REVISAR LA PETICION DE ESTADO DE TREFPB (PEQUEÑO CON BLE) NO OBTIENE EL ESTADO CORRECTAMENTE CON EQUIPO SIN MODELO Y TAMPOCO HAY REVISIÓN DE COMO RECIBIR CORRECTAMENTE LA INFORMACIÓN
  * <p>
  * No Urgente:
- * agregar el resto de compatibilidad a la interfaz respecto al uso de Operador, en TREFPB debería no poder verse el sroll ni botones
+ *
  */
 public class MainActivity extends AppCompatActivity implements NavigationBarView.OnItemSelectedListener, ListaBLEFragment.connectListener, PlantillaFragment.listener, UsuarioFragment.MainActivityistener, LoginFragment.listener, OperacionesFragment.listener, PlantillaOxxoDisplayFragment.listener {
     BottomNavigationView bottomNavigationView;
@@ -100,6 +101,7 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
     PlantillaFragment plantillaFragment;
     PlantillaCEOWiFiFragment plantillaCEOWiFiFragment;
     PlantillaOxxoDisplayFragment plantillaOxxoDisplayFragment;
+    PlantillaFragmentRutaFria plantillaFrutaFriaFragment;
     EstatusBLEFragment estatusBLEFragment;
     OperacionesFragment operacionesFragment;
     OperacionesFragmentCeoWifi operacionesFragmentCeoWifi;
@@ -225,6 +227,7 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
                 plantillaFragment = new PlantillaFragment(bluetoothServices, this);
                 plantillaCEOWiFiFragment = new PlantillaCEOWiFiFragment(bluetoothServices, this);
                 plantillaOxxoDisplayFragment = new PlantillaOxxoDisplayFragment(bluetoothServices, this);
+                plantillaFrutaFriaFragment = new PlantillaFragmentRutaFria(bluetoothServices, this);
                 estatusBLEFragment = new EstatusBLEFragment(bluetoothServices, this);
                 operacionesFragment = new OperacionesFragment(bluetoothServices, this);
                 operacionesFragmentCeoWifi = new OperacionesFragmentCeoWifi(bluetoothServices, this);
@@ -250,14 +253,15 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
         //plantillaCEOWiFiFragment.setListener(this);
         plantillaOxxoDisplayFragment.setListener(this);
         operacionesFragment.setOperacionesListener(this);
-        //operacionesFragmentceowifi.setOperacionesListener(this);
+        //oqperacionesFragmentceowifi.setOperacionesListener(this);
 
-        fragmentManager.beginTransaction().add(R.id.flFragment, loginFragment, "").hide(loginFragment).commit();
         fragmentManager.beginTransaction().add(R.id.flFragment, usuarioFragment, "").hide(usuarioFragment).commit();
+        fragmentManager.beginTransaction().add(R.id.flFragment, loginFragment, "").hide(usuarioFragment).commit();
         fragmentManager.beginTransaction().add(R.id.flFragment, estatusBLEFragment, "").hide(estatusBLEFragment).commit();
         fragmentManager.beginTransaction().add(R.id.flFragment, operacionesFragment, "").hide(operacionesFragment).commit();
         fragmentManager.beginTransaction().add(R.id.flFragment, operacionesFragmentCeoWifi, "").hide(operacionesFragmentCeoWifi).commit();
         fragmentManager.beginTransaction().add(R.id.flFragment, operacionesFragmentOxxo, "").hide(operacionesFragmentOxxo).commit();
+        fragmentManager.beginTransaction().add(R.id.flFragment, plantillaFrutaFriaFragment, "").hide(plantillaFrutaFriaFragment).commit();
         fragmentManager.beginTransaction().add(R.id.flFragment, plantillaFragment, "").hide(plantillaFragment).commit();
         fragmentManager.beginTransaction().add(R.id.flFragment, plantillaCEOWiFiFragment, "").hide(plantillaCEOWiFiFragment).commit();
         fragmentManager.beginTransaction().add(R.id.flFragment, plantillaOxxoDisplayFragment, "PlantillaOxxo").hide(plantillaOxxoDisplayFragment).commit();
@@ -350,24 +354,27 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
                     active = loginFragment;
                     Toast.makeText(this, "Conéctate con un usuario primero", Toast.LENGTH_SHORT).show();
                 } else {
-                    /*if (sp.getString("userjerarquia","").equals("4")){//jerarquia 4  = producción
-                        showInfoPopup("Jerarquía de usuarios","Tu usuario no puede utilizar esta función, contacta con el administrador del sistema.");
-                    }else{*/
-                    Log.d("TESTT",":"+sp.getString("trefpVersionName",""));
+                        if (sp.getString("userjerarquia","").equals("4")){//jerarquia 4  = producción
+                            showInfoPopup("Jerarquía de usuarios","Tu usuario no puede utilizar esta función, contacta con el administrador del sistema.");
+                        }else{
+                        Log.d("TESTT",":"+sp.getString("trefpVersionName",""));
 
-                    if (sp.getString("trefpVersionName", "").equals("IMBERA-WF  ")) {
-                        fragmentManager.beginTransaction().hide(active).show(plantillaCEOWiFiFragment).commit();
-                        active = plantillaCEOWiFiFragment;
-                    } else if (sp.getString("trefpVersionName", "").equals("IMBERA-OXXO")) {
-                        fragmentManager.beginTransaction().hide(active).show(plantillaOxxoDisplayFragment).commit();
-                        active = plantillaOxxoDisplayFragment;
-                    } else if (sp.getString("trefpVersionName", "").equals("IMBERA-TREFP")) {
-                        fragmentManager.beginTransaction().hide(active).show(plantillaFragment).commit();
-                        active = plantillaFragment;
-                    } else if (sp.getString("trefpVersionName", "").equals("")) {
-                        Toast.makeText(this, "Conéctate a un BLE primero", Toast.LENGTH_SHORT).show();
+                        if (sp.getString("trefpVersionName", "").equals("IMBERA-WF  ") || sp.getString("trefpVersionName", "").equals("IMBERA-WF")) {
+                            fragmentManager.beginTransaction().hide(active).show(plantillaCEOWiFiFragment).commit();
+                            active = plantillaCEOWiFiFragment;
+                        } else if (sp.getString("trefpVersionName", "").equals("IMBERA-OXXO")) {
+                            fragmentManager.beginTransaction().hide(active).show(plantillaOxxoDisplayFragment).commit();
+                            active = plantillaOxxoDisplayFragment;
+                        } else if (sp.getString("trefpVersionName", "").equals("IMBERA_RUTA_FRIA")) {
+                            fragmentManager.beginTransaction().hide(active).show(plantillaFrutaFriaFragment).commit();
+                            active = plantillaFrutaFriaFragment;
+                        } else if (sp.getString("trefpVersionName", "").equals("IMBERA-TREFP")) {
+                            fragmentManager.beginTransaction().hide(active).show(plantillaFragment).commit();
+                            active = plantillaFragment;
+                        } else if (sp.getString("trefpVersionName", "").equals("")) {
+                            Toast.makeText(this, "Conéctate a un BLE primero", Toast.LENGTH_SHORT).show();
+                        }
                     }
-                    //}
 
                 }
                 return true;
@@ -398,18 +405,7 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
                     if (sp.getString("userjerarquia", "").equals("4") || sp.getString("userjerarquia", "").equals("5")|| sp.getString("userjerarquia", "").equals("6")) {//jerarquia 4  = producción; 5 = Operador
                         showInfoPopup("Jerarquía de usuarios", "Tu usuario no puede utilizar esta función, contacta con el administrador del sistema.");
                     } else {
-                        if (sp.getString("trefpVersionName", "").equals("IMBERA-WF  ")) {
-                            fragmentManager.beginTransaction().hide(active).show(operacionesFragmentCeoWifi).commit();
-                            active = operacionesFragmentCeoWifi;
-                        } else if (sp.getString("trefpVersionName", "").equals("IMBERA-OXXO")) {
-                            fragmentManager.beginTransaction().hide(active).show(operacionesFragmentOxxo).commit();
-                            active = operacionesFragmentOxxo;
-                        } else if (sp.getString("trefpVersionName", "").equals("IMBERA-TREFP")) {
-                            fragmentManager.beginTransaction().hide(active).show(operacionesFragment).commit();
-                            active = operacionesFragment;
-                        } else if (sp.getString("trefpVersionName", "").equals("")) {
-                            Toast.makeText(this, "Conéctate a un BLE primero", Toast.LENGTH_SHORT).show();
-                        }
+                        
                     }
 
 
@@ -429,6 +425,74 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
         }
         return false;
     }
+
+    /*@Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.bottom_menu_item1:
+
+                    fragmentManager.beginTransaction().hide(active).show(listaBLEFragment).commit();
+                    active = listaBLEFragment;
+
+                return true;
+            case R.id.bottom_menu_item2:
+
+                    *//*if (sp.getString("userjerarquia","").equals("4")){//jerarquia 4  = producción
+                        showInfoPopup("Jerarquía de usuarios","Tu usuario no puede utilizar esta función, contacta con el administrador del sistema.");
+                    }else{*//*
+                    Log.d("TESTT",":"+sp.getString("trefpVersionName",""));
+
+                    if (sp.getString("trefpVersionName", "").equals("IMBERA-WF  ")) {
+                        fragmentManager.beginTransaction().hide(active).show(plantillaCEOWiFiFragment).commit();
+                        active = plantillaCEOWiFiFragment;
+                    } else if (sp.getString("trefpVersionName", "").equals("IMBERA-OXXO")) {
+                        fragmentManager.beginTransaction().hide(active).show(plantillaOxxoDisplayFragment).commit();
+                        active = plantillaOxxoDisplayFragment;
+                    } else if (sp.getString("trefpVersionName", "").equals("IMBERA-TREFP")) {
+                        fragmentManager.beginTransaction().hide(active).show(plantillaFragment).commit();
+                        active = plantillaFragment;
+                    } else if (sp.getString("trefpVersionName", "").equals("")) {
+                        Toast.makeText(this, "Conéctate a un BLE primero", Toast.LENGTH_SHORT).show();
+                    }
+                    //}
+
+
+                return true;
+            case R.id.bottom_menu_item3:
+
+
+                            fragmentManager.beginTransaction().hide(active).show(estatusBLEFragment).commit();
+                            active = estatusBLEFragment;
+
+
+
+
+
+                return true;
+            case R.id.bottom_menu_item4:
+
+
+                        if (sp.getString("trefpVersionName", "").equals("IMBERA-WF  ")) {
+                            fragmentManager.beginTransaction().hide(active).show(operacionesFragmentCeoWifi).commit();
+                            active = operacionesFragmentCeoWifi;
+                        } else if (sp.getString("trefpVersionName", "").equals("IMBERA-OXXO")) {
+                            fragmentManager.beginTransaction().hide(active).show(operacionesFragmentOxxo).commit();
+                            active = operacionesFragmentOxxo;
+                        } else if (sp.getString("trefpVersionName", "").equals("IMBERA-TREFP")) {
+                            fragmentManager.beginTransaction().hide(active).show(operacionesFragment).commit();
+                            active = operacionesFragment;
+                        } else if (sp.getString("trefpVersionName", "").equals("")) {
+                            Toast.makeText(this, "Conéctate a un BLE primero", Toast.LENGTH_SHORT).show();
+                        }
+
+
+
+
+                return true;
+
+        }
+        return false;
+    }*/
 
     @Override
     public void connectBLE(String name, String mac) {

@@ -73,7 +73,7 @@ public class ListaBLEFragment extends Fragment {
                         //listaDevices.add(new BLEDevices("","", null));
 
                     }else{
-                        if (device.getName().contains("IMBERA-TREFP") || device.getName().contains("IMBERA-OXXO") || device.getName().contains("OXXO-CMO")|| device.getName().contains("IMBERA-WF")){
+                        if (device.getName().equals("IMBERA_RUTA_FRIA") || device.getName().contains("IMBERA-TREFP") || device.getName().contains("IMBERA-OXXO") || device.getName().contains("OXXO-CMO")|| device.getName().contains("IMBERA-WF")){
                             if (listaDevices.isEmpty()){
                                 listaDevices.add(new BLEDevices(device.getName(),device.getAddress(), null));
                             }else {
@@ -443,7 +443,7 @@ public class ListaBLEFragment extends Fragment {
                                 FinalListData = GetRealDataFromHexaImbera.convert(listData, "Handshake","","");
                                 listData = GetRealDataFromHexaImbera.GetRealData(FinalListData, "Handshake","","");
                                 tvfwversion.setText("Modelo:" + listData.get(1)
-                                        + "\nVersión:" + listData.get(2)
+                                        + "\nVersión FW:" + listData.get(2)
                                         + "\nPlantilla:" + listData.get(3));
                                 esp.putString("modelo",listData.get(1));
                                 esp.putString("numversion",listData.get(2));

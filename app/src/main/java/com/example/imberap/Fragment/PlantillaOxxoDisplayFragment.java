@@ -175,6 +175,14 @@ public class PlantillaOxxoDisplayFragment extends Fragment implements AdapterVie
     }
 
     public void actualizarUIJerarquia(){
+
+        /*tvsubtituloPlantillaOxxo.setVisibility(View.GONE);
+        spinnerPlantillas.setVisibility(View.GONE);
+        btnDownloadPlantillas.setVisibility(View.GONE);
+        btnenviarfwOperadores.setVisibility(View.GONE);
+        btnenviarPlantillaOperadores.setVisibility(View.GONE);
+        btnEnviarFwYPlantilla.setVisibility(View.GONE);*/
+
         if (!sp.getString("userId","").equals("")){//si no hay usuario logeado entonces no escanear
             switch (sp.getString("userjerarquia","")){
                 case "1":{
@@ -905,7 +913,7 @@ public class PlantillaOxxoDisplayFragment extends Fragment implements AdapterVie
     }
 
     private void sendDataPlantillaFwTecnico(){
-        bluetoothServices.sendCommand("FirmwareYPlantillaOperador");
+        bluetoothServices.sendCommand("FirmwareYPlantillaTecnico");
     }
 
     private void sortFromDataToHexaOperador() {
@@ -948,7 +956,6 @@ public class PlantillaOxxoDisplayFragment extends Fragment implements AdapterVie
             }else{
                 Toast.makeText(getContext(), "El modelo debe ser el mismo que tiene actualmente el equipo", Toast.LENGTH_SHORT).show();
             }
-
         } else{
             Toast.makeText(getContext(), "Uno o varios parámetros están fuera de los límites válidos", Toast.LENGTH_SHORT).show();
             scrollView.post(new Runnable() {

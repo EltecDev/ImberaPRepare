@@ -37,6 +37,7 @@
             android:orientation="vertical">
 
             <TextView
+                android:visibility="gone"
                 android:id="@+id/tvSubtituloPlantillaOxxo"
                 android:layout_marginTop="10dp"
                 android:layout_width="wrap_content"
@@ -44,12 +45,14 @@
                 android:text="Puedes seleccionar una plantilla desde aquí, CUIDADO al seleccionarla se eliminarán los datos que están actualmente en los campos de edición. " />
 
             <Spinner
+                android:visibility="gone"
                 android:layout_marginTop="10dp"
                 android:id="@+id/spinnerGetPlantillaRemoto"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
             <Button
+                android:visibility="gone"
                 android:layout_marginTop="10dp"
                 android:id="@+id/btnDownloadPlantillas"
                 android:layout_width="wrap_content"

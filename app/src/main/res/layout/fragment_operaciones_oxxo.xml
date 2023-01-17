@@ -82,8 +82,8 @@
                 android:layout_height="50dp"/>
 
             <Button
+                android:visibility="gone"
                 android:layout_marginVertical="15dp"
-
                 android:layout_marginHorizontal="20dp"
                 android:background="@drawable/round_corner_black"
                 android:textColor="#fff"
@@ -93,6 +93,7 @@
                 android:layout_height="50dp"/>
 
             <Button
+                android:visibility="gone"
                 android:layout_marginVertical="15dp"
                 android:layout_marginHorizontal="20dp"
                 android:background="@drawable/round_corner_black"

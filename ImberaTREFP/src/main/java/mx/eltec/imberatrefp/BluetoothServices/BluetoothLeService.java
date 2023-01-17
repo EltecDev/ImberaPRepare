@@ -307,7 +307,7 @@ public class BluetoothLeService extends Service {
     public void sendComando(String command){
         listData.clear();
         if (writeCharacteristic==null || readCharacteristic==null){
-
+            Log.d(TAG,"writeCharacteristic NULL");
         }else {
             byte[] b = hexStringToByteArray(command);
             writeCharacteristic.setValue(b);

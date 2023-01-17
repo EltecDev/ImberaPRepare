@@ -10,8 +10,8 @@ android {
         applicationId "mx.eltec.imberap"
         minSdk 26
         targetSdk 33
-        versionCode 54
-        versionName "1.55"
+        versionCode 56
+        versionName "1.57RF"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

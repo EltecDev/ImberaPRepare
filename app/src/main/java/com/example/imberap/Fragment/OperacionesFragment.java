@@ -10,11 +10,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import com.example.imberap.BluetoothServices.BluetoothLeService;
@@ -59,7 +61,7 @@ public class OperacionesFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_operaciones, container, false);
-        init();
+        init(view);
         if (sp.getString("trefpVersionName","").equals("IMBERA-OXXO")){
             view.findViewById(R.id.btnreadEventData).setVisibility(View.GONE);
             view.findViewById(R.id.btnreadTimeData).setVisibility(View.GONE);
@@ -95,13 +97,27 @@ public class OperacionesFragment extends Fragment {
         view.findViewById(R.id.btnupdateFw).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                updatefw();
+                Log.d("datop","modelo:"+sp.getString("modelo",""));
+                Log.d("datop","fw:"+sp.getString("numversion",""));
+                if (sp.getString("modelo","").equals("3.3") && sp.getString("numversion","").equals("1.02")){
+                    createProgressDialogFwUpdateconfirmation();
+                }else{
+                    if (sp.getString("modelo","").equals("3.3")){
+                        updatefw();
+                    }else{
+                        if (sp.getString("modelo","").equals("3.5") && sp.getString("numversion","").equals("1.04")){
+                            Toast.makeText(context, "Ya estás actualizado a la última versión", Toast.LENGTH_SHORT).show();
+                        }else
+                            updatefw();
+                    }
+
+                }
             }
         });
         view.findViewById(R.id.btnupdateFwOriginal).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                updatefwOriginal();
+                //updatefwOriginal();
             }
         });
 
@@ -110,7 +126,17 @@ public class OperacionesFragment extends Fragment {
         return view;
     }
 
-    private void init() {
+    private void init(View view) {
+        /*if(sp.getString("modelo","").equals("3.5")){
+            view.findViewById(R.id.btnupdateFw).setVisibility(View.GONE);
+            view.findViewById(R.id.btnupdateFwOriginal).setVisibility(View.GONE);
+        }else if (sp.getString("modelo","").equals("3.3")){
+            view.findViewById(R.id.btnupdateFw).setVisibility(View.VISIBLE);
+            view.findViewById(R.id.btnupdateFwOriginal).setVisibility(View.GONE);
+        }else{
+            view.findViewById(R.id.btnupdateFw).setVisibility(View.VISIBLE);
+            view.findViewById(R.id.btnupdateFwOriginal).setVisibility(View.GONE);
+        }*/
 
 
     }
@@ -149,6 +175,9 @@ public class OperacionesFragment extends Fragment {
 
     }
 
+    /**
+     * Actualmente la actualización de fw es local pero debe ser obtenida desde remoto, así como las limitaciones entre modelos
+    * */
     private void updatefw() {
         if (!sp.getString("trefpVersionName","").equals("")){
             bluetoothServices.sendCommand("NewFirmware");
@@ -635,6 +664,36 @@ public class OperacionesFragment extends Fragment {
         public void createExcelTimeDataCrudo(String name, List<String> data, List<String> crudo);
         public void createExcelEventData(String name, List<String> data);
         public void createExcelEventDataCrudo(String name, List<String> data,List<String> crudo);
+    }
+
+    public void createProgressDialogFwUpdateconfirmation(){
+        if(progressdialog == null){
+            //Crear dialogos de "pantalla de carga" y "popups if"
+            LayoutInflater inflater = getLayoutInflater();
+            final View dialogView = inflater.inflate(R.layout.popup_fwconfirmation, null, false);
+            AlertDialog.Builder adb = new AlertDialog.Builder(context,R.style.Theme_AppCompat_Light_Dialog_Alert_eltc);
+            adb.setView(dialogView);
+            progressdialog = adb.create();
+            progressdialog.setCanceledOnTouchOutside(false);
+            progressdialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            progressdialog.show();
+
+            dialogView.findViewById(R.id.btnSendfwconfirmation).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    progressdialog.dismiss();
+                    progressdialog = null;
+                    updatefw();
+                }
+            });
+            dialogView.findViewById(R.id.btndontSendfwconfirmation).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    progressdialog.dismiss();
+                    progressdialog = null;
+                }
+            });
+        }
     }
 
     public void createProgressDialog(String string){

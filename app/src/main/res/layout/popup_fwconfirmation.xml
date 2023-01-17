@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/AlexaWelcomeLayout"
+    android:layout_margin="30dp"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/round_corner_white">
+
+    <LinearLayout
+        android:layout_marginTop="25dp"
+        android:id="@+id/adviceCELayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvTituloPopupOption"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="24dp"
+            android:layout_marginRight="24dp"
+            android:layout_marginBottom="4dp"
+            android:fontFamily="sans-serif-light"
+            android:text='Actuaización de Firmware'
+            android:textColor="#212121"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:paddingVertical="10dp"
+            android:id="@+id/tvSubtituloPopupOption"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="24dp"
+            android:layout_marginRight="24dp"
+            android:layout_marginBottom="6dp"
+            android:textSize="15sp"
+            android:text='Tu equipo actualmente tiene la versión de Firmware a la que intentas actualizar, ¿Quieres continuar de todos modos?' />
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:visibility="gone"
+            android:layout_marginLeft="24dp"
+            android:layout_marginRight="24dp"
+            android:layout_marginBottom="16dp"
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:hint="SSID"
+            android:inputType="" />
+        <com.google.android.material.textfield.TextInputEditText
+            android:visibility="gone"
+            android:layout_marginLeft="24dp"
+            android:layout_marginRight="24dp"
+            android:layout_marginBottom="16dp"
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:hint="Contraseña"
+            android:inputType="" />
+
+        <Button
+            android:id="@+id/btnSendfwconfirmation"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginLeft="24dp"
+            android:layout_marginRight="24dp"
+            android:layout_marginBottom="24dp"
+            android:background="@drawable/round_corner_black"
+            android:gravity="center"
+            android:text="Actualizar de todos modos"
+            android:textColor="#ffffff" />
+
+        <Button
+            android:id="@+id/btndontSendfwconfirmation"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginLeft="24dp"
+            android:layout_marginRight="24dp"
+            android:layout_marginBottom="24dp"
+            android:background="@drawable/round_corner_white"
+            android:gravity="center"
+            android:text="Cancelar"
+            android:textColor="#000000" />
+
+    </LinearLayout>
+
+</RelativeLayout>
